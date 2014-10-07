@@ -4,13 +4,13 @@ Syftet med ProtoKollen är att samla in och tillgängligöra alla kommunstyrelse
 
 Protokollen kommer att publiceras på webben som öppen data, beskriven enligt DCAT-standard, för journalister, forskare, beslutsfattare, tjänstemän och entreprenörer att ta del av. Själva hoppas vi i slutändan kunna göra journalistik av vår datainsamling. Det är inte svårt att se den journalistiska potentialen. Protokollen skulle ge an unik inblick i den demokratiska vardagen på lokal nivå från ett makroperspektiv, som vi aldrig sett tidigare. Vilka frågor är det som upptar beslutsfattare i olika delar av landet? Går det att se samband med styre, socioekonomi och innehåll? Vilka företag nämns?
 
-Projektet genomförs av [Jens Finnäs](https://twitter.com/jensfinnas) och [Peter Grensund](https://twitter.com/grensund) vid J++ och [Leo Wallentin](http://leowallentin.se/lang/sv), med stöd av Vinnova. Vi kommer att presentera våra första resultat i mars 2015.
+Projektet genomförs av [Jens Finnäs](https://twitter.com/jensfinnas) och [Peter Grensund](https://twitter.com/grensund) vid J++ och [Leo Wallentin](http://leowallentin.se/leo/sv), med stöd av Vinnova. Vi kommer att presentera våra första resultat i mars 2015.
 
 Licens
 ======
 All källkod är tillgänglig under MIT-licensens (MIT)
 
-Copyright (c) 2014 [Jens Finnäs](https://twitter.com/jensfinnas), [Peter Grensund](https://twitter.com/grensund), [Leo Wallentin](http://leowallentin.se/lang/sv)
+Copyright (c) 2014 [Jens Finnäs](https://twitter.com/jensfinnas), [Peter Grensund](https://twitter.com/grensund), [Leo Wallentin](http://leowallentin.se/leo/sv)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
