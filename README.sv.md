@@ -6,6 +6,8 @@ Protokollen kommer att publiceras på webben som öppen data, beskriven enligt D
 
 Projektet genomförs av [Jens Finnäs](https://twitter.com/jensfinnas) och [Peter Grensund](https://twitter.com/grensund) vid J++ och [Leo Wallentin](http://leowallentin.se/lang/sv), med stöd av Vinnova. Vi kommer att presentera våra första resultat i mars 2015.
 
+Licens
+======
 All källkod är tillgänglig under MIT-licensens (MIT)
 
 Copyright (c) 2014 [Jens Finnäs](https://twitter.com/jensfinnas), [Peter Grensund](https://twitter.com/grensund), [Leo Wallentin](http://leowallentin.se/lang/sv)

@@ -2,10 +2,10 @@ ProtoCollection
 ===============
 ProtoCollection (Swedish: [ProtoKollen](README.sv.md)) is a web service that harvests and analyzes meeting minutes from the 290 Swedish municipal boards (“kommunstyrelse”). The project is funded by Vinnova.
 
+Further information might be available in [the Swedish README file](README.sv.md).
 
-Further information might be available in [the Swedish README file](README.sv.md)
-
-
+Licence
+=======
 All code is distributed under the MIT License (MIT)
 
 Copyright (c) 2014 [Jens Finnäs](https://twitter.com/jensfinnas), [Peter Grensund](https://twitter.com/grensund), [Leo Wallentin](http://leowallentin.se/lang/en)
