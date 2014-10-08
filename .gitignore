@@ -1,5 +1,7 @@
 protokollen.egg-info/*
 login.py
+*.pyc
+*.csv
 
 # Compiled source #
 ###################

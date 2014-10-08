@@ -1,7 +1,7 @@
 try:
     from setuptools import setup
 
-    install_requires = ['selenium', 'xvfbwrapper', 'python-magic']
+    install_requires = ['selenium >= 2.4.0', 'xvfbwrapper', 'python-magic']
 
     try:
         import argparse
