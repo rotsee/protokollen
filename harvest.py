@@ -5,6 +5,7 @@ import logging
                                                          #
 dataFile = "Kommunstyrelseprotokoll (tidigare Dokument i Dalarna) - Sheet1.csv"                                    #
 logLevel = logging.INFO # DEBUG > INFO > WARNING > ERROR #
+protokollenUserAgent = 'Protokollen; ProtoCollection (http://protokollen.net/)'
                                                          #
 ##########################################################
 
@@ -18,19 +19,21 @@ def is_absolute(url):
 	"""Check if url is absolute or relative"""
 	return bool(urlparse.urlparse(url).netloc)
 
-from urllib2 import urlopen, URLError, HTTPError
+import urllib2
 def dlfile(url,localpath):
 	# TODO: Set User-agent to show who we are!
 	try:
 		url = url.encode('utf-8')
-		f = urlopen(url)
+		req = urllib2.Request(url)
+		req.add_header('User-agent', protokollenUserAgent)
+		f = urllib2.urlopen(req)
 
 		with open(localpath, "wb") as local_file:
 			local_file.write(f.read())
 
-	except HTTPError, e:
+	except urllib2.HTTPError, e:
 		logging.warning("HTTP Error: %s %s" % (e.code, url) )
-	except URLError, e:
+	except urllib2.URLError, e:
 		logging.warning("URL Error: %s %s" % (e.reason, url) )
 
 def getBucketListLength(pathFragment,bucket):
@@ -95,7 +98,7 @@ for row in dataSet.getNext():
 		logging.info("Processing %s %s" % (municipality,year))
 
 		#Make sure whatever element we are looking for is loaded before continuing
-		if preclick != "":
+		if preclick is not None:
 			pageLoadedCheck = preclick
 		else:
 			pageLoadedCheck = dlclick1
@@ -112,7 +115,7 @@ for row in dataSet.getNext():
 #						logging.warning("Page at %s timed out, or first xPath (%s) wasn't found" % (url,pageLoadedCheck))
 #						browser.quit()
 
-		if preclick != "":
+		if preclick is not None:
 			logging.info(" Preclicking")
 			elementList = browser.find_elements_by_xpath(preclick)
 			if not elementList:
@@ -136,7 +139,7 @@ for row in dataSet.getNext():
 				if not downloadUrl:
 					pass #Silently ignore false positives in xPath
 				else:
-					if dlclick2:
+					if dlclick2 is not None:
 						logging.info("  Entering two step download")
 						browser2.get(downloadUrl)
 						browser2.implicitly_wait(3)
@@ -154,7 +157,7 @@ for row in dataSet.getNext():
 						if not downloadUrl:
 							logging.warning("   Two step download failed")
 
-				if downloadUrl:
+				if downloadUrl is not None:
 					filename = hashlib.md5(url).hexdigest()
 					if fileExistsInBucket(municipality + "/" + year + "/" + filename,bucket):
 						pass #File is already on Amazon
