@@ -82,6 +82,9 @@ dataSet = datasheet.DataSet(csvFile.data)
 
 import os
 import hashlib
+import magic
+magicmime = magic.Magic(mime=True)
+
 for row in dataSet.getNext():
 	municipality = row["municipality"]
 	year         = row["year"]
