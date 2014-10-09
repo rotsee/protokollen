@@ -2,7 +2,7 @@
 import logging
 
 class CSVFile:
-	"""Imports data from a CSV file in a format suitable for Class DataSheet
+	"""Imports data from a CSV file in a format suitable for the DataSheet class
 	"""
 	def __init__(self,filename,delimiter=',',quotechar='"'):
 		import csv

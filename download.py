@@ -9,8 +9,12 @@ class File:
 		url,
 		localFile,
 		userAgent = 'Protokollen; ProtoCollection (http://protokollen.net/)'):
-			import urllib2
 			self.localFile = localFile
+			self.success   = False
+			self.mimeType  = None
+
+			import urllib2
+			import magic
 			try:
 				url = url.encode('utf-8')
 				req = urllib2.Request(url)
@@ -27,9 +31,11 @@ class File:
 
 			if self.exists():
 				self.success = True
+				magicMime = magic.Magic(mime=True)
+				self.mimeType = magicmime.from_file(self.localFile)
 			else:
 				logging.warning("Failed to download file from %s" % url)
-				self.success = False
+
 
 	def exists(self):
 		if os.path.isfile(self.localFile):
@@ -39,3 +45,19 @@ class File:
 
 	def delete(self):
 		os.unlink(self.localFile)
+
+	def getFileType(self):
+		if self.mimeType == 'application/pdf':
+			return 'pdf'
+		elif self.mimeType == 'application/msword':
+			return 'doc'
+		elif self.mimeType == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+			return 'docx'
+		elif self.mimeType == 'application/vnd.oasis.opendocument.text':
+			return 'odt'
+		elif self.mimeType == 'text/rtf':
+			return 'rtf'
+		elif self.mimeType == 'text/plain':
+			return 'txt'
+		else:
+			return None

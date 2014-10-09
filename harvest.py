@@ -8,6 +8,7 @@ import logging
                                                          #
 dataFile = "Kommunstyrelseprotokoll (tidigare Dokument i Dalarna) - Sheet1.csv"                                    #
 logLevel = logging.INFO # DEBUG > INFO > WARNING > ERROR #
+allowedFiletypes = ['pdf','doc','docx']                  #
                                                          #
 ##########################################################
 
@@ -40,10 +41,12 @@ logging.info("Starting a full harvesting loop on `%s`" % dataFile)
 
 logging.info("Connecting to S3")
 import login
-from boto.s3.connection import S3Connection
-conn = S3Connection(login.aws_access_key_id, login.aws_secret_access_key)
-bucket = conn.get_bucket(login.aws_bucket_name)
-from boto.s3.key import Key
+import upload
+s3 = upload.S3Connection(
+	login.aws_access_key_id,
+	login.aws_secret_access_key,
+	login.aws_bucket_name)
+
 
 logging.info("Setting up virtual browser")
 from selenium import webdriver
@@ -66,10 +69,7 @@ csvFile = datasheet.CSVFile(dataFile)
 dataSet = datasheet.DataSet(csvFile.data)
 
 import download
-
 import hashlib
-import magic
-magicmime = magic.Magic(mime=True)
 
 for row in dataSet.getNext():
 	municipality = row["municipality"]
@@ -165,23 +165,15 @@ for row in dataSet.getNext():
 
 						downloadFile = download.File(downloadUrl,localFilename)
 						if downloadFile.success:
-							#Only accept some file types
-							mimetype = magicmime.from_file(localFilename)
-							if mimetype == 'application/pdf':
-								filetype = 'pdf'
-							elif mimetype == 'application/msword':
-								filetype = 'doc'
-							elif mimetype == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-								filetype = 'docx'
-							else:
-								filetype = None
+							filetype = downloadFile.getFileType()
 
-							if filetype:
+							if filetype in allowedFiletypes:
 								k = Key(bucket)
 								k.key = municipality + "/" + year + "/" + filename + "." + filetype
 								k.set_contents_from_filename(localFilename)
 							else:
-								logging.warning("Not a valid mime type at %s" % downloadUrl)
+								logging.warning("%s is not a valid mime type" % downloadFile.mimeType)
+
 							downloadFile.delete()
 
 browser.close()
