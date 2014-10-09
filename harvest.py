@@ -22,19 +22,6 @@ def is_absolute(url):
 	"""Check if url is absolute or relative"""
 	return bool(urlparse.urlparse(url).netloc)
 
-def getBucketListLength(pathFragment,bucket):
-	l = bucket.list(pathFragment)
-	i = 0
-	for key in l:
-		i += 1
-	return i
-
-def fileExistsInBucket(fullfilename,bucket):
-	if getBucketListLength(fullfilename,bucket):
-		return True
-	else:
-		return False
-
 ###########################################################################
 
 logging.info("Starting a full harvesting loop on `%s`" % dataFile)
@@ -46,7 +33,6 @@ s3 = upload.S3Connection(
 	login.aws_access_key_id,
 	login.aws_secret_access_key,
 	login.aws_bucket_name)
-
 
 logging.info("Setting up virtual browser")
 from selenium import webdriver
@@ -119,7 +105,7 @@ for row in dataSet.getNext():
 			logging.warning("  No URLs found")
 		else:
 			#Sanity check. Do we have a resonable amount of URLs?
-			alreadyUploadedListLength = getBucketListLength(municipality + "/" + year,bucket)
+			alreadyUploadedListLength = s3.getBucketListLength(municipality + "/" + year)
 			if abs(alreadyUploadedListLength - len(urllistSelenium)) > 1:
 				logging.warning("  There was a sudden change in the number of download URLs for this municipality and year.")
 
@@ -148,7 +134,7 @@ for row in dataSet.getNext():
 
 				if downloadUrl is not None:
 					filename = hashlib.md5(downloadUrl).hexdigest()
-					if fileExistsInBucket(municipality + "/" + year + "/" + filename,bucket):
+					if s3.fileExistsInBucket(municipality + "/" + year + "/" + filename):
 						pass #File is already on Amazon
 					else:
 						print("downloading")
@@ -168,9 +154,8 @@ for row in dataSet.getNext():
 							filetype = downloadFile.getFileType()
 
 							if filetype in allowedFiletypes:
-								k = Key(bucket)
-								k.key = municipality + "/" + year + "/" + filename + "." + filetype
-								k.set_contents_from_filename(localFilename)
+								s3name = municipality + "/" + year + "/" + filename + "." + filetype
+								s3.putFile(localFilename,s3name)
 							else:
 								logging.warning("%s is not a valid mime type" % downloadFile.mimeType)
 
