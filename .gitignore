@@ -1,5 +1,6 @@
 protokollen.egg-info/*
 login.py
+test.py
 *.pyc
 *.csv
 
