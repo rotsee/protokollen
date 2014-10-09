@@ -176,7 +176,7 @@ for row in dataSet.getNext():
 							urlBase = parse_object.scheme + "://" + parse_object.netloc
 							downloadUrl = urlBase + downloadUrl
 
-						dlfile(url,localFilename)
+						dlfile(downloadUrl,localFilename)
 
 						if not os.path.isfile(localFilename):
 							logging.warning("Failed to download file from %s" % downloadUrl)
@@ -197,7 +197,7 @@ for row in dataSet.getNext():
 								k.key = municipality + "/" + year + "/" + filename + "." + filetype
 								k.set_contents_from_filename(localFilename)
 							else:
-								loggin.warning("Not a valid mime type at %s" % downloadUrl)
+								logging.warning("Not a valid mime type at %s" % downloadUrl)
 
 							os.unlink(localFilename)
 
