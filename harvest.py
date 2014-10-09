@@ -1,11 +1,13 @@
 #coding=utf-8
 
+#TODO:
+#multistep download is broken (test case: Bollnäs 2014).
+
 import logging
 ########## SETTINGS ######################################
                                                          #
 dataFile = "Kommunstyrelseprotokoll (tidigare Dokument i Dalarna) - Sheet1.csv"                                    #
 logLevel = logging.INFO # DEBUG > INFO > WARNING > ERROR #
-protokollenUserAgent = 'Protokollen; ProtoCollection (http://protokollen.net/)'
                                                          #
 ##########################################################
 
@@ -18,23 +20,6 @@ import urlparse
 def is_absolute(url):
 	"""Check if url is absolute or relative"""
 	return bool(urlparse.urlparse(url).netloc)
-
-import urllib2
-def dlfile(url,localpath):
-	# TODO: Set User-agent to show who we are!
-	try:
-		url = url.encode('utf-8')
-		req = urllib2.Request(url)
-		req.add_header('User-agent', protokollenUserAgent)
-		f = urllib2.urlopen(req)
-
-		with open(localpath, "wb") as local_file:
-			local_file.write(f.read())
-
-	except urllib2.HTTPError, e:
-		logging.warning("HTTP Error: %s %s" % (e.code, url) )
-	except urllib2.URLError, e:
-		logging.warning("URL Error: %s %s" % (e.reason, url) )
 
 def getBucketListLength(pathFragment,bucket):
 	l = bucket.list(pathFragment)
@@ -80,7 +65,8 @@ import datasheet
 csvFile = datasheet.CSVFile(dataFile)
 dataSet = datasheet.DataSet(csvFile.data)
 
-import os
+import download
+
 import hashlib
 import magic
 magicmime = magic.Magic(mime=True)
@@ -93,7 +79,7 @@ for row in dataSet.getNext():
 	dlclick1     = row["dlclick1"]
 	dlclick2     = row["dlclick2"]
 
-	if dlclick1 == "" or municipality == "" or year == "" or url == "":
+	if dlclick1 is None or municipality is None or year is None or url is None:
 
 		logging.warning("A required field is missing from %s (%s). We will skip this row." % (municipality,year))
 	else:
@@ -161,10 +147,11 @@ for row in dataSet.getNext():
 							logging.warning("   Two step download failed")
 
 				if downloadUrl is not None:
-					filename = hashlib.md5(url).hexdigest()
+					filename = hashlib.md5(downloadUrl).hexdigest()
 					if fileExistsInBucket(municipality + "/" + year + "/" + filename,bucket):
 						pass #File is already on Amazon
 					else:
+						print("downloading")
 						localFilename = "temp/"+filename
 
 						if is_absolute(downloadUrl):
@@ -172,15 +159,12 @@ for row in dataSet.getNext():
 						else:
 							#URL is relative, append base
 							from urllib.parse import urlparse
-							parse_object = urlparse(downloadUrl)
+							parse_object = urlparse(url)
 							urlBase = parse_object.scheme + "://" + parse_object.netloc
 							downloadUrl = urlBase + downloadUrl
 
-						dlfile(downloadUrl,localFilename)
-
-						if not os.path.isfile(localFilename):
-							logging.warning("Failed to download file from %s" % downloadUrl)
-						else:
+						downloadFile = download.File(downloadUrl,localFilename)
+						if downloadFile.success:
 							#Only accept some file types
 							mimetype = magicmime.from_file(localFilename)
 							if mimetype == 'application/pdf':
@@ -198,8 +182,7 @@ for row in dataSet.getNext():
 								k.set_contents_from_filename(localFilename)
 							else:
 								logging.warning("Not a valid mime type at %s" % downloadUrl)
-
-							os.unlink(localFilename)
+							downloadFile.delete()
 
 browser.close()
 vdisplay.stop()
