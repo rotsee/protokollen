@@ -5,9 +5,7 @@ try:
     'selenium >= 2.4.0',
     'xvfbwrapper',
     'python-magic',
-    'gspread',
-    'oauth2client',
-    'httplib2']
+    'oauth2client']
 
     try:
         import argparse

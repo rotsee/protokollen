@@ -7,7 +7,7 @@ Prerequisites
  * Firefox (tested with version 32.0)
  * Xvfb (tested with version 1.15.1)
  * An Amazon S3 bucket
- * An OAuth2 JSON key file from Google developers console, if you wish to use Google Spreadsheets as the source for your harvesting. Not needed if using a local CSV file.
+ * [Service-account credentials](https://developers.google.com/console/help/new/#serviceaccounts) from the [Google developers console](https://console.developers.google.com/), if you wish to use Google Spreadsheets as the source for your harvesting. Not needed if using a local CSV file.
  * Command line access to your server
  * Internet connection (even for a dry run)
  
@@ -16,14 +16,36 @@ Installation
 
  * Clone this repository
  * From the protokollen directory, run `python setup.py develop`
- * Copy `login.template.py` to `login.py`, and add your Amazon S3 credentials there
+ * Copy `login.template.py` to `login.py`, and add your Amazon S3 and Google API credentials there
+ * Copy your Google API p12 file to `google_api.p12` (or specify another path in `login.py`)
 
 Using ProtoCollection
 =====================
 
-Harvest documents
------------------
-The harvesting script `harvest.py` takes a CSV with URLs and xPath expressions. It will fetch any encountered PDF, MS Word DOC or DOCX file encountered, and store them on Amazon S3.
+Harvesting documents
+---------------------
+The harvesting script `harvest.py` takes a table with URLs and xPath expressions. It will fetch any valid files encountered, and store them on Amazon S3.
+
+For each row in the data table, `harvest.py` will:
+
+1. Open the entry page
+2. Do any clicks required to display the list of protocols
+3. Scrape the page for paths for the respective protocols
+4. For each protocol, if required, click through any intermediate steps to get to the actual download link
+5. Check if the file is already at Amazon
+6. Otherwise, download the file
+7. Check the mime type of the file
+8. If it looks like a valid protocol, upload it to Amazon S3
+
+Run `python harvest.py --help` for more info.
+
+Extracting data from documents
+------------------------------
+TBD
+
+Analyzing data
+--------------
+TBD
 
 Changelog
 =========

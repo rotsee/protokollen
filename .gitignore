@@ -1,6 +1,7 @@
 protokollen.egg-info/*
 login.py
 google_client_credentials.json
+*.p12
 test.py
 *.pyc
 *.csv

@@ -1,12 +1,15 @@
 #coding=utf-8
 
 #TODO:
-#command line tools
-#multistep download is broken (test case: Bollnäs 2014).
 #download directly from Google 
+#scramble rows
+#Make an abstract data source class
+#Do not start virtual browser until we need it
+#make datasheet.py independent of login-oy 
+#send mail support
+#multistep download is broken (test case: Bollnäs 2014).
 
-
-import logging
+import login
 
 import argparse, argcomplete
 parser = argparse.ArgumentParser(description='This script will download all files pointed out by a series of URLs and xPath expressions, and upload them to an Amazon S3 server.')
@@ -23,15 +26,15 @@ parser.add_argument(
 	"-d",
 	"--dry",
 	dest="dryrun",
-	action='store_true',#no argument
+	action='store_true',
     help="Dry run. Do not upload any files to Amazon (only download and delete them).")
 
 parser.add_argument(
 	"-s",
 	"--super-dry",
 	dest="superdryrun",
-	action='store_true',#no argument
-    help="Super dry. A dry run where we do not even download any files.")
+	action='store_true',
+	help="Super dry. A dry run where we do not even download any files.")
 
 parser.add_argument(
 	"-t",
@@ -40,16 +43,37 @@ parser.add_argument(
 	type=int,
 	default=1,
 	metavar="CHANGES",
-    help="When should we warn about suspicios changes in the number of protocols? 1 means that anything other that zero or one new protocol is considered suspicios.")
+	help="When should we warn about suspicios changes in the number of protocols? 1 means that anything other that zero or one new protocol is considered suspicios.")
+
+parser.add_argument(
+	"-f",
+	"--file",
+	dest="filename",
+	help="Enter a file name, if your data source is a local CSV file. Otherwise, we will look for a Google Spreadsheets ID in login.py")
 
 argcomplete.autocomplete(parser)
 args = parser.parse_args()
 
+import logging
 logLevel = args.loglevel * 10 #https://docs.python.org/2/library/logging.html#levels
 logging.basicConfig(
-	level=logLevel,
-	format='%(asctime)s %(message)s'
+	level=logging.INFO,
+	format='%(asctime)s %(levelname)s: %(message)s'
 	)
+
+dataSheet = None
+dataFile 	 = None
+if args.filename is not None:
+	dataFile = args.filename
+	logging.info("Harvesting from `%s`" % dataFile)
+else:
+	if login.google_spreadsheet_key is None:
+		logging.error("No local file given, and no Google Spreadsheet ID found in login.py. Cannot proceed.")
+		import sys
+		sys.exit()
+	else:
+		dataSheet = login.google_spreadsheet_key
+		logging.info("Harvesting from `%s`" % dataSheet)
 
 suddenChangeThreshold = args.tolaratedchanges
 
@@ -69,7 +93,7 @@ else:
 
 ########## SETTINGS ######################################
                                                          #
-dataFile = "Kommunstyrelseprotokoll (tidigare Dokument i Dalarna) - Sheet1.csv"                                    #
+#dataFile = "Kommunstyrelseprotokoll (tidigare Dokument i Dalarna) - Sheet1.csv"                                    #
 allowedFiletypes = ['pdf','doc','docx']                  #
                                                          #
 ##########################################################
@@ -81,10 +105,7 @@ def is_absolute(url):
 
 ##########################################################
 
-logging.info("Starting a full harvesting loop on `%s`" % dataFile)
-
 logging.info("Connecting to S3")
-import login
 import upload
 s3 = upload.S3Connection(
 	login.aws_access_key_id,
@@ -97,19 +118,22 @@ from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ExpectedConditions
 from xvfbwrapper import Xvfb
-vdisplay = Xvfb()
-vdisplay.start()
+#vdisplay = Xvfb()
+#vdisplay.start()
 # We need a separate browser for the second download click
-profile = webdriver.FirefoxProfile()
-profile2 = webdriver.FirefoxProfile()
+#profile = webdriver.FirefoxProfile()
+#profile2 = webdriver.FirefoxProfile()
 #profile.set_preference("browser.link.open_newwindow", 1)
-browser = webdriver.Firefox(profile)
-browser2 = webdriver.Firefox(profile2)
+#browser = webdriver.Firefox(profile)
+#browser2 = webdriver.Firefox(profile2)
 
-logging.info("Fetching data from CSV file")
+logging.info("Fetching data from CSV file or Google Docs")
 import datasheet
-csvFile = datasheet.CSVFile(dataFile)
-dataSet = datasheet.DataSet(csvFile.data)
+if dataFile is not None:
+	dataContainer = datasheet.CSVFile(dataFile)
+elif dataSheet is not None:
+	dataContainer = datasheet.GoogleSheet(dataSheet)
+dataSet = datasheet.DataSet(dataContainer.data)
 
 import download
 import hashlib
