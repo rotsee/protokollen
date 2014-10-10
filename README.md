@@ -2,10 +2,18 @@ ProtoCollection
 ===============
 ProtoCollection (Swedish: [ProtoKollen](README.sv.md)) is a web service that harvests and analyzes meeting minutes from the 290 Swedish municipal boards (“kommunstyrelse”). The project is funded by Vinnova.
 
+Prerequisites
+=============
+ * Firefox (tested with version 32.0)
+ * Xvfb (tested with version 1.15.1)
+ * An Amazon S3 bucket
+ * An OAuth2 JSON key file from Google developers console, if you wish to use Google Spreadsheets as the source for your harvesting. Not needed if using a local CSV file.
+ * Command line access to your server
+ * Internet connection (even for a dry run)
+ 
 Installation
 ============
 
- * Install Firefox (any version should do) and xvfb
  * Clone this repository
  * From the protokollen directory, run `python setup.py develop`
  * Copy `login.template.py` to `login.py`, and add your Amazon S3 credentials there
