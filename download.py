@@ -32,7 +32,7 @@ class File:
 			if self.exists():
 				self.success = True
 				magicMime = magic.Magic(mime=True)
-				self.mimeType = magicmime.from_file(self.localFile)
+				self.mimeType = magicMime.from_file(self.localFile)
 			else:
 				logging.warning("Failed to download file from %s" % url)
 

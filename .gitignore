@@ -5,6 +5,7 @@ google_client_credentials.json
 test.py
 *.pyc
 *.csv
+dist/*
 
 # Compiled source #
 ###################

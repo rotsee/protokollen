@@ -1,8 +1,6 @@
 #coding=utf-8
 
 #TODO:
-#download directly from Google 
-#scramble rows
 #Make an abstract data source class
 #Do not start virtual browser until we need it
 #make datasheet.py independent of login-oy 
@@ -61,19 +59,23 @@ logging.basicConfig(
 	format='%(asctime)s %(levelname)s: %(message)s'
 	)
 
-dataSheet = None
-dataFile 	 = None
+import datasheet
 if args.filename is not None:
-	dataFile = args.filename
-	logging.info("Harvesting from `%s`" % dataFile)
+	dataSet = datasheet.CSVFile(dataFile)
+	logging.info("Harvesting from CSV file `%s`" % dataFile)
+elif login.google_spreadsheet_key is not None:
+	dataSet = datasheet.GoogleSheet(
+		login.google_spreadsheet_key,
+		login.google_client_email,
+		login.google_p12_file)
+	logging.info("Harvesting from Google Spreadsheet`%s`" % login.google_spreadsheet_key)
 else:
-	if login.google_spreadsheet_key is None:
-		logging.error("No local file given, and no Google Spreadsheet ID found in login.py. Cannot proceed.")
-		import sys
-		sys.exit()
-	else:
-		dataSheet = login.google_spreadsheet_key
-		logging.info("Harvesting from `%s`" % dataSheet)
+	logging.error("No local file given, and no Google Spreadsheet ID found in login.py. Cannot proceed.")
+	import sys
+	sys.exit()
+
+dataSet.shuffle() #give targets some rest between requests by scrambling the rows
+
 
 suddenChangeThreshold = args.tolaratedchanges
 
@@ -118,22 +120,14 @@ from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ExpectedConditions
 from xvfbwrapper import Xvfb
-#vdisplay = Xvfb()
-#vdisplay.start()
+vdisplay = Xvfb()
+vdisplay.start()
 # We need a separate browser for the second download click
-#profile = webdriver.FirefoxProfile()
-#profile2 = webdriver.FirefoxProfile()
+profile = webdriver.FirefoxProfile()
+profile2 = webdriver.FirefoxProfile()
 #profile.set_preference("browser.link.open_newwindow", 1)
-#browser = webdriver.Firefox(profile)
-#browser2 = webdriver.Firefox(profile2)
-
-logging.info("Fetching data from CSV file or Google Docs")
-import datasheet
-if dataFile is not None:
-	dataContainer = datasheet.CSVFile(dataFile)
-elif dataSheet is not None:
-	dataContainer = datasheet.GoogleSheet(dataSheet)
-dataSet = datasheet.DataSet(dataContainer.data)
+browser = webdriver.Firefox(profile)
+browser2 = webdriver.Firefox(profile2)
 
 import download
 import hashlib

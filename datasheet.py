@@ -1,8 +1,24 @@
 #coding=utf-8
-import logging
+class DataSet:
+	"""Represents a tabular data set, from a CSV file or similar.
+	   data is supposed to be a list of dictionaries
+	   [{A: a1, B: b1}, {A: a2, B: b2}, ...]
+	"""
 
-class CSVFile:
-	"""Imports data from a CSV file in a format suitable for the DataSheet class
+	def __init__(self,data):
+		self.data = data
+
+	def shuffle(self):
+		from random import shuffle
+		shuffle(self.data)
+
+	def getNext(self):
+		for row in self.data:
+			yield row
+
+class CSVFile(DataSet):
+	"""Represents data from a CSV file. Data is loaded on init.
+	   First row is assumed to contain headers
 	"""
 	def __init__(self,filename,delimiter=',',quotechar='"'):
 		import csv
@@ -17,11 +33,10 @@ class CSVFile:
 			with open(self.filename, 'rb') as csvfile:
 				reader = csv.reader(csvfile)
 				firstRow = True
-				indexRow = []
 				for row in reader:
 					if firstRow:
 						self.indexRow = row
-						self.width = len(indexRow)
+						self.width = len(self.indexRow)
 						firstRow = False
 					else:
 						rowObj = {}
@@ -38,19 +53,19 @@ class CSVFile:
 			logging.error("OSError in class CSVFile: %s" % err)
 
 
-class GoogleSheet:
-	"""Imports data from a Google Spreadsheet, in a format suitable for the DataSheet class
+class GoogleSheet(DataSet):
+	"""Represents data from a Google Spreadsheet. Data is loaded on init.
+	   First row is assumed to contain headers.
 	"""
-	def __init__(self,googleSheetKey):
-		import login
+	def __init__(self,googleSheetKey,client_email,p12file="google_api.p12"):
 		self.key = googleSheetKey
 		self.data = []
 
 		#Two step authorization
 		from oauth2client.client import SignedJwtAssertionCredentials
-		private_key = self._getPrivateKeyFromP12File(login.google_p12_file)
+		private_key = self._getPrivateKeyFromP12File(p12file)
 		OAuth2Credentials = SignedJwtAssertionCredentials(
-			login.google_client_email,
+			client_email,
 			private_key,
 			'https://spreadsheets.google.com/feeds')
 		import gdata.gauth
@@ -69,17 +84,3 @@ class GoogleSheet:
 		private_key = f.read()
 		f.close()
 		return private_key
-
-
-class DataSet:
-	"""Represents a tabular data set, from a CSV file or similar.
-	   data is supposed to be a list of dictionaries
-	   [{A: a1, B: b1}, {A: a2, B: b2}, ...]
-	"""
-
-	def __init__(self,data):
-		self.data = data
-
-	def getNext(self):
-		for row in self.data:
-			yield row
