@@ -1,4 +1,5 @@
 #coding=utf-8
+
 class DataSet:
 	"""Represents a tabular data set, from a CSV file or similar.
 	   data is supposed to be a list of dictionaries

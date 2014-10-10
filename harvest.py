@@ -1,51 +1,46 @@
 #coding=utf-8
 
 #TODO:
-#Make an abstract data source class
 #Do not start virtual browser until we need it
-#make datasheet.py independent of login-oy 
-#send mail support
+#sendmail support
 #multistep download is broken (test case: Bollnäs 2014).
 
-import login
+
+import login # Passwords and keys goes in login.py
 
 import argparse, argcomplete
-parser = argparse.ArgumentParser(description='This script will download all files pointed out by a series of URLs and xPath expressions, and upload them to an Amazon S3 server.')
+parser = argparse.ArgumentParser(
+	description='This script will download all files pointed out by a series of URLs and xPath expressions, and upload them to an Amazon S3 server.')
 parser.add_argument(
-	"-l",
-	"--loglevel",
+	"-l", "--loglevel",
 	dest="loglevel",
-    help="Log level (5=only critical, 4=errors, 3=warnings*, 2=info, 1=debug",
+    help="Log level. 5=only critical, 4=errors, 3=warnings, 2=info, 1=debug. Setting this to 1 will print a lot! Default=3.)",
     type=int,
     choices=(1,2,3,4,5),
     default=3 )
 
 parser.add_argument(
-	"-d",
-	"--dry",
+	"-d", "--dry",
 	dest="dryrun",
 	action='store_true',
     help="Dry run. Do not upload any files to Amazon (only download and delete them).")
 
 parser.add_argument(
-	"-s",
-	"--super-dry",
+	"-s", "--super-dry",
 	dest="superdryrun",
 	action='store_true',
 	help="Super dry. A dry run where we do not even download any files.")
 
 parser.add_argument(
-	"-t",
-	"--tolarated-changes",
+	"-t", "--tolarated-changes",
 	dest="tolaratedchanges",
 	type=int,
 	default=1,
 	metavar="CHANGES",
-	help="When should we warn about suspicios changes in the number of protocols? 1 means that anything other that zero or one new protocol is considered suspicios.")
+	help="When should we warn about suspicios changes in the number of protocols? 1 means that anything other that zero or one new protocol since last time is considered suspicios.")
 
 parser.add_argument(
-	"-f",
-	"--file",
+	"-f", 	"--file",
 	dest="filename",
 	help="Enter a file name, if your data source is a local CSV file. Otherwise, we will look for a Google Spreadsheets ID in login.py")
 
@@ -61,21 +56,19 @@ logging.basicConfig(
 
 import datasheet
 if args.filename is not None:
-	dataSet = datasheet.CSVFile(dataFile)
 	logging.info("Harvesting from CSV file `%s`" % dataFile)
+	dataSet = datasheet.CSVFile(dataFile)
 elif login.google_spreadsheet_key is not None:
+	logging.info("Harvesting from Google Spreadsheet`%s`" % login.google_spreadsheet_key)
 	dataSet = datasheet.GoogleSheet(
 		login.google_spreadsheet_key,
 		login.google_client_email,
 		login.google_p12_file)
-	logging.info("Harvesting from Google Spreadsheet`%s`" % login.google_spreadsheet_key)
 else:
 	logging.error("No local file given, and no Google Spreadsheet ID found in login.py. Cannot proceed.")
 	import sys
 	sys.exit()
-
 dataSet.shuffle() #give targets some rest between requests by scrambling the rows
-
 
 suddenChangeThreshold = args.tolaratedchanges
 
@@ -208,7 +201,7 @@ for row in dataSet.getNext():
 							logging.warning("   Two step download failed")
 
 				if downloadUrl is not None:
-					filename = hashlib.md5(downloadUrl).hexdigest()
+					filename = hashlib.md5(municipality + "/" + year + "/" + filename).hexdigest()
 					if s3.fileExistsInBucket(municipality + "/" + year + "/" + filename):
 						pass #File is already on Amazon
 					else:

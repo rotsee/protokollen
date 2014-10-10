@@ -37,7 +37,7 @@ For each row in the data table, `harvest.py` will:
 7. Check the mime type of the file
 8. If it looks like a valid protocol, upload it to Amazon S3
 
-Run `python harvest.py --help` for more info.
+Run `python harvest.py --help` for more info on how to feed data into the script.
 
 Extracting data from documents
 ------------------------------
