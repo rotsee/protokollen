@@ -1,7 +1,13 @@
 try:
     from setuptools import setup
 
-    install_requires = ['selenium >= 2.4.0', 'xvfbwrapper', 'python-magic']
+    install_requires = [
+    'selenium >= 2.4.0',
+    'xvfbwrapper',
+    'python-magic',
+    'gspread',
+    'oauth2client',
+    'httplib2']
 
     try:
         import argparse
@@ -13,10 +19,9 @@ except ImportError:
     from distutils.core import setup
     kws = {}
 
-
 setup(	name='protokollen',
 		version='0.1',
-		description='This package contains the protokollen harvester',
+		description='This package contains the ProtoCollection Python tools',
 		url='https://github.com/rotsee/protokollen',
 		license='MIT',
 		**kws
