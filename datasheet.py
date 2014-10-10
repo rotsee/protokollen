@@ -9,6 +9,24 @@ class DataSet:
 	def __init__(self,data):
 		self.data = data
 
+	def filter(self,require=None,disallow=None):
+		filteredList = []
+		for row in self.data:
+			ok = True
+			for r in require or []:
+				if r in row and row[r] is not None:
+					pass
+				else:
+					ok = False
+			for d in disallow or []:
+				if d in row and row[d] is not None:
+					ok = False
+					break
+			if ok:
+				filteredList.append(row)
+
+		return DataSet(filteredList)
+
 	def shuffle(self):
 		from random import shuffle
 		shuffle(self.data)

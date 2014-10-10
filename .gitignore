@@ -1,11 +1,10 @@
-protokollen.egg-info/*
 login.py
-google_client_credentials.json
+protokollen.egg-info/*
+test.*
 *.p12
-test.py
 *.pyc
 *.csv
-dist/*
+temp/*
 
 # Compiled source #
 ###################
