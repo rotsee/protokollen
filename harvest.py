@@ -1,28 +1,85 @@
 #coding=utf-8
 
 #TODO:
+#command line tools
 #multistep download is broken (test case: Bollnäs 2014).
+#download directly from Google 
+
 
 import logging
-########## SETTINGS ######################################
-                                                         #
-dataFile = "Kommunstyrelseprotokoll (tidigare Dokument i Dalarna) - Sheet1.csv"                                    #
-logLevel = logging.INFO # DEBUG > INFO > WARNING > ERROR #
-allowedFiletypes = ['pdf','doc','docx']                  #
-                                                         #
-##########################################################
 
+import argparse, argcomplete
+parser = argparse.ArgumentParser(description='This script will download all files pointed out by a series of URLs and xPath expressions, and upload them to an Amazon S3 server.')
+parser.add_argument(
+	"-l",
+	"--loglevel",
+	dest="loglevel",
+    help="Log level (5=only critical, 4=errors, 3=warnings*, 2=info, 1=debug",
+    type=int,
+    choices=(1,2,3,4,5),
+    default=3 )
+
+parser.add_argument(
+	"-d",
+	"--dry",
+	dest="dryrun",
+	action='store_true',#no argument
+    help="Dry run. Do not upload any files to Amazon (only download and delete them).")
+
+parser.add_argument(
+	"-s",
+	"--super-dry",
+	dest="superdryrun",
+	action='store_true',#no argument
+    help="Super dry. A dry run where we do not even download any files.")
+
+parser.add_argument(
+	"-t",
+	"--tolarated-changes",
+	dest="tolaratedchanges",
+	type=int,
+	default=1,
+	metavar="CHANGES",
+    help="When should we warn about suspicios changes in the number of protocols? 1 means that anything other that zero or one new protocol is considered suspicios.")
+
+argcomplete.autocomplete(parser)
+args = parser.parse_args()
+
+logLevel = args.loglevel * 10 #https://docs.python.org/2/library/logging.html#levels
 logging.basicConfig(
 	level=logLevel,
 	format='%(asctime)s %(message)s'
 	)
+
+suddenChangeThreshold = args.tolaratedchanges
+
+NORMAL_MODE   = 0
+DRY_MODE      = 1
+SUPERDRY_MODE = 2
+
+if args.superdryrun:
+	logging.info("Running in super dry mode")
+	executionMode = SUPERDRY_MODE
+elif args.dryrun:
+	logging.info("Running in dry mode")
+	executionMode = DRY_MODE
+else:
+	logging.info("Running in normal mode")
+	executionMode = NORMAL_MODE
+
+########## SETTINGS ######################################
+                                                         #
+dataFile = "Kommunstyrelseprotokoll (tidigare Dokument i Dalarna) - Sheet1.csv"                                    #
+allowedFiletypes = ['pdf','doc','docx']                  #
+                                                         #
+##########################################################
 
 import urlparse
 def is_absolute(url):
 	"""Check if url is absolute or relative"""
 	return bool(urlparse.urlparse(url).netloc)
 
-###########################################################################
+##########################################################
 
 logging.info("Starting a full harvesting loop on `%s`" % dataFile)
 
@@ -106,7 +163,7 @@ for row in dataSet.getNext():
 		else:
 			#Sanity check. Do we have a resonable amount of URLs?
 			alreadyUploadedListLength = s3.getBucketListLength(municipality + "/" + year)
-			if abs(alreadyUploadedListLength - len(urllistSelenium)) > 1:
+			if alreadyUploadedListLength > 0 and ((abs(alreadyUploadedListLength - len(urllistSelenium)) > suddenChangeThreshold) or (len(urllistSelenium) < alreadyUploadedListLength) ):
 				logging.warning("  There was a sudden change in the number of download URLs for this municipality and year.")
 
 			for u in urllistSelenium:
@@ -149,17 +206,19 @@ for row in dataSet.getNext():
 							urlBase = parse_object.scheme + "://" + parse_object.netloc
 							downloadUrl = urlBase + downloadUrl
 
-						downloadFile = download.File(downloadUrl,localFilename)
-						if downloadFile.success:
-							filetype = downloadFile.getFileType()
+						if executionMode < SUPERDRY_MODE:
+							downloadFile = download.File(downloadUrl,localFilename)
+							if downloadFile.success:
+								filetype = downloadFile.getFileType()
 
-							if filetype in allowedFiletypes:
-								s3name = municipality + "/" + year + "/" + filename + "." + filetype
-								s3.putFile(localFilename,s3name)
-							else:
-								logging.warning("%s is not a valid mime type" % downloadFile.mimeType)
+								if filetype in allowedFiletypes:
+									s3name = municipality + "/" + year + "/" + filename + "." + filetype
+									if executionMode < DRY_MODE:
+										s3.putFile(localFilename,s3name)
+								else:
+									logging.warning("%s is not a valid mime type" % downloadFile.mimeType)
 
-							downloadFile.delete()
+								downloadFile.delete()
 
 browser.close()
 vdisplay.stop()
