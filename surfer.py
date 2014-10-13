@@ -13,7 +13,7 @@ class Surfer:
 		from xvfbwrapper import Xvfb
 
 		self.vdisplay = Xvfb()
-		vdisplay.start()
+		self.vdisplay.start()
 
 		profile = webdriver.FirefoxProfile()
 		self.browser = webdriver.Firefox(profile)
@@ -21,11 +21,11 @@ class Surfer:
 		#profile.set_preference("browser.link.open_newwindow", 1)
 		#browser2 = webdriver.Firefox(profile2)
 
-	def surfTo(url):
+	def surfTo(self,url):
 		self.browser.get(url)
 		self.browser.implicitly_wait(self.extraDelay)
 
-	def clickOnStuff(xPath):
+	def clickOnStuff(self,xPath):
 		elementList = self.browser.find_elements_by_xpath(xPath)
 		if not elementList:
 			logging.warning("No elements found for xPath `%s`" % xPath)
@@ -34,10 +34,10 @@ class Surfer:
 				element.click()
 			self.browser.implicitly_wait(self.extraDelay)
 
-	def findElements(xPath):
+	def findElements(self,xPath):
 		return self.browser.find_elements_by_xpath(xPath)
 
-	def getHrefList(xPath):
+	def getHrefList(self,xPath):
 		#TODO accept direct hits AND a hits and hits in subelements
 		hrefList = []
 		elementList = self.findElements(xPath)
@@ -47,9 +47,9 @@ class Surfer:
 				hrefList.append(href)
 		return hrefList
 
-	def kill():
-		browser.close()
-		vdisplay.stop()
+	def kill(self):
+		self.browser.close()
+		self.vdisplay.stop()
 
 
 # FIXME 

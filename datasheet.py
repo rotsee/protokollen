@@ -76,7 +76,11 @@ class GoogleSheet(DataSet):
 	"""Represents data from a Google Spreadsheet. Data is loaded on init.
 	   First row is assumed to contain headers.
 	"""
-	def __init__(self,googleSheetKey,client_email,p12file="google_api.p12"):
+	def __init__(self,
+		googleSheetKey,
+		client_email,
+		p12file="google_api.p12",
+		sheet=1):
 		self.key = googleSheetKey
 		self.data = []
 
@@ -91,10 +95,23 @@ class GoogleSheet(DataSet):
 		import gdata.spreadsheets.client
 		OAuth2Token = gdata.gauth.OAuth2TokenFromCredentials(OAuth2Credentials)
 		gd_client = gdata.spreadsheets.client.SpreadsheetsClient()
-		OAuth2Token.authorize(gd_client)
 		gd_client.debug = True
+		gd_client.ssl = False
+		OAuth2Token.authorize(gd_client)
 
-		listFeed = gd_client.GetListFeed(googleSheetKey,1)
+		ssfeed = gd_client.GetSpreadsheets()
+		wsfeed = gd_client.GetWorksheets(self.key)
+		#If given a sheet name, rather then a number, look up corresponding id
+		if self.is_number(sheet) == False:
+			sheetIDs = self._worksheet_ids(wsfeed)
+			if sheet in sheetIDs:
+				self.sheet = sheetIDs[sheet]
+			else:
+				self.sheet = 1
+		else:
+			self.sheet = sheet
+
+		listFeed = gd_client.GetListFeed(self.key,self.sheet)
 		for i, entry in enumerate(listFeed.entry):
 			self.data.append(entry.to_dict())
 
@@ -103,3 +120,21 @@ class GoogleSheet(DataSet):
 		private_key = f.read()
 		f.close()
 		return private_key
+
+	def _worksheet_ids(self,feed):
+		import urlparse
+		import os
+		def _id(entry):
+			split = urlparse.urlsplit(entry.id.text)
+			return os.path.basename(split.path)
+		return dict([
+			(entry.title.text, _id(entry))
+			for entry in feed.entry
+		])
+
+	def is_number(self,s):
+		try:
+			float(s)
+			return True
+		except ValueError:
+			return False

@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 #coding=utf-8
 
 #TODO:
@@ -137,9 +138,11 @@ for row in dataSet.getNext():
 
 	for downloadUrl in hrefList:
 
+		downloadUrlString = downloadUrl.get_attribute("href")
+
 		if dlclick2 is not None:
 			logging.info("Entering two step download")
-			browser.surfTo(downloadUrl)
+			browser.surfTo(downloadUrlString)
 			hrefList2 = browser.findElements(dlclick2)
 			if len(hrefList2) == 0:
 				logging.warning("No match for second download xPath (%s)" % dlclick2)
@@ -148,30 +151,32 @@ for row in dataSet.getNext():
 				logging.warning("Multiple matches on second download xPath (%s). Results might be unexpected." % dlclick2)
 
 			downloadUrl = hrefList2[0]
+			downloadUrlString = downloadUrlString.get_attribute("href")
 
-		filename = hashlib.md5(municipality + "/" + year + "/" + filename).hexdigest()
-		if s3.fileExistsInBucket(municipality + "/" + year + "/" + filename):
+		filename = hashlib.md5(downloadUrlString).hexdigest()
+		remoteNakedFilename = municipality + "/" + year + "/" + filename #full filename, but no suffix yet
+		localNakedFilename = "temp/"+filename
+		if s3.fileExistsInBucket(remoteNakedFilename):
 			continue #File is already on Amazon
 
-		localFilename = "temp/"+filename
-		if is_absolute(downloadUrl):
+		if is_absolute(downloadUrlString):
 			pass #URL needs no modification
 		else:
 			#URL is relative, append base
 			from urllib.parse import urlparse
 			parse_object = urlparse(url)
 			urlBase = parse_object.scheme + "://" + parse_object.netloc
-			downloadUrl = urlBase + downloadUrl
+			downloadUrlString = urlBase + downloadUrlString
 
 		if executionMode < SUPERDRY_MODE:
-			downloadFile = download.File(downloadUrl,localFilename)
+			downloadFile = download.File(downloadUrlString,localNakedFilename)
 			if downloadFile.success:
 				filetype = downloadFile.getFileType()
 
 				if filetype in allowedFiletypes:
-					s3name = municipality + "/" + year + "/" + filename + "." + filetype
+					remoteFullFilename = remoteNakedFilename + "." + filetype
 					if executionMode < DRY_MODE:
-						s3.putFile(localFilename,s3name)
+						s3.putFile(localNakedFilename,remoteFullFilename)
 				else:
 					logging.warning("%s is not a valid mime type" % downloadFile.mimeType)
 
