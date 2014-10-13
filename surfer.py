@@ -1,5 +1,6 @@
 #coding=utf-8
 import logging
+import urlparse
 
 class Surfer:
 	"""This class does virtual web surfing on our demand
@@ -15,11 +16,8 @@ class Surfer:
 		self.vdisplay = Xvfb()
 		self.vdisplay.start()
 
-		profile = webdriver.FirefoxProfile()
-		self.browser = webdriver.Firefox(profile)
-		#profile2 = webdriver.FirefoxProfile()
-		#profile.set_preference("browser.link.open_newwindow", 1)
-		#browser2 = webdriver.Firefox(profile2)
+		self.profile = webdriver.FirefoxProfile()
+		self.browser = webdriver.Firefox(self.profile)
 
 	def surfTo(self,url):
 		self.browser.get(url)
@@ -37,21 +35,33 @@ class Surfer:
 	def findElements(self,xPath):
 		return self.browser.find_elements_by_xpath(xPath)
 
-	def getHrefList(self,xPath):
-		#TODO accept direct hits AND a hits and hits in subelements
-		hrefList = []
+	def getUrlList(self,xPath):
+		urlList = []
 		elementList = self.findElements(xPath)
 		for element in elementList:
 			href = element.get_attribute("href")
 			if href is not None:
-				hrefList.append(href)
-		return hrefList
+				urlList.append(Url(href))
+		return urlList#list of Url objects
 
 	def kill(self):
 		self.browser.close()
 		self.vdisplay.stop()
 
+class Url:
+	"""Represents a url, from e.g. Surfer.getHrefList()
+	"""
+	def __init__(self,url):
+		self.href = url
 
+	def is_absolute(self):
+		"""Check if url is absolute or relative"""
+		return bool(urlparse.urlparse(self.url).netloc)
+
+	def makeAbsolute(self):
+		parse_object = urlparse(self.href)
+		urlBase = parse_object.scheme + "://" + parse_object.netloc
+		self.href = urlBase + self.href
 # FIXME 
 #					try:
 #					    elements = WebDriverWait(browser, 10).until(

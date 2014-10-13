@@ -1,10 +1,6 @@
 #!/usr/bin/env python2
 #coding=utf-8
 
-#TODO:
-#Do not start virtual browser until we need it
-#sendmail support
-
 import login # Passwords and keys goes in login.py
 
 import argparse, argcomplete
@@ -88,13 +84,6 @@ allowedFiletypes = ['pdf','doc','docx']                  #
                                                          #
 ##########################################################
 
-import urlparse
-def is_absolute(url):
-	"""Check if url is absolute or relative"""
-	return bool(urlparse.urlparse(url).netloc)
-
-##########################################################
-
 logging.info("Connecting to S3")
 import upload
 s3 = upload.S3Connection(login.aws_access_key_id,login.aws_secret_access_key,login.aws_bucket_name)
@@ -124,43 +113,43 @@ for row in dataSet.getNext():
 		browser.clickOnStuff(preclick)
 
 	logging.info("Getting URL list")
-	hrefList = browser.getHrefList(dlclick1)
+	urlList = browser.getUrlList(dlclick1)
 
-	if len(hrefList) == 0:
+	if len(urlList) == 0:
 		logging.warning("No URLs found in %s %s" %  (municipality,year))
 
 	#Sanity check. Do we have a resonable amount of URLs?
 	alreadyUploadedListLength = s3.getBucketListLength(municipality + "/" + year)
-	if alreadyUploadedListLength > 0 and ((abs(alreadyUploadedListLength - len(hrefList)) > suddenChangeThreshold) or (len(hrefList) < alreadyUploadedListLength) ):
+	if alreadyUploadedListLength > 0 and ((abs(alreadyUploadedListLength - len(urlList)) > suddenChangeThreshold) or (len(urlList) < alreadyUploadedListLength) ):
 		logging.warning("There was a sudden change in the number of download URLs for this municipality and year.")
 
-	for downloadUrl in hrefList:
+	for downloadUrl in urlList:
+
+		#TODO iterate over extra dlclicks
+		if not downloadUrl.is_absolute():
+			downloadUrl.makeAbsolute
 
 		if dlclick2 is not None:
 			logging.debug("Entering two step download")
-			browser.surfTo(downloadUrl)
-			hrefList2 = browser.getHrefList(dlclick2)
-			if len(hrefList2) == 0:
+			browser.surfTo(downloadUrl.href)
+			urlList2 = browser.getUrlList(dlclick2)
+			if len(urlList2) == 0:
 				logging.warning("No match for second download xPath (%s)" % dlclick2)
 				continue
-			elif len(hrefList2) > 1:
+			elif len(urlList2) > 1:
 				logging.warning("Multiple matches on second download xPath (%s). Results might be unexpected." % dlclick2)
-			downloadUrl = hrefList2[0]
+			downloadUrl = urlList2[0]
+			if not downloadUrl.is_absolute():
+				downloadUrl.makeAbsolute
 
-		filename = hashlib.md5(downloadUrl).hexdigest()
+		filename = hashlib.md5(downloadUrl.href).hexdigest()
 		remoteNakedFilename = municipality + "/" + year + "/" + filename #full filename, but no suffix yet
 		localNakedFilename = "temp/"+filename
 		if s3.fileExistsInBucket(remoteNakedFilename):
 			continue #File is already on Amazon
 
-		if is_absolute(downloadUrl):
-			pass #URL needs no modification
-		else:
-			#URL is relative, append base
-			from urllib.parse import urlparse
-			parse_object = urlparse(url)
-			urlBase = parse_object.scheme + "://" + parse_object.netloc
-			downloadUrl = urlBase + downloadUrl
+		if not downloadUrl.is_absolute():
+			downloadUrl.makeAbsolute
 
 		if executionMode < SUPERDRY_MODE:
 			downloadFile = download.File(downloadUrl,localNakedFilename)
