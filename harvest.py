@@ -2,10 +2,8 @@
 #coding=utf-8
 
 #TODO:
-#make browsing a separate class
 #Do not start virtual browser until we need it
 #sendmail support
-#multistep download is broken (test case: Bollnäs 2014).
 
 import login # Passwords and keys goes in login.py
 
@@ -57,8 +55,8 @@ logging.basicConfig(
 
 import datasheet #datasheet contains classes for storing data sets
 if args.filename is not None:
-	logging.info("Harvesting from CSV file `%s`" % dataFile)
-	dataSet = datasheet.CSVFile(dataFile)
+	logging.info("Harvesting from CSV file `%s`" % args.filename)
+	dataSet = datasheet.CSVFile(args.filename)
 elif login.google_spreadsheet_key is not None:
 	logging.info("Harvesting from Google Spreadsheet`%s`" % login.google_spreadsheet_key)
 	dataSet = datasheet.GoogleSheet(login.google_spreadsheet_key,login.google_client_email,login.google_p12_file)
@@ -126,7 +124,7 @@ for row in dataSet.getNext():
 		browser.clickOnStuff(preclick)
 
 	logging.info("Getting URL list")
-	hrefList = browser.findElements(dlclick1)
+	hrefList = browser.getHrefList(dlclick1)
 
 	if len(hrefList) == 0:
 		logging.warning("No URLs found in %s %s" %  (municipality,year))
@@ -138,38 +136,34 @@ for row in dataSet.getNext():
 
 	for downloadUrl in hrefList:
 
-		downloadUrlString = downloadUrl.get_attribute("href")
-
 		if dlclick2 is not None:
-			logging.info("Entering two step download")
-			browser.surfTo(downloadUrlString)
-			hrefList2 = browser.findElements(dlclick2)
+			logging.debug("Entering two step download")
+			browser.surfTo(downloadUrl)
+			hrefList2 = browser.getHrefList(dlclick2)
 			if len(hrefList2) == 0:
 				logging.warning("No match for second download xPath (%s)" % dlclick2)
 				continue
-			elif len(uList) > 1:
+			elif len(hrefList2) > 1:
 				logging.warning("Multiple matches on second download xPath (%s). Results might be unexpected." % dlclick2)
-
 			downloadUrl = hrefList2[0]
-			downloadUrlString = downloadUrlString.get_attribute("href")
 
-		filename = hashlib.md5(downloadUrlString).hexdigest()
+		filename = hashlib.md5(downloadUrl).hexdigest()
 		remoteNakedFilename = municipality + "/" + year + "/" + filename #full filename, but no suffix yet
 		localNakedFilename = "temp/"+filename
 		if s3.fileExistsInBucket(remoteNakedFilename):
 			continue #File is already on Amazon
 
-		if is_absolute(downloadUrlString):
+		if is_absolute(downloadUrl):
 			pass #URL needs no modification
 		else:
 			#URL is relative, append base
 			from urllib.parse import urlparse
 			parse_object = urlparse(url)
 			urlBase = parse_object.scheme + "://" + parse_object.netloc
-			downloadUrlString = urlBase + downloadUrlString
+			downloadUrl = urlBase + downloadUrl
 
 		if executionMode < SUPERDRY_MODE:
-			downloadFile = download.File(downloadUrlString,localNakedFilename)
+			downloadFile = download.File(downloadUrl,localNakedFilename)
 			if downloadFile.success:
 				filetype = downloadFile.getFileType()
 
