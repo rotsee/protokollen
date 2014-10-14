@@ -9,6 +9,9 @@ class DataSet:
 	def __init__(self,data):
 		self.data = data
 
+	def getLength(self):
+		return len(self.data)
+
 	def filter(self,require=None,disallow=None):
 		filteredList = []
 		for row in self.data:

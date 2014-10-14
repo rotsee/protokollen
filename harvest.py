@@ -4,10 +4,8 @@
 import login
 import settings
 
-import logging
-
 from modules import interface
-harvestInterface = interface.Interface("This script will download all files pointed out by a series of URLs and xPath expressions, and upload them to an Amazon S3 server.")
+harvestInterface = interface.Interface(__file__, "This script will download all files pointed out by a series of URLs and xPath expressions, and upload them to an Amazon S3 server.")
 
 harvestInterface.parser.add_argument(
 	"-s", "--super-dry",
@@ -28,33 +26,33 @@ harvestInterface.parser.add_argument(
 	dest="filename",
 	help="Enter a file name, if your data source is a local CSV file. Otherwise, we will look for a Google Spreadsheets ID in login.py")
 
-args = harvestInterface.parse_args()
+harvestInterface.init()
 
 import datasheet #datasheet contains classes for storing data sets
-if args.filename is not None:
-	logging.info("Harvesting from CSV file `%s`" % args.filename)
-	dataSet = datasheet.CSVFile(args.filename)
+if harvestInterface.args.filename is not None:
+	harvestInterface.info("Harvesting from CSV file `%s`" % harvestInterface.args.filename)
+	dataSet = datasheet.CSVFile(harvestInterface.args.filename)
 elif login.google_spreadsheet_key is not None:
-	logging.info("Harvesting from Google Spreadsheet`%s`" % login.google_spreadsheet_key)
+	harvestInterface.info("Harvesting from Google Spreadsheet`%s`" % login.google_spreadsheet_key)
 	dataSet = datasheet.GoogleSheet(login.google_spreadsheet_key,login.google_client_email,login.google_p12_file)
 else:
-	logging.error("No local file given, and no Google Spreadsheet key found. Cannot proceed.")
+	harvestInterface.error("No local file given, and no Google Spreadsheet key found. Cannot proceed.")
 	import sys
 	sys.exit()
 
-suddenChangeThreshold = args.tolaratedchanges
+suddenChangeThreshold = harvestInterface.args.tolaratedchanges
 
 #Add an extra execution mode to the interface class
 harvestInterface.SUPERDRY_MODE = 2
 if harvestInterface.args.superdryrun:
-	logging.info("Running in super dry mode")
+	harvestInterface.info("Running in super dry mode")
 	harvestInterface.executionMode = SUPERDRY_MODE
 
-logging.info("Connecting to S3")
+harvestInterface.info("Connecting to S3")
 import upload
 s3 = upload.S3Connection(login.aws_access_key_id,login.aws_secret_access_key,login.aws_bucket_name)
 
-logging.info("Setting up virtual browser")
+harvestInterface.info("Setting up virtual browser")
 import surfer
 browser = surfer.Surfer()
 
@@ -62,32 +60,35 @@ import download
 import hashlib
 dataSet = dataSet.filter(require=["municipality","year","url","dlclick1"])
 dataSet.shuffle() #give targets some rest between requests by scrambling the rows
+
+harvestInterface.info("Data contains %d rows" % dataSet.getLength())
+
 for row in dataSet.getNext():
 	municipality = row["municipality"]
 	year         = row["year"]
 	url          = row["url"]
-	preclick     = row["preclick1"]
+	preclick     = row.get("preclick1",None)
 	dlclick1     = row["dlclick1"]
-	dlclick2     = row["dlclick2"]
+	dlclick2     = row.get("dlclick2",None)
 
-	logging.info("Processing %s %s" % (municipality,year))
+	harvestInterface.info("Processing %s %s" % (municipality,year))
 
 	browser.surfTo(url)
 
 	if preclick is not None:
-		logging.info("Preclicking")
+		harvestInterface.info("Preclicking")
 		browser.clickOnStuff(preclick)
 
-	logging.info("Getting URL list")
+	harvestInterface.info("Getting URL list")
 	urlList = browser.getUrlList(dlclick1)
 
 	if len(urlList) == 0:
-		logging.warning("No URLs found in %s %s" %  (municipality,year))
+		harvestInterface.warning("No URLs found in %s %s" %  (municipality,year))
 
 	#Sanity check. Do we have a resonable amount of URLs?
 	alreadyUploadedListLength = s3.getBucketListLength(municipality + "/" + year)
 	if alreadyUploadedListLength > 0 and ((abs(alreadyUploadedListLength - len(urlList)) > suddenChangeThreshold) or (len(urlList) < alreadyUploadedListLength) ):
-		logging.warning("There was a sudden change in the number of download URLs for this municipality and year.")
+		harvestInterface.warning("There was a sudden change in the number of download URLs for this municipality and year.")
 
 	for downloadUrl in urlList:
 
@@ -96,14 +97,14 @@ for row in dataSet.getNext():
 			downloadUrl.makeAbsolute
 
 		if dlclick2 is not None:
-			logging.debug("Entering two step download")
+			harvestInterface.debug("Entering two step download")
 			browser.surfTo(downloadUrl.href)
 			urlList2 = browser.getUrlList(dlclick2)
 			if len(urlList2) == 0:
-				logging.warning("No match for second download xPath (%s)" % dlclick2)
+				harvestInterface.warning("No match for second download xPath (%s)" % dlclick2)
 				continue
 			elif len(urlList2) > 1:
-				logging.warning("Multiple matches on second download xPath (%s). Results might be unexpected." % dlclick2)
+				harvestInterface.warning("Multiple matches on second download xPath (%s). Results might be unexpected." % dlclick2)
 			downloadUrl = urlList2[0]
 			if not downloadUrl.is_absolute():
 				downloadUrl.makeAbsolute
@@ -117,20 +118,20 @@ for row in dataSet.getNext():
 		if not downloadUrl.is_absolute():
 			downloadUrl.makeAbsolute
 
-		if executionMode < SUPERDRY_MODE:
+		if harvestInterface.executionMode < harvestInterface.SUPERDRY_MODE:
 			downloadFile = download.File(downloadUrl.href,localNakedFilename)
 			if downloadFile.success:
 				filetype = downloadFile.getFileType()
 
 				if filetype in settings.allowedFiletypes:
 					remoteFullFilename = remoteNakedFilename + "." + filetype
-					if executionMode < DRY_MODE:
+					if harvestInterface.executionMode < interface.Interface.DRY_MODE:
 						s3.putFile(localNakedFilename,remoteFullFilename)
 				else:
-					logging.warning("%s is not a valid mime type" % downloadFile.mimeType)
+					harvestInterface.warning("%s is not a valid mime type" % downloadFile.mimeType)
 
 				downloadFile.delete()
 			else:
-				logging.warning("Download failed for %s" % downloadUrl)
+				harvestInterface.warning("Download failed for %s" % downloadUrl)
 
 browser.kill()

@@ -1,19 +1,25 @@
 #coding=utf-8
+"""This module is included in the main entry points of ProtoKollen, to provide common functionality,
+   such as error handling, etc. 
+"""
+
 import sys
 sys.path.insert(1,"modules") # All project specific modules go here
 
 import argparse, argcomplete
 import logging
+FORMAT = '%(asctime)s %(levelname)s: %(message)s'
+logging.basicConfig(format=FORMAT)
 
 class Interface:
 	"""This class represents the common user interface shared amongst ProtoKollen scripts
-	   It handles common parameters, error message formatting, alerts, and the like.
+	   It handles common parameters, error message formatting, alerts, and the like
 	"""
 
 	NORMAL_MODE   = 0
 	DRY_MODE      = 1
 
-	def __init__(self, description):
+	def __init__(self, name, description):
 		self.parser = argparse.ArgumentParser(description)
 		self.parser.add_argument(
 			"-l", "--loglevel",
@@ -28,24 +34,37 @@ class Interface:
 			action='store_true',
 		    help="Dry run. Do not upload any files, or put stuff in databases.")
 
-	def parse_args(self):
+		self.executionMode = self.NORMAL_MODE
+		self.args = {}
+		self.isInitiated = False
+		self.logger = logging.getLogger(name)
+
+	def init(self):
 		argcomplete.autocomplete(self.parser)
 		self.args = self.parser.parse_args()
 
-		self.logLevel = self.args.loglevel * 10 #https://docs.python.org/2/library/logging.html#levels
-		logging.basicConfig(
-			level=self.logLevel,
-			format='%(asctime)s %(levelname)s: %(message)s'
-			)
+		self.logger.setLevel(self.args.loglevel * 10) #https://docs.python.org/2/library/logging.html#levels
 
 		if self.args.dryrun:
-			logging.info("Running in dry mode")
+			self.logger.info("Running in dry mode")
 			self.executionMode = self.DRY_MODE
-		else:
-			logging.info("Running in normal mode")
-			self.executionMode = self.NORMAL_MODE
 
-		return self.args
+		self.isInitiated = True
+
+	def log(self,msg,mode=logging.INFO):
+		self.logger.log(mode, msg)
+	def debug(self, *args, **kwargs):
+		self.logger.debug(*args, **kwargs)
+	def info(self, *args, **kwargs):
+		self.logger.info(*args, **kwargs)
+	def warning(self, *args, **kwargs):
+		self.logger.warning(*args, **kwargs)
+	def error(self, *args, **kwargs):
+		self.logger.error(*args, **kwargs)
+	def critical(self, *args, **kwargs):
+		self.logger.critical(*args, **kwargs)
 
 	def dryMode(self):
+		if not self.isInitiated:
+			self.logger.warning("Interface:dryMode() was called before Interface:init()")
 		return bool(self.executionMode)
