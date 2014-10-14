@@ -29,3 +29,8 @@ class S3Connection:
 		k = Key(self._bucket)
 		k.key = s3name
 		k.set_contents_from_filename(localFilename)
+
+if __name__ == "__main__":
+	print "This module is only intended to be called from other scripts."
+	import sys
+	sys.exit()

@@ -62,3 +62,8 @@ class Url:
 		parse_object = urlparse(self.href)
 		urlBase = parse_object.scheme + "://" + parse_object.netloc
 		self.href = urlBase + self.href
+
+if __name__ == "__main__":
+	print "This module is only intended to be called from other scripts."
+	import sys
+	sys.exit()

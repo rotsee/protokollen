@@ -5,6 +5,7 @@ import sys
 sys.path.insert(1,"modules") # All project specific modules go here
 
 import login # Passwords and keys goes in login.py
+import settings
 
 import argparse, argcomplete
 parser = argparse.ArgumentParser(
@@ -80,13 +81,6 @@ else:
 	logging.info("Running in normal mode")
 	executionMode = NORMAL_MODE
 
-########## SETTINGS ######################################
-                                                         #
-#dataFile = "Kommunstyrelseprotokoll (tidigare Dokument i Dalarna) - Sheet1.csv"                                    #
-allowedFiletypes = ['pdf','doc','docx']                  #
-                                                         #
-##########################################################
-
 logging.info("Connecting to S3")
 import upload
 s3 = upload.S3Connection(login.aws_access_key_id,login.aws_secret_access_key,login.aws_bucket_name)
@@ -159,7 +153,7 @@ for row in dataSet.getNext():
 			if downloadFile.success:
 				filetype = downloadFile.getFileType()
 
-				if filetype in allowedFiletypes:
+				if filetype in settings.allowedFiletypes:
 					remoteFullFilename = remoteNakedFilename + "." + filetype
 					if executionMode < DRY_MODE:
 						s3.putFile(localNakedFilename,remoteFullFilename)
