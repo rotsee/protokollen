@@ -1,6 +1,6 @@
-import logging
-import login
-import settings
+#coding=utf-8
+import sys
+sys.path.insert(1,"modules") # All project specific modules go here
 
 import argparse, argcomplete
 import logging

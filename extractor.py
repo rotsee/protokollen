@@ -8,4 +8,3 @@ from modules import interface
 extractorInterface = interface.Interface("Extracts text from files in an Amazon S3 bucket")
 args = extractorInterface.parse_args()
 
-print extractorInterface.logLevel

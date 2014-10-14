@@ -1,36 +1,21 @@
 #!/usr/bin/env python2
 #coding=utf-8
 
-import sys
-sys.path.insert(1,"modules") # All project specific modules go here
-
-import login # Passwords and keys goes in login.py
+import login
 import settings
 
-import argparse, argcomplete
-parser = argparse.ArgumentParser(
-	description='This script will download all files pointed out by a series of URLs and xPath expressions, and upload them to an Amazon S3 server.')
-parser.add_argument(
-	"-l", "--loglevel",
-	dest="loglevel",
-    help="Log level. 5=only critical, 4=errors, 3=warnings, 2=info, 1=debug. Setting this to 1 will print a lot! Default=3.)",
-    type=int,
-    choices=(1,2,3,4,5),
-    default=3 )
+import logging
 
-parser.add_argument(
-	"-d", "--dry",
-	dest="dryrun",
-	action='store_true',
-    help="Dry run. Do not upload any files to Amazon (only download and delete them).")
+from modules import interface
+harvestInterface = interface.Interface("This script will download all files pointed out by a series of URLs and xPath expressions, and upload them to an Amazon S3 server.")
 
-parser.add_argument(
+harvestInterface.parser.add_argument(
 	"-s", "--super-dry",
 	dest="superdryrun",
 	action='store_true',
 	help="Super dry. A dry run where we do not even download any files.")
 
-parser.add_argument(
+harvestInterface.parser.add_argument(
 	"-t", "--tolarated-changes",
 	dest="tolaratedchanges",
 	type=int,
@@ -38,20 +23,12 @@ parser.add_argument(
 	metavar="CHANGES",
 	help="When should we warn about suspicios changes in the number of protocols? 1 means that anything other that zero or one new protocol since last time is considered suspicios.")
 
-parser.add_argument(
+harvestInterface.parser.add_argument(
 	"-f", 	"--file",
 	dest="filename",
 	help="Enter a file name, if your data source is a local CSV file. Otherwise, we will look for a Google Spreadsheets ID in login.py")
 
-argcomplete.autocomplete(parser)
-args = parser.parse_args()
-
-import logging
-logLevel = args.loglevel * 10 #https://docs.python.org/2/library/logging.html#levels
-logging.basicConfig(
-	level=logging.INFO,
-	format='%(asctime)s %(levelname)s: %(message)s'
-	)
+args = harvestInterface.parse_args()
 
 import datasheet #datasheet contains classes for storing data sets
 if args.filename is not None:
@@ -67,19 +44,11 @@ else:
 
 suddenChangeThreshold = args.tolaratedchanges
 
-NORMAL_MODE   = 0
-DRY_MODE      = 1
-SUPERDRY_MODE = 2
-
-if args.superdryrun:
+#Add an extra execution mode to the interface class
+harvestInterface.SUPERDRY_MODE = 2
+if harvestInterface.args.superdryrun:
 	logging.info("Running in super dry mode")
-	executionMode = SUPERDRY_MODE
-elif args.dryrun:
-	logging.info("Running in dry mode")
-	executionMode = DRY_MODE
-else:
-	logging.info("Running in normal mode")
-	executionMode = NORMAL_MODE
+	harvestInterface.executionMode = SUPERDRY_MODE
 
 logging.info("Connecting to S3")
 import upload
