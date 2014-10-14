@@ -2,6 +2,24 @@
 import logging
 import os
 
+class FileType:
+	UNKNOWN = 0
+	PDF     = 1
+	DOC     = 2
+	DOCX    = 3
+	ODT     = 4
+	RTF     = 5
+	TXT     = 6
+
+	mimeToTypeDict = {
+		'application/pdf': FileType.PDF,
+		'application/msword': FileType.DOC,
+		'application/vnd.openxmlformats-officedocument.wordprocessingml.document': FileType.DOCX,
+		'application/vnd.oasis.opendocument.text': FileType.ODT,
+		'text/rtf': FileType.RTF,
+		'text/plain': FileType.TXT
+	}
+
 class File:
 	"""Represents a file downloaded from the web
 	"""
@@ -47,20 +65,7 @@ class File:
 		os.unlink(self.localFile)
 
 	def getFileType(self):
-		if self.mimeType == 'application/pdf':
-			return 'pdf'
-		elif self.mimeType == 'application/msword':
-			return 'doc'
-		elif self.mimeType == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-			return 'docx'
-		elif self.mimeType == 'application/vnd.oasis.opendocument.text':
-			return 'odt'
-		elif self.mimeType == 'text/rtf':
-			return 'rtf'
-		elif self.mimeType == 'text/plain':
-			return 'txt'
-		else:
-			return None
+		return FileType.mimeToTypeDict.get(self.mimeType,None)
 
 if __name__ == "__main__":
 	print "This module is only intended to be called from other scripts."
