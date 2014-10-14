@@ -5,6 +5,7 @@ test.*
 *.pyc
 *.csv
 temp/*
+./~lock*
 
 # Compiled source #
 ###################
