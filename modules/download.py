@@ -3,7 +3,7 @@ import logging
 import os
 
 class File:
-	"""A file being downloaded from a server
+	"""Represents a file downloaded from the web
 	"""
 	def __init__(self,
 		url,

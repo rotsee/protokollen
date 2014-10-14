@@ -1,6 +1,9 @@
 #!/usr/bin/env python2
 #coding=utf-8
 
+import sys
+sys.path.insert(1,"modules") # All project specific modules go here
+
 import login # Passwords and keys goes in login.py
 
 import argparse, argcomplete
@@ -152,7 +155,7 @@ for row in dataSet.getNext():
 			downloadUrl.makeAbsolute
 
 		if executionMode < SUPERDRY_MODE:
-			downloadFile = download.File(downloadUrl,localNakedFilename)
+			downloadFile = download.File(downloadUrl.href,localNakedFilename)
 			if downloadFile.success:
 				filetype = downloadFile.getFileType()
 

@@ -1,6 +1,5 @@
 #coding=utf-8
 import logging
-import urlparse
 
 class Surfer:
 	"""This class does virtual web surfing on our demand
@@ -48,6 +47,7 @@ class Surfer:
 		self.browser.close()
 		self.vdisplay.stop()
 
+import urlparse
 class Url:
 	"""Represents a url, from e.g. Surfer.getHrefList()
 	"""
@@ -56,18 +56,9 @@ class Url:
 
 	def is_absolute(self):
 		"""Check if url is absolute or relative"""
-		return bool(urlparse.urlparse(self.url).netloc)
+		return bool(urlparse.urlparse(self.href).netloc)
 
 	def makeAbsolute(self):
 		parse_object = urlparse(self.href)
 		urlBase = parse_object.scheme + "://" + parse_object.netloc
 		self.href = urlBase + self.href
-# FIXME 
-#					try:
-#					    elements = WebDriverWait(browser, 10).until(
-#					    	ExpectedConditions.visibilityOfElementLocated(
-#					    		By.xpath(pageLoadedCheck)))
-#					    print elements
-#					except:
-#						logging.warning("Page at %s timed out, or first xPath (%s) wasn't found" % (url,pageLoadedCheck))
-#						browser.quit()
