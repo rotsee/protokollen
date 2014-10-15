@@ -19,7 +19,7 @@ class Interface:
 	NORMAL_MODE   = 0
 	DRY_MODE      = 1
 
-	def __init__(self, name, description):
+	def __init__(self, name, description, commandLineArgs=[]):
 		self.parser = argparse.ArgumentParser(description)
 		self.parser.add_argument(
 			"-l", "--loglevel",
@@ -33,23 +33,23 @@ class Interface:
 			dest="dryrun",
 			action='store_true',
 		    help="Dry run. Do not upload any files, or put stuff in databases.")
+		for c in commandLineArgs:
+			cshort = c.get("short",None)
+			del c["short"]
+			clong = c.get("long",None)
+			del c["long"]
+			self.parser.add_argument(cshort, clong,**c)
 
-		self.executionMode = self.NORMAL_MODE
-		self.args = {}
-		self.isInitiated = False
-		self.logger = logging.getLogger(name)
-
-	def init(self):
 		argcomplete.autocomplete(self.parser)
 		self.args = self.parser.parse_args()
 
+		self.logger = logging.getLogger(name)
 		self.logger.setLevel(self.args.loglevel * 10) #https://docs.python.org/2/library/logging.html#levels
 
+		self.executionMode = self.NORMAL_MODE
 		if self.args.dryrun:
 			self.logger.info("Running in dry mode")
 			self.executionMode = self.DRY_MODE
-
-		self.isInitiated = True
 
 	def log(self,msg,mode=logging.INFO):
 		self.logger.log(mode, msg)
@@ -65,6 +65,4 @@ class Interface:
 		self.logger.critical(*args, **kwargs)
 
 	def dryMode(self):
-		if not self.isInitiated:
-			self.logger.warning("Interface:dryMode() was called before Interface:init()")
 		return bool(self.executionMode)

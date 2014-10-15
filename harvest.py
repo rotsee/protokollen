@@ -3,30 +3,27 @@
 
 import login
 import settings
-
 from modules import interface
-ui = interface.Interface(__file__, "This script will download all files pointed out by a series of URLs and xPath expressions, and upload them to an Amazon S3 server.")
-
-ui.parser.add_argument(
-	"-s", "--super-dry",
-	dest="superdryrun",
-	action='store_true',
-	help="Super dry. A dry run where we do not even download any files.")
-
-ui.parser.add_argument(
-	"-t", "--tolarated-changes",
-	dest="tolaratedchanges",
-	type=int,
-	default=1,
-	metavar="CHANGES",
-	help="When should we warn about suspicios changes in the number of protocols? 1 means that anything other that zero or one new protocol since last time is considered suspicios.")
-
-ui.parser.add_argument(
-	"-f", 	"--file",
-	dest="filename",
-	help="Enter a file name, if your data source is a local CSV file. Otherwise, we will look for a Google Spreadsheets ID in login.py")
-
-ui.init()
+commandLineArgs = [{
+	"short" : "-s", "long"  : "--super-dry",
+	"dest"  : "superdryrun",
+	"action": "store_true",
+	"help"  : "Super dry. A dry run where we do not even download any files."
+	},{
+	"short" : "-t",	"long"  : "--tolarated-changes",
+	"type"	: int,
+	"default":1,
+	"dest"  : "tolaratedchanges",
+	"metavar":"CHANGES",
+	"help"  : "When should we warn about suspicios changes in the number of protocols? 1 means that anything other that zero or one new protocol since last time is considered suspicios."
+	},{
+	"short" : "-f",	"long"  : "--file",
+	"dest"  : "filename",
+	"help"  : "Enter a file name, if your data source is a local CSV file. Otherwise, we will look for a Google Spreadsheets ID in login.py."},
+]
+ui = interface.Interface(__file__,
+	"This script will download all files pointed out by a series of URLs and xPath expressions, and upload them to an Amazon S3 server.",
+	commandLineArgs=commandLineArgs)
 
 import datasheet #datasheet contains classes for storing data sets
 if ui.args.filename is not None:
