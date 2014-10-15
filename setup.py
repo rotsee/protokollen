@@ -1,3 +1,6 @@
+#!/usr/bin/env python2
+#coding=utf-8
+
 try:
     from setuptools import setup
 
