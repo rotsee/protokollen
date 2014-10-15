@@ -1,14 +1,14 @@
 #coding=utf-8
 from boto.s3.connection import S3Connection as _S3Connection
-from boto.s3.key import Key
+from boto.s3.key import Key as BotoKey
 
-class Key(Key):
+class Key(BotoKey):
 	"""extends Amazon's key class with name splitting,
 	   to get “files” and “folders”. This is the class
 	   returned by S3Connection:getNext yielder
 	"""
-	def __init__(self,key):
-		super(Key, self).__init__()
+	def __init__(self,bucket,key):
+		super(Key, self).__init__(bucket,key)
 		self._key = key
 		self.name = key.name.encode('utf-8')
 		self.filename = self.name.split("/")[-1]
@@ -31,7 +31,7 @@ class S3Connection(object):
 
 	def getNextFile(self):
 		for key in self._bucket.list():
-			yield Key(key)
+			yield Key(self._bucket,key)
 
 	def getBucketListLength(self,pathFragment):
 		l = self._bucket.list(pathFragment)
@@ -47,8 +47,7 @@ class S3Connection(object):
 			return False
 
 	def putFile(self,localFilename,s3name):
-		k = Key(self._bucket)
-		k.key = s3name
+		k = Key(self._bucket,s3name)
 		k.set_contents_from_filename(localFilename)
 
 if __name__ == "__main__":

@@ -1,17 +1,18 @@
 #!/usr/bin/env python2
 #coding=utf-8
+#pylint: disable=fixme, line-too-long
 """This script will download all files pointed out by a series of URLs
    and xPath expressions, and upload them to an Amazon S3 server.
 """
 
 import hashlib
-from . import login
-from . import settings
-from .modules.interface import Interface
-from .modules import download
-from .modules import surfer
-from .modules import upload
-from .modules import datasheet
+import login
+import settings
+from modules.interface import Interface
+from modules import download
+from modules import surfer
+from modules import upload
+from modules import datasheet
 
 def main():
     """Entry point when run from command line"""
@@ -97,7 +98,8 @@ def main():
         #Sanity check. Do we have a resonable amount of URLs?
         alreadyUploadedListLength = uploader.getFileListLength(municipality + "/" + year)
         if alreadyUploadedListLength > 0:
-            if (abs(alreadyUploadedListLength - len(urlList)) > sudden_change_threshold) or (len(urlList) < alreadyUploadedListLength):
+            length_diff = abs(alreadyUploadedListLength) - len(urlList)
+            if (length_diff > sudden_change_threshold) or (len(urlList) < alreadyUploadedListLength):
                 ui.warning("""There was a sudden change in the number of download URLs
                             for this municipality and year.""")
 
