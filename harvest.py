@@ -119,7 +119,7 @@ for row in dataSet.getNext():
 			downloadUrl.makeAbsolute
 
 		if ui.executionMode < ui.SUPERDRY_MODE:
-			downloadFile = download.File(downloadUrl.href,localNakedFilename)
+			downloadFile = download.FileFromWeb(downloadUrl.href,localNakedFilename)
 			if downloadFile.success:
 				filetype = downloadFile.getFileType()
 
