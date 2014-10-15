@@ -9,7 +9,7 @@ class Uploader:
 	def putFil(self,localFilename):
 		pass
 
-	def fileExist(self,fullfilename):
+	def fileExists(self,fullfilename):
 		pass
 
 	def getFileListLength(self,path):
@@ -27,7 +27,7 @@ class S3Uploader(Uploader):
 	def getFileListLength(self,pathFragment):
 		return self.connection.getBucketListLength(pathFragment)
 
-	def fileExist(self,fullfilename):
+	def fileExists(self,fullfilename):
 		return self.connection.fileExistsInBucket(fullfilename)
 
 	def putFile(self,localFilename,s3name):
