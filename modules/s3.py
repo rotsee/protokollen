@@ -4,7 +4,8 @@ from boto.s3.key import Key
 
 class Key(Key):
 	"""extends Amazon's key class with name splitting,
-	   to get “files” and “folders”
+	   to get “files” and “folders”. This is the class
+	   returned by S3Connection:getNext yielder
 	"""
 	def __init__(self,key):
 		super(Key, self).__init__()
@@ -30,7 +31,7 @@ class S3Connection(object):
 
 	def getNextFile(self):
 		for key in self._bucket.list():
-			yield key
+			yield Key(key)
 
 	def getBucketListLength(self,pathFragment):
 		l = self._bucket.list(pathFragment)

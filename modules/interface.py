@@ -13,7 +13,7 @@ logging.basicConfig(format=FORMAT)
 
 class Interface:
 	"""This class represents the common user interface shared amongst ProtoKollen scripts
-	   It handles common parameters, error message formatting, alerts, and the like
+	   It handles common parameters, error message formatting, alerts, and the like.
 	"""
 
 	NORMAL_MODE   = 0
@@ -34,11 +34,10 @@ class Interface:
 			action='store_true',
 		    help="Dry run. Do not upload any files, or put stuff in databases.")
 		for c in commandLineArgs:
-			cshort = c.get("short",None)
-			del c["short"]
-			clong = c.get("long",None)
-			del c["long"]
-			self.parser.add_argument(cshort, clong,**c)
+			self.parser.add_argument(
+				c.pop("short",None),
+				c.pop("long",None),
+				**c)
 
 		argcomplete.autocomplete(self.parser)
 		self.args = self.parser.parse_args()
@@ -66,3 +65,7 @@ class Interface:
 
 	def dryMode(self):
 		return bool(self.executionMode)
+
+	def exit(self):
+		import sys
+		sys.exit()

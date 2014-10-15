@@ -9,7 +9,9 @@ try:
     'xvfbwrapper',
     'python-magic',
     'oauth2client',
-    'gdata']
+    'gdata',
+    'pdfminer'
+    ]
 
     try:
         import argparse
