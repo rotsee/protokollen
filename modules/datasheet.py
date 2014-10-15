@@ -1,5 +1,7 @@
 #coding=utf-8
 
+import logging
+
 class DataSet:
 	"""Represents a tabular data set, from a CSV file or similar.
 	   data is supposed to be a list of dictionaries
@@ -27,8 +29,7 @@ class DataSet:
 					break
 			if ok:
 				filteredList.append(row)
-
-		return DataSet(filteredList)
+		self.data = filteredList
 
 	def shuffle(self):
 		from random import shuffle
@@ -135,9 +136,10 @@ class GoogleSheet(DataSet):
 			for entry in feed.entry
 		])
 
-	def is_number(self,s):
+	def is_number(self,string):
+		"""Check if input is a number"""
 		try:
-			float(s)
+			float(string)
 			return True
 		except ValueError:
 			return False

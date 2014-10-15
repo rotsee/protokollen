@@ -50,6 +50,7 @@ class Interface:
 			self.logger.info("Running in dry mode")
 			self.executionMode = self.DRY_MODE
 
+	#Conveniance shortcuts logging methods
 	def log(self,msg,mode=logging.INFO):
 		self.logger.log(mode, msg)
 	def debug(self, *args, **kwargs):
