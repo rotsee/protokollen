@@ -12,12 +12,12 @@ class FileType:
 	TXT     = 6
 
 	mimeToTypeDict = {
-		'application/pdf': FileType.PDF,
-		'application/msword': FileType.DOC,
-		'application/vnd.openxmlformats-officedocument.wordprocessingml.document': FileType.DOCX,
-		'application/vnd.oasis.opendocument.text': FileType.ODT,
-		'text/rtf': FileType.RTF,
-		'text/plain': FileType.TXT
+		'application/pdf': PDF,
+		'application/msword': DOC,
+		'application/vnd.openxmlformats-officedocument.wordprocessingml.document': DOCX,
+		'application/vnd.oasis.opendocument.text': ODT,
+		'text/rtf': RTF,
+		'text/plain': TXT
 	}
 
 class File:
