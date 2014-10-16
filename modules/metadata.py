@@ -5,7 +5,7 @@
 class Properties():
     """Contains keys and constants for useful metadata properties from various standards.
        `dictionary.common` can be overridden by more specific dictionaries, 
-       see `Creator` vs `dc.creator`, or `date` with potentially different meanings.
+       see `Creator` vs `dc.creator` vs `mso.Creator`
     """
 
     SOFTWARE = "software"
@@ -23,20 +23,29 @@ class Properties():
             "CreatorTool": SOFTWARE,
             "Author": AUTHOR,
             "contributor": AUTHOR,
+            "Last Saved by": AUTHOR,
             "Title": TITLE,
             "title": TITLE,
             "publisher": ORGANISATION,
             "ModDate": MODIFICATION_DATE,
             "ModifyDate": MODIFICATION_DATE,
             "LastModified": MODIFICATION_DATE,
+            "Last Modified": MODIFICATION_DATE,
             "SourceModified": MODIFICATION_DATE,
             "MetadataDate": MODIFICATION_DATE,
             "CreationDate": CREATION_DATE,
             "CreateDate": CREATION_DATE,
+            "Created": CREATION_DATE,
             "description": DESCRIPTION,
-            "Subject": DESCRIPTION
+            "Description": DESCRIPTION,
+            "Subject": DESCRIPTION,
+        },
+        "mso": {
+        #Microsoft Office .doc files
+            "Creator": AUTHOR,
         },
         "dc": {
+        #Dublin Core
             "creator": AUTHOR,
             "date": MODIFICATION_DATE,
         }
@@ -88,13 +97,15 @@ class Metadata(object):
                 self._mergeInto(key, v)
             return
 
-        if key in self.data:
-            if foundValue in self.data[key]:
-                return
+        foundValue = foundValue.strip()
+        if foundValue != "":
+            if key in self.data:
+                if foundValue in self.data[key]:
+                    return
+                else:
+                    self.data[key].append(foundValue)
             else:
-                self.data[key].append(foundValue)
-        else:
-            self.data[key] = [foundValue]
+                self.data[key] = [foundValue]
 
 if __name__ == "__main__":
     print "This module is only intended to be called from other scripts."
