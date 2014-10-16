@@ -10,7 +10,8 @@ try:
     'python-magic',
     'oauth2client',
     'gdata',
-    'pdfminer == 20110515'#Note that API has changed dramatically in later versions
+    'pdfminer == 20110515',#Note that API has changed dramatically in later versions
+    'docx'
     ]
 
     try:
