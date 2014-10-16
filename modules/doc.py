@@ -7,11 +7,15 @@ import subprocess
 from modules.metadata import Metadata
 
 def run_command(command):
-    p = subprocess.Popen(command,
+    """Runs a shell command and captures stdout.
+       This is for wvText (and very hackish).
+       We should probably rather let wv write to a file.
+    """
+    process = subprocess.Popen(command,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT,
                          shell=True)
-    return iter(p.stdout.readline, b'')
+    return iter(process.stdout.readline, b'')
 
 class DocExtractor(object):
     """Class for getting plain text from a Microsoft Word file.
@@ -26,14 +30,14 @@ class DocExtractor(object):
         command = 'wvSummary ' + self.path
         metadata = Metadata()
         for line in run_command(command):
-            parts = line.strip().replace("\"","").split(" = ")
+            parts = line.strip().replace("\"", "").split(" = ")
             if len(parts) == 2:
-                metadata.add({parts[0]: parts[1]},"mso")
+                metadata.add({parts[0]: parts[1]}, "mso")
         return metadata
 
 
     def getText(self):
-    	"""Returns all text content from the document as plain text.
+        """Returns all text content from the document as plain text.
         """
         out = ' /dev/stdout' #ugly, ugly hack. Will only work on *nix
         command = 'wvText ' + self.path + out
@@ -43,6 +47,6 @@ class DocExtractor(object):
         return string
 
 if __name__ == "__main__":
-	print "This module is only intended to be called from other scripts."
-	import sys
-	sys.exit()
+    print "This module is only intended to be called from other scripts."
+    import sys
+    sys.exit()

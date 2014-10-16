@@ -31,7 +31,7 @@ def main():
 		except:
 			ui.warning("Could not download %s from Amazon" % key.name)
 			continue
-		text = None
+
 		filetype = downloaded_file.getFileType()
 		if filetype == FileType.PDF:
 			ui.info("Starting pdf extraction from %s" % downloaded_file.localFile)
@@ -42,12 +42,11 @@ def main():
 		elif filetype == FileType.DOC:
 			ui.info("Starting doc extraction from %s" % downloaded_file.localFile)
 			extractor = DocExtractor(downloaded_file.localFile)
-			
+
 		text = extractor.getText()
 		meta = extractor.getMetadata()
-		print meta.data
-		downloaded_file.delete()
 
+		downloaded_file.delete()
 		ui.exit()
 
 if __name__ == '__main__':

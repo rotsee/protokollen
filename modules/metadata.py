@@ -62,10 +62,6 @@ class Metadata(object):
        in a unified format.
     """
 
-    PROPERTIES = {
-        ""
-    }
-
     def __init__(self):
         self.data = {}
 
@@ -84,7 +80,7 @@ class Metadata(object):
 
     def _mergeInto(self, key, value):
         """Internal method for baking new values into metadata dictionary.
-           Typical inputs and desired output include:
+           Typical `value` values, and desired output include:
 
              * {"A": ["B", "C"]}  =>  B,C
              * [{"A": "B"}]  => B
@@ -93,6 +89,7 @@ class Metadata(object):
              * "B" => B
 
         """
+
         foundValue = value
         if isinstance(value, dict): #if dict: make list
             foundValue = []
@@ -103,7 +100,7 @@ class Metadata(object):
                 self._mergeInto(key, v)
             return
 
-        foundValue = foundValue.strip()
+        foundValue = foundValue.strip() #by now, foundValue is a single string
         if foundValue != "":
             if key in self.data:
                 if foundValue in self.data[key]:
