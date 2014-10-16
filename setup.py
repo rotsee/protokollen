@@ -11,7 +11,8 @@ try:
     'oauth2client',
     'gdata',
     'pdfminer == 20110515',#Note that API has changed dramatically in later versions
-    'docx'
+    'docx', #good for text, bad for metadata
+    'openxmlinfo', #good for metadata, bad for text
     ]
 
     try:

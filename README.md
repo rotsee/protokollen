@@ -6,7 +6,8 @@ Prerequisites
 =============
  * Firefox (tested with version 32.0)
  * Xvfb (tested with version 1.15.1)
- * wvText and wvSummary from wv (tested with version 1.2.1)
+ * wvText and wvSummary from `wv` (tested with version 1.2.1),
+   using either `lynx` or `elinks` (but not `links`)
  * An Amazon S3 bucket
  * [Service-account credentials](https://developers.google.com/console/help/new/#serviceaccounts) from the [Google developers console](https://console.developers.google.com/), if you wish to use Google Spreadsheets as the source for your harvesting. Not needed if using a local CSV file.
  * Command line access to your server

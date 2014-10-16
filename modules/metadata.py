@@ -5,7 +5,8 @@
 class Properties():
     """Contains keys and constants for useful metadata properties from various standards.
        `dictionary.common` can be overridden by more specific dictionaries, 
-       see `Creator` vs `dc.creator` vs `mso.Creator`
+       see `Creator` vs `mso.Creator`, where Creator has different meanings in
+       different contexts.
     """
 
     SOFTWARE = "software"
@@ -36,6 +37,7 @@ class Properties():
             "CreationDate": CREATION_DATE,
             "CreateDate": CREATION_DATE,
             "Created": CREATION_DATE,
+            "created": CREATION_DATE,
             "description": DESCRIPTION,
             "Description": DESCRIPTION,
             "Subject": DESCRIPTION,
@@ -43,6 +45,10 @@ class Properties():
         "mso": {
         #Microsoft Office .doc files
             "Creator": AUTHOR,
+        },
+        "ooxml": {
+            #Office Open XML
+            "creator": AUTHOR,
         },
         "dc": {
         #Dublin Core
