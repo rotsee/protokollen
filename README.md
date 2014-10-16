@@ -6,10 +6,13 @@ Prerequisites
 =============
  * Firefox (tested with version 32.0)
  * Xvfb (tested with version 1.15.1)
+ * wvText and wvSummary from wv (tested with version 1.2.1)
  * An Amazon S3 bucket
  * [Service-account credentials](https://developers.google.com/console/help/new/#serviceaccounts) from the [Google developers console](https://console.developers.google.com/), if you wish to use Google Spreadsheets as the source for your harvesting. Not needed if using a local CSV file.
  * Command line access to your server
  * Internet connection (even for a dry run)
+
+ These scripts have been tested under Ubuntu 14.04 and Debian 7. Making them run under Windows would probably require some extra hacking.
  
 Installation
 ============
