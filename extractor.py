@@ -11,6 +11,9 @@ from modules.interface import Interface
 from modules.s3 import S3Connection
 from modules.download import FileFromS3, FileType
 from modules.pdf import PdfExtractor
+from modules.ooxml import DocxExtractor
+from modules.doc import DocExtractor
+
 
 def main():
 	"""Entry point when run from command line"""
@@ -29,9 +32,17 @@ def main():
 			ui.warning("Could not download %s from Amazon" % key.name)
 			continue
 		text = None
-		if downloaded_file.getFileType() == FileType.PDF:
+		filetype = downloaded_file.getFileType()
+		if filetype == FileType.PDF:
 			ui.info("Starting pdf extraction from %s" % downloaded_file.localFile)
 			extractor = PdfExtractor(downloaded_file.localFile)
+		elif filetype == FileType.DOCX:
+			ui.info("Starting docx extraction from %s" % downloaded_file.localFile)
+			extractor = DocxExtractor(downloaded_file.localFile)
+		elif filetype == FileType.DOC:
+			ui.info("Starting doc extraction from %s" % downloaded_file.localFile)
+			extractor = DocExtractor(downloaded_file.localFile)
+			
 		text = extractor.getText()
 		meta = extractor.getMetadata()
 		print meta.data
