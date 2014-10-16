@@ -20,8 +20,9 @@ class PdfExtractor(object):
         self.path = path
 
     def getMetadata(self):
-    	"""Returns a list of metadata dictionaries from both
-    	   the info field (older PDFs) and XMP (newer PDFs)
+    	"""Returns metadata from both
+    	   the info field (older PDFs) and XMP (newer PDFs).
+           Return format is a .modules.metadata.Metadata object
     	"""
         fp = open(self.path, 'rb')
         parser = PDFParser(fp)
