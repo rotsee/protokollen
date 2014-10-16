@@ -1,4 +1,7 @@
 #coding=utf-8
+"""This module contains classes for interacting with Amazon S3,
+   including an extension for boto.s3.key.Key
+"""
 from boto.s3.connection import S3Connection as _S3Connection
 from boto.s3.key import Key as BotoKey
 
@@ -7,17 +10,13 @@ class Key(BotoKey):
 	   to get “files” and “folders”. This is the class
 	   returned by S3Connection:getNext yielder
 	"""
-	def __init__(self,bucket,key):
-		super(Key, self).__init__(bucket,key)
-		self._key = key
-		self.name = key.name.encode('utf-8')
-		self.filename = self.name.split("/")[-1]
-		self.extension = self.filename.split(".")[-1]
-		self.basename = self.filename.split(".")[1]
-
-	def __str__(self):
-		return str(self.name)
-
+	def __init__(self,bucket=None, key=None):
+		super(Key, self).__init__(bucket, key.name)
+		if key is not None:
+			self.name = key.name.encode('utf-8')
+			self.filename = self.name.split("/")[-1]
+			self.extension = self.filename.split(".")[-1]
+			self.basename = self.filename.split(".")[0]
 
 class S3Connection(object):
 	"""Represents a S3 connection

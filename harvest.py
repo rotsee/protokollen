@@ -3,6 +3,7 @@
 #pylint: disable=fixme, line-too-long
 """This script will download all files pointed out by a series of URLs
    and xPath expressions, and upload them to an Amazon S3 server.
+   Run `./harvest.py --help` for options.
 """
 
 import hashlib
@@ -51,7 +52,7 @@ def main():
                 login.google_client_email,
                 login.google_p12_file)
     else:
-        ui.error("No local file given, and no Google Spreadsheet key found. Cannot proceed.")
+        ui.error("No local file given, and no Google Spreadsheet key found.  Cannot proceed.")
         ui.exit()
 
     sudden_change_threshold = ui.args.tolaratedchanges

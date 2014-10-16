@@ -123,12 +123,7 @@ class FileFromS3(File):
 	"""
 	def __init__(self,key,localFile):
 		self.localFile = localFile
-		self.mimeType  = None
-		try:
-			key.get_contents_to_filename(localFile)
-			self.success   = True
-		except:
-			self.success   = False
+		key.get_contents_to_filename(localFile)
 
 	def getFileType(self):#We know this from the extension, no need to check mime type again
 		return FileType.extToTypeDict.get(self.localFile.split(".")[-1],None)

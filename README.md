@@ -26,22 +26,13 @@ Harvesting documents
 ---------------------
 The harvesting script `harvest.py` takes a table with URLs and xPath expressions. It will fetch any valid files encountered, and store them on Amazon S3.
 
-For each row in the data table, `harvest.py` will:
-
-1. Open the entry page
-2. Do any clicks required to display the list of protocols
-3. Scrape the page for paths for the respective protocols
-4. For each protocol, if required, click through any intermediate steps to get to the actual download link
-5. Check if the file is already at Amazon
-6. Otherwise, download the file
-7. Check the mime type of the file
-8. If it looks like a valid protocol, upload it to Amazon S3
-
-Run `python harvest.py --help` for more info on how to feed data into the script.
+Run `python harvest.py --help` for more info on how to feed data into the script, or `pydoc ./harvest.py` (or `pdoc ./harvest.py`) for API help.
 
 Extracting data from documents
 ------------------------------
-TBD
+The extraction script `extractor.py` will go through files in an Amazon S3 bucket, and try to extract plain text data from them.
+
+Run `python extractor.py --help` for more info, or `pydoc ./extractor.py` (or `pdoc ./extractor.py`) for API help.
 
 Analyzing data
 --------------
@@ -53,6 +44,10 @@ Changelog
  * 0.1: First harvester
 
 Further information might be available in [the Swedish README file](README.sv.md).
+
+Contact
+=======
+Find us on [www.protokollen.net](http://www.protokollen.net)
 
 Licence
 =======

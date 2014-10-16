@@ -1,50 +1,43 @@
 #!/usr/bin/env python2
 #coding=utf-8
+"""This is where we extract plain text and meta data from documents,
+   and uploads it to Amazon and/or a database.
+   The actual extraction is done by format-specific modules.
+   Run `./extractor.py --help` for options.
+"""
+
 import login
 from modules.interface import Interface
 from modules.s3 import S3Connection
+from modules.download import FileFromS3, FileType
+from modules.pdf import PdfExtractor
 
-from pdfminer.pdfinterp import PDFResourceManager, process_pdf
-from pdfminer.converter import TextConverter
-from pdfminer.layout import LAParams
-from cStringIO import StringIO
-
-def convert_pdf(path):
-    rsrcmgr = PDFResourceManager()
-    retstr = StringIO()
-    codec = 'utf-8'
-    laparams = LAParams()
-    device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
-
-    fp = file(path, 'rb')
-    process_pdf(rsrcmgr, device, fp)
-    fp.close()
-    device.close()
-
-    str = retstr.getvalue()
-    retstr.close()
-    return str
-
-ui = Interface(__file__, "Extracts text from files in an Amazon S3 bucket")
-ui.info("Starting extractor")
-ui.info("Connecting to S3")
-filesConnection = S3Connection(
-		login.aws_access_key_id,
-		login.aws_secret_access_key,
-		login.aws_bucket_name)
-from download import FileFromS3, FileType
-for key in filesConnection.getNextFile():
-	ui.info("Processing file %s" % key.name)
-	downloaded_file = FileFromS3(key, "temp/" + key.filename)
-	if downloaded_file.success:
+def main():
+	"""Entry point when run from command line"""
+	ui = Interface(__file__, "Extracts text from files in an Amazon S3 bucket")
+	ui.info("Starting extractor")
+	ui.info("Connecting to S3")
+	source_files_connection = S3Connection(
+			login.aws_access_key_id,
+			login.aws_secret_access_key,
+			login.aws_bucket_name)
+	for key in source_files_connection.getNextFile():
+		ui.info("Processing file %s" % key.name)
+		try:
+			downloaded_file = FileFromS3(key, "temp/"+key.filename)
+		except:
+			ui.warning("Could not download %s from Amazon" % key.name)
+			continue
+		text = None
 		if downloaded_file.getFileType() == FileType.PDF:
-			ui.info("Starting pdf extraction")			
-			#PDF miner
-			print convert_pdf(downloaded_file.localFile)
+			ui.info("Starting pdf extraction from %s" % downloaded_file.localFile)
+			extractor = PdfExtractor(downloaded_file.localFile)
+		text = extractor.getText()
+		meta = extractor.getMetadata()
+		print meta.data
 		downloaded_file.delete()
+
 		ui.exit()
-	else:
-		ui.warning("Failed to download %s from amazon S3!" % key.name)
 
-
-
+if __name__ == '__main__':
+    main()
