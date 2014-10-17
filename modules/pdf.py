@@ -7,9 +7,9 @@ from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from cStringIO import StringIO
 
-from protokollen.modules.metadata import Metadata
+from modules.metadata import Metadata
 from pdfminer.pdfparser import PDFParser, PDFDocument
-from protokollen.modules.xmp import xmp_to_dict
+from modules.xmp import xmp_to_dict
 from pdfminer.pdftypes import resolve1
 
 class PdfExtractor(object):
