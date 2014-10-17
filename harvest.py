@@ -10,10 +10,35 @@ import hashlib
 import login
 import settings
 from modules.interface import Interface
-from modules import download
-from modules import surfer
-from modules import upload
-from modules import datasheet
+from modules.download import FileFromWeb
+from modules.surfer import Surfer
+from modules.upload import S3Uploader
+from modules.datasheet import CSVFile, GoogleSheet
+
+from collections import deque
+def click_through_dlclicks(browser, dlclicks_deque):
+    """Move through a deque of xpath expressions (left to right),
+       each xpath describing a click necessary to find and download a document.
+
+       `browser` is a surfer.Surfer object.
+
+       Returns all hrefs from the last step (URLs to the actual documents).
+       All hrefs are absolute URLs.
+    """
+    list_of_hrefs = []
+    while dlclicks_deque:
+        dlclick = dlclicks_deque.popleft()
+        url_list = browser.getUrlList(dlclick)
+        """A list of surfer.Url objects"""
+        for url in url_list:
+            if not url.is_absolute():
+                url.make_absolute(browser.selenium_driver.current_url)
+            if dlclicks_deque: #more iterations to do?
+                browser.surfTo(url.href)
+                list_of_hrefs += click_through_dlclicks(browser,dlclicks_deque)
+            else:
+                list_of_hrefs.append(url.href)
+    return list_of_hrefs
 
 def main():
     """Entry point when run from command line"""
@@ -44,10 +69,10 @@ def main():
 
     if ui.args.filename is not None:
         ui.info("Harvesting from CSV file `%s`" % ui.args.filename)
-        data_set = datasheet.CSVFile(ui.args.filename)
+        data_set = CSVFile(ui.args.filename)
     elif login.google_spreadsheet_key is not None:
         ui.info("Harvesting from Google Spreadsheet`%s`" % login.google_spreadsheet_key)
-        data_set = datasheet.GoogleSheet(
+        data_set = GoogleSheet(
                 login.google_spreadsheet_key,
                 login.google_client_email,
                 login.google_p12_file)
@@ -63,80 +88,70 @@ def main():
         ui.executionMode = Interface.SUPERDRY_MODE
 
     ui.info("Connecting to S3")
-    uploader = upload.S3Uploader(
+    uploader = S3Uploader(
             login.aws_access_key_id,
             login.aws_secret_access_key,
             login.aws_bucket_name)
 
     ui.info("Setting up virtual browser")
-    browser = surfer.Surfer()
+    browser = Surfer()
 
     data_set.filter(require=["municipality", "year", "url", "dlclick1"])
     data_set.shuffle() #give targets some rest between requests by scrambling the rows
     ui.info("Data contains %d rows" % data_set.getLength())
     ui.debug(data_set.data)
-
+    preclick_headers = data_set.getEnumeratedHeaders("preclick")
+    dlclick_headers = data_set.getEnumeratedHeaders("dlclick")
     for row in data_set.getNext():
         municipality = row["municipality"]
         year = row["year"]
-        url = row["url"]
-        preclick = row.get("preclick1", None)
-        dlclick1 = row["dlclick1"]
-        dlclick2 = row.get("dlclick2", None)
+        preclicks = row.enumerated_columns(preclick_headers)
+        dlclicks = row.enumerated_columns(dlclick_headers)
 
         ui.info("Processing %s %s" % (municipality, year))
-        browser.surfTo(url)
-
-        if preclick is not None:
-            ui.info("Preclicking")
+        browser.surfTo(row["url"])
+        for preclick in preclicks:
+            ui.debug("Preclicking %s " % preclick)
             browser.clickOnStuff(preclick)
+        ui.debug("We are now at the URL %s" % browser.selenium_driver.current_url)
 
         ui.info("Getting URL list")
-        urlList = browser.getUrlList(dlclick1)
-        if len(urlList) == 0:
+        hrefList = click_through_dlclicks(browser, deque(dlclicks))
+        ui.info("Found %d URLs" % len(hrefList))
+        ui.debug(hrefList)
+        if len(hrefList) == 0:
             ui.warning("No URLs found in %s %s" %  (municipality, year))
-
         #Sanity check. Do we have a resonable amount of URLs?
-        alreadyUploadedListLength = uploader.getFileListLength(municipality + "/" + year)
-        if alreadyUploadedListLength > 0:
-            length_diff = abs(alreadyUploadedListLength) - len(urlList)
-            if (length_diff > sudden_change_threshold) or (len(urlList) < alreadyUploadedListLength):
-                ui.warning("""There was a sudden change in the number of download URLs
-                            for this municipality and year.""")
-
-        for download_url in urlList:
-            #TODO iterate over extra dlclicks
-            if not download_url.is_absolute():
-                download_url.makeAbsolute()
-
-            if dlclick2 is not None:
-                ui.debug("Entering two step download")
-                browser.surfTo(download_url.href)
-                urlList2 = browser.getUrlList(dlclick2)
-                if len(urlList2) == 0:
-                    ui.warning("No match for second download xPath (%s)" % dlclick2)
-                    continue
-                elif len(urlList2) > 1:
-                    ui.warning("Multiple matches on second download xPath (%s)." % dlclick2)
-                download_url = urlList2[0]
-                if not download_url.is_absolute():
-                    download_url.makeAbsolute()
-
-            filename = hashlib.md5(download_url.href).hexdigest()
-            remote_naked_filename = municipality + "/" + year + "/" + filename
-            local_naked_filename = "temp/"+filename
+        # FIXME: Vi vet inte förrän alla filer är nerladdade, hur många giltiga filer vi har.
+        #        Bättre att hålla räkning på hur många vi laddar upp, jämför med hur många som fanns
+        #
+        #alreadyUploadedListLength = uploader.getFileListLength(municipality + "/" + year)
+        #if alreadyUploadedListLength > 0:
+        #    length_diff = abs(alreadyUploadedListLength) - len(urlList)
+        #    if (length_diff > sudden_change_threshold) or (len(urlList) < alreadyUploadedListLength):
+        #        ui.warning("""There was a sudden change in the number of download URLs
+        #                    for this municipality and year.""")
+        for href in hrefList:
+            filename = hashlib.md5(href).hexdigest()
+            remote_naked_filename = uploader.buildRemoteName(filename, path=[municipality,year])
+            """Full path, but without extension.
+               We don't know the proper extension until we have checked the mime-type ourselves
+               (we don't trust anyone else)
+            """
             if uploader.fileExists(remote_naked_filename):
                 continue #File is already on Amazon
 
-            if not download_url.is_absolute():
-                download_url.makeAbsolute()
-
             if ui.executionMode < Interface.SUPERDRY_MODE:
-                download_file = download.FileFromWeb(download_url.href, local_naked_filename)
+                ui.debug("Downloading file at %s" % href)
+                local_naked_filename = "temp/"+filename
+                download_file = FileFromWeb(href, local_naked_filename)
                 if download_file.success:
                     filetype = download_file.getFileType()
                     if filetype in settings.allowedFiletypes:
-                        remote_full_filename = remote_naked_filename + "." + filetype
+                        remote_full_filename = uploader.buildRemoteName(
+                                                    filename,
+                                                    ext=download_file.getFileExt(),
+                                                    path=[municipality,year])
                         if ui.executionMode < Interface.DRY_MODE:
                             uploader.putFile(local_naked_filename, remote_full_filename)
                     else:
@@ -144,6 +159,7 @@ def main():
                     download_file.delete()
                 else:
                     ui.warning("Download failed for %s" % download_url)
+    ui.info("Closing virtual browser")
     browser.kill()
 
 if __name__ == '__main__':

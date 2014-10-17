@@ -15,24 +15,24 @@ class Surfer:
 		self.vdisplay = Xvfb()
 		self.vdisplay.start()
 
-		self.profile = webdriver.FirefoxProfile()
-		self.browser = webdriver.Firefox(self.profile)
+		self.selenium_profile = webdriver.FirefoxProfile()
+		self.selenium_driver = webdriver.Firefox(self.selenium_profile)
 
 	def surfTo(self,url):
-		self.browser.get(url)
-		self.browser.implicitly_wait(self.extraDelay)
+		self.selenium_driver.get(url)
+		self.selenium_driver.implicitly_wait(self.extraDelay)
 
 	def clickOnStuff(self,xPath):
-		elementList = self.browser.find_elements_by_xpath(xPath)
+		elementList = self.selenium_driver.find_elements_by_xpath(xPath)
 		if not elementList:
 			logging.warning("No elements found for xPath `%s`" % xPath)
 		else:
 			for element in elementList:
 				element.click()
-			self.browser.implicitly_wait(self.extraDelay)
+			self.selenium_driver.implicitly_wait(self.extraDelay)
 
 	def findElements(self,xPath):
-		return self.browser.find_elements_by_xpath(xPath)
+		return self.selenium_driver.find_elements_by_xpath(xPath)
 
 	def getUrlList(self,xPath):
 		urlList = []
@@ -44,7 +44,7 @@ class Surfer:
 		return urlList#list of Url objects
 
 	def kill(self):
-		self.browser.close()
+		self.selenium_driver.close()
 		self.vdisplay.stop()
 
 import urlparse
@@ -58,10 +58,14 @@ class Url:
 		"""Check if url is absolute or relative"""
 		return bool(urlparse.urlparse(self.href).netloc)
 
-	def makeAbsolute(self):
-		parse_object = urlparse(self.href)
-		urlBase = parse_object.scheme + "://" + parse_object.netloc
-		self.href = urlBase + self.href
+	def make_absolute(self, reference_url):
+		"""Makes this Url absolute, by using the domain from reference_url.
+
+		   Does not handle protocol relative URLs
+		"""
+		parse_object = urlparse(reference_url)
+		url_base = parse_object.scheme + "://" + parse_object.netloc
+		self.href = url_base + self.href
 
 if __name__ == "__main__":
 	print "This module is only intended to be called from other scripts."

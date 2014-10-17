@@ -38,6 +38,16 @@ class FileType:
 		'txt': TXT
 	}
 
+	typeToExtDict = {
+		UNKNOWN: None,
+		PDF: "pdf",
+		DOC: "doc",
+		DOCX: "docx",
+		ODT: "odt",
+		RTF: "rtf",
+		TXT: "txt"
+	}
+
 class File:
 	"""Represents a file downloaded from somewhere.
 	"""
@@ -85,6 +95,8 @@ class File:
 	def getFileType(self):
 		return FileType.mimeToTypeDict.get(self.mimeType,None)
 
+	def getFileExt(self):
+		return FileType.typeToExtDict.get(self.getFileType(),None)
 
 class FileFromWeb(File):
 	"""Represents a file downloaded from the web.

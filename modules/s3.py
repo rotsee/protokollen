@@ -15,10 +15,10 @@ class Key(BotoKey):
 		if key is not None:
 			if isinstance(key,str):
 				super(Key, self).__init__(bucket, key)
-				self.name = key.encode('utf-8')
+				self.name = key
 			else:
 				super(Key, self).__init__(bucket, key.name)
-				self.name = key.name.encode('utf-8')
+				self.name = key.name
 
 			self.path_fragments = self.name.split("/")
 			self.filename = self.path_fragments.pop()
