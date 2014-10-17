@@ -10,14 +10,16 @@ Prerequisites
  * An Amazon S3 bucket
  * Command line access to your server
  * Internet connection (even for a dry run)
+ * Python2 => 2.5
 
 For harvester.py
 ----------------
  * Firefox (tested with version 32.0)
  * Xvfb (tested with version 1.15.1)
+ * Python Imaging Library (tested with version 2.3)
  * [Service-account credentials](https://developers.google.com/console/help/new/#serviceaccounts) from the [Google developers console](https://console.developers.google.com/), if you wish to use Google Spreadsheets as the source for your harvesting. Not needed if you use a local CSV file.
  * Tesseract > 3.02.01
- * Swedish data for Tesseract (a file called `SWE.traineddata` in current versions)
+ * Swedish data for Tesseract (a file called `SWE.traineddata` in current versions, that must be put in Tesseract's data directory)
  * GhostScript
 
 For extractor.py

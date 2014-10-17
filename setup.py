@@ -13,6 +13,7 @@ try:
     'pdfminer == 20110515',#Note that API has changed dramatically in later versions
     'docx', #good for text, bad for metadata
     'openxmlinfo', #good for metadata, bad for text
+    'pytesseract',
     ]
 
     try:
