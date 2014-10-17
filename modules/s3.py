@@ -6,17 +6,26 @@ from boto.s3.connection import S3Connection as _S3Connection
 from boto.s3.key import Key as BotoKey
 
 class Key(BotoKey):
-	"""extends Amazon's key class with name splitting,
-	   to get “files” and “folders”. This is the class
-	   returned by S3Connection:getNext yielder
+	"""extends the boto.s3.key.Key class with some helpful
+	   name splitting features, to get “files” and “folders”.
+	   Can take an existing boto Key object, or a key string
+	   as it's second argument.
 	"""
 	def __init__(self,bucket=None, key=None):
-		super(Key, self).__init__(bucket, key.name)
 		if key is not None:
-			self.name = key.name.encode('utf-8')
-			self.filename = self.name.split("/")[-1]
+			if isinstance(key,str):
+				super(Key, self).__init__(bucket, key)
+				self.name = key.encode('utf-8')
+			else:
+				super(Key, self).__init__(bucket, key.name)
+				self.name = key.name.encode('utf-8')
+
+			self.path_fragments = self.name.split("/")
+			self.filename = self.path_fragments.pop()
 			self.extension = self.filename.split(".")[-1]
 			self.basename = self.filename.split(".")[0]
+		else:
+			super(Key, self).__init__(bucket)
 
 class S3Connection(object):
 	"""Represents a S3 connection
@@ -45,9 +54,13 @@ class S3Connection(object):
 		else:
 			return False
 
-	def putFile(self,localFilename,s3name):
+	def putFile(self, localFilename, s3name):
 		k = Key(self._bucket,s3name)
 		k.set_contents_from_filename(localFilename)
+
+	def putFileFromString(self, string, s3name):
+		k = Key(self._bucket,s3name)
+		k.set_contents_from_string(string)
 
 if __name__ == "__main__":
 	print "This module is only intended to be called from other scripts."
