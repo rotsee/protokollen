@@ -2,6 +2,8 @@
 """This module includes tools for handling and extracting text from PDF files.
 """
 
+import logging
+
 from pdfminer.pdfinterp import PDFResourceManager, process_pdf
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -63,6 +65,35 @@ class PdfExtractor(object):
 
         text = retstr.getvalue()
         retstr.close()
+        if (text is None) or (text.strip() == ""):
+            logging.info("No text found in PDF. Attempting OCR. This will take a while.")
+            #FIXME this should go in a separate method
+            #First, convert to image
+            import subprocess
+            try:
+                arglist = ["gs",
+                      "-dNOPAUSE",
+                      "-sOutputFile=temp/page%03d.png",
+                      "-sDEVICE=png16m",
+                      "-r72",
+                      self.path]
+                process = subprocess.call(
+                    args=arglist,
+                    stdout=subprocess.STDOUT,
+                    stderr=subprocess.STDOUT)
+            except OSError:
+                logging.error("Failed to run GhostScript (using `gs`)")
+            #Do OCR
+            import time
+            time.sleep(1) # make sure the server has time to write the files
+            import Image
+            import pytesseract
+            import os
+            text = ""
+            for file_ in os.listdir("temp"):
+                if file_.endswith(".png"):
+                    text += pytesseract.image_to_string(Image.open("temp/" + file_), lang="swe")
+                    os.unlink("temp/" + file_)
         return text
 
 if __name__ == "__main__":
