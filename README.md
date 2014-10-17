@@ -14,18 +14,18 @@ Prerequisites
 
 For harvester.py
 ----------------
- * Firefox (tested with version 32.0)
+ * Firefox (tested with version 32.0 and 33.0)
  * Xvfb (tested with version 1.15.1)
- * Python Imaging Library (tested with version 2.3)
  * [Service-account credentials](https://developers.google.com/console/help/new/#serviceaccounts) from the [Google developers console](https://console.developers.google.com/), if you wish to use Google Spreadsheets as the source for your harvesting. Not needed if you use a local CSV file.
- * Tesseract > 3.02.01
- * Swedish data for Tesseract (a file called `SWE.traineddata` in current versions, that must be put in Tesseract's data directory)
- * GhostScript
-
+ 
 For extractor.py
 ----------------
  * wvText and wvSummary from `wv` (tested with version 1.2.1),
    using either `lynx` or `elinks` (but not `links`)
+ * Tesseract >= version 3.02.02
+ * Swedish data for Tesseract (a file called `SWE.traineddata` in current versions, that must be put in Tesseract's data directory)
+ * The Python Imaging Library, PIL (tested with version 2.3)
+ * GhostScript (tested with version 9.10)
 
 These scripts have been tested under Ubuntu 14.04 and Debian 7. Making them run under Windows would probably require some extra hacking.
  
@@ -36,7 +36,7 @@ Installation
  * Clone this repository
  * From the protokollen directory, run `python setup.py develop`
  * Copy `login.template.py` to `login.py`, and add your Amazon S3 and Google API credentials there,
-   as well as the names of the S3 buckets you want to use.
+   as well as the names of the S3 buckets you want to use to store documents and text files.
  * Copy your Google API p12 file to `google_api.p12` (or specify another path in `login.py`)
 
 
@@ -52,6 +52,7 @@ Run `python harvest.py --help` for more info on how to feed data into the script
 Extracting data from documents
 ------------------------------
 The extraction script `extractor.py` will go through files in an Amazon S3 bucket, and try to extract plain text data from them.
+It understands pdf, docx and doc files, and can also do OCR on scanned pdf-files.
 
 Run `python extractor.py --help` for more info, or `pydoc ./extractor.py` (or `pdoc ./extractor.py`) for API help.
 
