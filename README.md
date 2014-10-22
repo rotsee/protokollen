@@ -17,6 +17,7 @@ For harvester.py
  * Firefox (tested with version 32.0 and 33.0)
  * Xvfb (tested with version 1.15.1)
  * [Service-account credentials](https://developers.google.com/console/help/new/#serviceaccounts) from the [Google developers console](https://console.developers.google.com/), if you wish to use Google Spreadsheets as the source for your harvesting. Not needed if you use a local CSV file.
+ * python-magic (installed by setup.py) and libmagic (needs to be installed separately)
  
 For extractor.py
 ----------------
@@ -48,6 +49,8 @@ Harvesting documents
 The harvesting script `harvest.py` takes a table with URLs and xPath expressions. It will fetch any valid files encountered, and store them on Amazon S3.
 
 Run `python harvest.py --help` for more info on how to feed data into the script, or `pydoc ./harvest.py` (or `pdoc ./harvest.py`) for API help.
+
+[Here is an example csv file](https://github.com/rotsee/protokollen/blob/master/data/xpath_sample_dalarna_and_gavleborg.csv) with xPaths from Dalarna and Gävleborg.
 
 Extracting data from documents
 ------------------------------

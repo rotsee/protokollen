@@ -5,6 +5,7 @@
 aws_access_key_id = "ACCES KEY ID"
 aws_secret_access_key = "SECRET ACCESS KEY"
 aws_bucket_name = "BUCKET NAME"
+aws_text_bucket_name = "BUCKET NAME"
 
 ############### OPTIONAL #######################
 #

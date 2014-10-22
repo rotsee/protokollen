@@ -94,12 +94,21 @@ def main():
             login.aws_bucket_name)
 
     ui.info("Setting up virtual browser")
-    browser = Surfer()
+    try:
+        browser = Surfer()
+        run_harvest(data_set, browser, uploader, ui)
+    except Exception as e:
+        ui.critical("%s: %s" % (type(e), e))
+        raise e
+    finally: 
+        ui.info("Closing virtual browser")
+        browser.kill()
 
+def run_harvest(data_set, browser, uploader, ui):
     data_set.filter(require=["municipality", "year", "url", "dlclick1"])
     data_set.shuffle() #give targets some rest between requests by scrambling the rows
     ui.info("Data contains %d rows" % data_set.getLength())
-    ui.debug(data_set.data)
+    # ui.debug(data_set.data)
     preclick_headers = data_set.getEnumeratedHeaders("preclick")
     dlclick_headers = data_set.getEnumeratedHeaders("dlclick")
     for row in data_set.getNext():
@@ -111,12 +120,17 @@ def main():
         ui.info("Processing %s %s" % (municipality, year))
         browser.surfTo(row["url"])
         for preclick in preclicks:
-            ui.debug("Preclicking %s " % preclick)
-            browser.clickOnStuff(preclick)
+            # preclick is often None which is not a valid value
+            # for selenium_driver.find_elements_by_xpath
+            if preclick:  
+                ui.debug("Preclicking %s " % preclick)
+                browser.clickOnStuff(preclick)
         ui.debug("We are now at the URL %s" % browser.selenium_driver.current_url)
 
         ui.info("Getting URL list")
-        hrefList = click_through_dlclicks(browser, deque(dlclicks))
+        # make sure our deque doesn't contain any None values
+        hrefList = click_through_dlclicks(browser,
+                                          deque(filter(None, dlclicks)))
         ui.info("Found %d URLs" % len(hrefList))
         ui.debug(hrefList)
         if len(hrefList) == 0:
@@ -159,8 +173,6 @@ def main():
                     download_file.delete()
                 else:
                     ui.warning("Download failed for %s" % download_url)
-    ui.info("Closing virtual browser")
-    browser.kill()
 
 if __name__ == '__main__':
     main()
