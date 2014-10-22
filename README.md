@@ -49,7 +49,7 @@ The harvesting script `harvest.py` takes a table with URLs and xPath expressions
 
 Run `python harvest.py --help` for more info on how to feed data into the script, or `pydoc ./harvest.py` (or `pdoc ./harvest.py`) for API help.
 
-[Here is an example csv file](https://github.com/rotsee/protokollen/data/xpath_sample_dalarna_and_gavleborg.csv) with xPaths from Dalarna and Gävleborg.
+[Here is an example csv file](https://github.com/rotsee/protokollen/blob/master/data/xpath_sample_dalarna_and_gavleborg.csv) with xPaths from Dalarna and Gävleborg.
 
 Extracting data from documents
 ------------------------------
