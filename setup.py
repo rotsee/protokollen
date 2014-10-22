@@ -12,8 +12,11 @@ try:
     'gdata',
     'pdfminer == 20110515',#Note that API has changed dramatically in later versions
     'docx', #good for text, bad for metadata
-    'openxmlinfo', #good for metadata, bad for text
+    'openxmllib', #good for metadata, bad for text
     'pytesseract',
+    'argcomplete',
+    'pyOpenSSL',  # required, in practice, by oauth2client
+    'boto'
     ]
 
     try:
