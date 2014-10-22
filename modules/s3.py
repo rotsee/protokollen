@@ -13,10 +13,10 @@ class Key(BotoKey):
 	"""
 	def __init__(self,bucket=None, key=None):
 		if key is not None:
-			if isinstance(key,str):
+			if isinstance(key, basestring):#if either string or unicode
 				super(Key, self).__init__(bucket, key)
 				self.name = key
-			else:
+			else:#if initiated with an existing key
 				super(Key, self).__init__(bucket, key.name)
 				self.name = key.name
 
