@@ -67,12 +67,12 @@ def main():
                   ext="txt",
                   path=key.path_fragments)
             #uploader.connection is a S3Connection, use its putFileFromString method
-            if (uploader.fileExists(remoteFilename)) and (ui.args.overwrite is None)
+            if (uploader.fileExists(remoteFilename)) and (ui.args.overwrite is None):
                 continue #File is already on Amazon            
             else:
               uploader.connection.putFileFromString(text, remoteFilename)
 
-        ui.exit()
+    ui.exit()
 
 if __name__ == '__main__':
     main()

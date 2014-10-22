@@ -115,6 +115,12 @@ class FileFromWeb(File):
 				req = urllib2.Request(url)
 				req.add_header('User-agent', userAgent)
 				f = urllib2.urlopen(req)
+                                
+                                # make sure the directory we're
+                                # placing the file in actually exists
+                                d = os.path.dirname(self.localFile)
+                                if d and not os.path.exists(d):
+                                        os.makedirs(d)
 
 				with open(self.localFile, "wb") as localFileHandle:
 					localFileHandle.write(f.read())
