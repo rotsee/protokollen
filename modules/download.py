@@ -73,8 +73,11 @@ class File(object):
 		os.unlink(self.localFile)
 
 	def getFileType(self):
-		return FileType.mimeToTypeDict.get(self.mimeType,None)
+		return FileType.extToTypeDict.get(self.localFile.split(".")[-1],None)
 
+        # This default method only uses the extension of the file, not
+        # self.mimeType (which only gets set by the subclass
+        # FileFromWeb, which uses an alternate implementation of this method)
 	def getFileExt(self):
 		return FileType.typeToExtDict.get(self.getFileType(),None)
 
@@ -83,9 +86,13 @@ class LocalFile(File):
                 super(LocalFile, self).__init__(source, localFile)
                 shutil.copy2(source.localFilename, localFile)
 
-        # same as FileFromS3.getFileType
-	def getFileType(self):
-		return FileType.extToTypeDict.get(self.localFile.split(".")[-1],None)
+class DropboxFile(File):
+        def __init__(self, source, localFile):
+                super(DropboxFile, self).__init__(source, localFile)
+                out = open(localFile, "wb")
+                with source.dbclient.get_file(source.rootpath+"/"+source.name) as f:
+                        out.write(f.read())
+                out.close()
 
 class FileFromWeb(File):
 	"""Represents a file downloaded from the web.
@@ -125,6 +132,11 @@ class FileFromWeb(File):
 			else:
 				logging.warning("Failed to download file from %s" % url)
 
+        # moved this now alternate implementation from the base class
+        # since FileFromWeb is the only subclass using it.
+	def getFileType(self):
+		return FileType.mimeToTypeDict.get(self.mimeType,None)
+
 class FileFromS3(File):
 	"""Represents a file downloaded from Amazon S3.
 	"""
@@ -132,8 +144,6 @@ class FileFromS3(File):
 		self.localFile = localFile
 		key.get_contents_to_filename(localFile)
 
-	def getFileType(self):#We know this from the extension, no need to check mime type again
-		return FileType.extToTypeDict.get(self.localFile.split(".")[-1],None)
 
 if __name__ == "__main__":
 	print "This module is only intended to be called from other scripts."

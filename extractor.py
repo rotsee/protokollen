@@ -72,7 +72,8 @@ def main():
         elif filetype == FileType.DOC:
             ui.info("Starting doc extraction from %s" % downloaded_file.localFile)
             extractor = DocExtractor(downloaded_file.localFile)
-
+        else:
+            raise ValueError("No extractor for filetype %s" % filetype)
         text = extractor.getText()
         meta = extractor.getMetadata()
         downloaded_file.delete()
