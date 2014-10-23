@@ -100,15 +100,16 @@ class Metadata(object):
                 self._mergeInto(key, v)
             return
 
-        foundValue = foundValue.strip() #by now, foundValue is a single string
-        if foundValue != "":
-            if key in self.data:
-                if foundValue in self.data[key]:
-                    return
+        if foundValue:  # foundValue can be None
+            foundValue = foundValue.strip() #by now, foundValue is a single string
+            if foundValue != "":
+                if key in self.data:
+                    if foundValue in self.data[key]:
+                        return
+                    else:
+                        self.data[key].append(foundValue)
                 else:
-                    self.data[key].append(foundValue)
-            else:
-                self.data[key] = [foundValue]
+                    self.data[key] = [foundValue]
 
 if __name__ == "__main__":
     print "This module is only intended to be called from other scripts."

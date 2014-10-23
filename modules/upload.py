@@ -4,11 +4,14 @@ import os
 import shutil
 from abc import ABCMeta, abstractmethod
 
-from download import FileFromS3
+from download import FileFromS3, LocalFile
 
+# FIXME: With the new getNextFile and getFile methods, this should
+# probably be named Storage instead of Uploader. But one change at a
+# time.
 class Uploader:
     """Abstract uploader. Subclasses are used for putting files on remote
-    servers. 
+    servers, and/or retrieving them from the same place.
 
     All subclasses are initialized with the same set of parameters,
     but some of the parameters might not be needed with all
@@ -142,9 +145,47 @@ class LocalUploader(Uploader):
         return os.path.exists(self.path + os.sep + fullfilename)
 
     def putFile(self, localFilename, remoteFilename):
-        shutil.copy2(localFilename, remoteFilename)
+        path = self.path + os.sep + remoteFilename
+        d = os.path.dirname(path)
+        if d and not os.path.exists(d):
+            os.makedirs(d)
+        shutil.copy2(localFilename, path)
 
+    def getNextFile(self):
+        path = self.path
 
+        # mimics the modules.s3.Key interface
+        class LocalstorageKey(object):
+            def __init__(self, bucket, key):
+                assert isinstance(key, basestring) # keys are really filename strings
+                # bucket is not used
+                self.name = key  # full logical path of the file
+                self.path_fragments = key.split("/")
+                self.filename = self.path_fragments.pop() # filename w/o path
+                self.basename, self.extension = os.path.splitext(self.filename) # filename w/o extension and only extension, respectively
+
+                self.localFilename = path + os.sep + key # full physical path of the file
+                
+        for root, dirs, files in os.walk(self.path):
+            for f in files:
+                fullpath = root + os.sep + f
+                logicpath = fullpath[len(self.path)+1:]
+                yield(LocalstorageKey(None, logicpath))
+
+    def getFile(self, key, localFilename):
+        # creating the LocalFile object copies the content to localFilename
+        return LocalFile(key, localFilename)
+
+    def putFileFromString(self, string, remoteFilename):
+        mode = "wb" if isinstance(string, str) else "w"
+        path = self.path + os.sep + remoteFilename
+        d = os.path.dirname(path)
+        if d and not os.path.exists(d):
+            os.makedirs(d)
+        with open(path, mode) as fp:
+            fp.write(string)
+    
+        
 class DropboxUploader(Uploader):
     """Handles fileupload to Dropbox folders. You need to create a Dropbox
      app and authorize it to access your Dropbox.

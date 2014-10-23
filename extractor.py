@@ -42,11 +42,24 @@ def main():
                                     login.aws_text_bucket_name)
 
     for key in source_files_connection.getNextFile():
+        # first of all, check if the processed file already exists in
+        # remote storage (no need to do expensive PDF processing if it
+        # is.
+        if ui.executionMode < Interface.DRY_MODE:
+            remoteFilename = uploader.buildRemoteName(
+                  key.basename,
+                  ext="txt",
+                  path=key.path_fragments)
+            if (uploader.fileExists(remoteFilename) and
+                not ui.args.overwrite):
+                continue #File is already in remote storage
+
         ui.info("Processing file %s" % key.name)
         try:
             downloaded_file = source_files_connection.getFile(key, "temp/"+key.filename)
-        except:
-            ui.warning("Could not download %s from Amazon" % key.name)
+        except Exception as e:
+            ui.warning("Could not download %s from storage: %s: %s" %
+                       (key.name, type(e), e))
             continue
 
         filetype = downloaded_file.getFileType()
@@ -63,17 +76,8 @@ def main():
         text = extractor.getText()
         meta = extractor.getMetadata()
         downloaded_file.delete()
+        uploader.putFileFromString(text, remoteFilename)
 
-        if ui.executionMode < Interface.DRY_MODE:
-            remoteFilename = uploader.buildRemoteName(
-                  key.basename,
-                  ext="txt",
-                  path=key.path_fragments)
-            if (uploader.fileExists(remoteFilename) and
-                ui.args.overwrite is None):
-                continue #File is already in remote storage
-            else:
-                uploader.putFileFromString(text, remoteFilename)
 
     ui.exit()
 

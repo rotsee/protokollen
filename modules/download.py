@@ -1,6 +1,7 @@
 #coding=utf-8
 import logging
 import os
+import shutil
 
 class FileType:
 	UNKNOWN = 0
@@ -48,35 +49,14 @@ class FileType:
 		TXT: "txt"
 	}
 
-class File:
+class File(object):
 	"""Represents a file downloaded from somewhere.
 	"""
 	success   = False
 
-	def __init__(self,localFile):
+	def __init__(self, source, localFile):
 			self.localFile = localFile
 			self.mimeType  = None
-
-			import urllib2
-			try:
-				url = url.encode('utf-8')
-				req = urllib2.Request(url)
-				req.add_header('User-agent', userAgent)
-				f = urllib2.urlopen(req)
-
-				with open(self.localFile, "wb") as localFileHandle:
-					localFileHandle.write(f.read())
-
-			except urllib2.HTTPError, e:
-				logging.warning("HTTP Error: %s %s" % (e.code, url) )
-			except urllib2.URLError, e:
-				logging.warning("URL Error: %s %s" % (e.reason, url) )
-
-			if self.exists():
-				self.success = True
-				self._determineMime()
-			else:
-				logging.warning("Failed to get file")
 
 	def _determineMime(self):
 		import magic
@@ -97,6 +77,15 @@ class File:
 
 	def getFileExt(self):
 		return FileType.typeToExtDict.get(self.getFileType(),None)
+
+class LocalFile(File):
+	def __init__(self, source, localFile):
+                super(LocalFile, self).__init__(source, localFile)
+                shutil.copy2(source.localFilename, localFile)
+
+        # same as FileFromS3.getFileType
+	def getFileType(self):
+		return FileType.extToTypeDict.get(self.localFile.split(".")[-1],None)
 
 class FileFromWeb(File):
 	"""Represents a file downloaded from the web.

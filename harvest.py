@@ -99,7 +99,7 @@ def main():
         run_harvest(data_set, browser, uploader, ui)
     except Exception as e:
         ui.critical("%s: %s" % (type(e), e))
-        raise e
+        raise
     finally: 
         ui.info("Closing virtual browser")
         browser.kill()
