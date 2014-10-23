@@ -1,24 +1,67 @@
 #coding=utf-8
 
+import os
+import shutil
+from abc import ABCMeta, abstractmethod
+
+from download import FileFromS3
+
 class Uploader:
-    """Abstract uploader. Subclasses are used for putting files on remote servers.
+    """Abstract uploader. Subclasses are used for putting files on remote
+    servers. 
+
+    All subclasses are initialized with the same set of parameters,
+    but some of the parameters might not be needed with all
+    subclasses.
+
+    :param accesskey: Any key that identifies the application requesting 
+                      access (not needed for local storage)
+    :param secret: A secret key for the application requesting access
+                      (not needed for local storage)
+    :param token: A token, normally retrieved trough a OAuth authorization, 
+                  granting access to a particular user with this app (not 
+                  needed for S3 or local storage)
+    :param path: The path (or bucket) where files are stored within this backend
+
     """
+    __metaclass__ = ABCMeta
 
-    path_separator = "/"
-    """Could be changes to by subclasses for e.g. a Windows server uploader."""
-
-    def __init__(self):
+    def __init__(self,
+                 app_key = None,
+                 app_secret = None,
+                 token = None,
+                 path = "protokollen"
+    ):
         pass
 
-    def putFile(self,localFilename):
+    @abstractmethod
+    def putFile(self,localFilename, remoteFilename):
         pass
 
+    @abstractmethod
+    def putFileFromString(self, string, remoteFilename):
+        pass
+
+    @abstractmethod
     def fileExists(self,fullfilename):
         pass
 
+    @abstractmethod
     def getFileListLength(self,path):
         pass
 
+
+    @abstractmethod
+    def getNextFile(self):
+        """Iterates through the file store and returns the next available file, in the form of a Key object that identifies the file and storage-dependent metadata."""
+        pass
+
+    @abstractmethod
+    def getFile(self, key, localFilename):
+        """Retrieves a file identified by key, storing it locally as
+localFilename."""
+        pass
+    
     def buildRemoteName(self,
           name,
           ext="",
@@ -28,9 +71,9 @@ class Uploader:
            `path` can be a string, or a list of strings with path fragments
         """
         fullfilename = ""
-        if isinstance(path,list):
+        if isinstance(path, list):
             for path_fragment in path:#easier than join, as we want a trailing path_separator
-                fullfilename += path_fragment + self.path_separator
+                fullfilename += path_fragment + os.sep
         else:
             fullfilename += path
         fullfilename += name
@@ -40,23 +83,98 @@ class Uploader:
 
 class S3Uploader(Uploader):
     """Handles fileupload to Amazon S3 buckets.
+
+    :param accesskey: The access key id
+    :param secret: The secret access key
+    :param token: Not used for this storage backend
+    :param path: The bucket name
     """
 
     def __init__(self,
-        aws_access_key_id,
-        aws_secret_access_key,
-        aws_bucket_name="protokollen"):
+                 accesskey,
+                 secret,
+                 token = None,
+                 path="protokollen"):
         import s3
-        self.connection = s3.S3Connection(aws_access_key_id, aws_secret_access_key,aws_bucket_name)
+        self.connection = s3.S3Connection(accesskey, secret,path)
 
     def getFileListLength(self,pathFragment):
         return self.connection.getBucketListLength(pathFragment)
 
+    # this'll return a Key or Key-like object with .filename, .name
+    def getNextFile(self):
+        return self.connection.getNextFile()
+
+    # this'll retrieve the file identified by key (returned from
+    # getNextFile) and return a download.File object with .localFile
+    def getFile(self, key, localFilename):
+        return FileFromS3(key, localFilename)
+        
     def fileExists(self,fullfilename):
         return self.connection.fileExistsInBucket(fullfilename)
 
     def putFile(self,localFilename,s3name):
         self.connection.putFile(localFilename,s3name)
+
+    def putFileFromString(self, string, s3name):
+        self.connection.putFileFromString(string, s3name)
+
+
+class LocalUploader(Uploader):
+    """Handles file "upload" to a local directory
+
+    :param accesskey: Not used
+    :param secret: Not used
+    :param token: Not used
+    :param path: The local filesystem path
+    """
+    def __init__(self,
+                 accesskey=None,
+                 secret=None,
+                 token=None,
+                 path="protokollen"):
+        self.path = path
+
+    def getFileListLength(self, pathFragment):
+        raise NotImplementedError
+
+    def fileExists(self, fullfilename):
+        return os.path.exists(self.path + os.sep + fullfilename)
+
+    def putFile(self, localFilename, remoteFilename):
+        shutil.copy2(localFilename, remoteFilename)
+
+
+class DropboxUploader(Uploader):
+    """Handles fileupload to Dropbox folders. You need to create a Dropbox
+     app and authorize it to access your Dropbox.
+
+    :param accesskey: The app key
+    :param secret: The app secret
+    :param token: The token from the authorization step. If not provided, 
+                  this backend will guide you through this step. 
+    :param path: The path in the dropbox where files are stored
+
+    """
+    def __init__(self,
+                 accesskey,
+                 secret,
+                 token=None,
+                 path="protokollen"):
+        import dropbox
+        if not token:
+            print("Steps to create a token here...")
+        raise NotImplementedError
+
+    def getFileListLength(self, pathFragment):
+        raise NotImplementedError
+
+    def fileExists(self, fullfilename):
+        raise NotImplementedError
+
+    def putFile(self, localFilename, remoteFilename):
+        raise NotImplementedError
+
 
 if __name__ == "__main__":
     print "This module is only intended to be called from other scripts."

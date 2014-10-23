@@ -13,14 +13,7 @@ class Key(BotoKey):
 	"""
 	def __init__(self,bucket=None, key=None):
 		if key is not None:
-<<<<<<< HEAD
 			if isinstance(key, basestring):#if either string or unicode
-=======
-                        # key might be a str (ie bytes) or unicode
-                        # depending on the exact arguments to
-                        # buildRemoteName. 
-			if isinstance(key, (str, unicode)):
->>>>>>> ee962b9f5b8934fec6ff1546317f13e3da36c9b5
 				super(Key, self).__init__(bucket, key)
 				self.name = key
 			else:#if initiated with an existing key
