@@ -7,6 +7,7 @@ from abc import ABCMeta, abstractmethod
 
 from download import FileFromS3, LocalFile, DropboxFile
 
+
 # FIXME: With the new getNextFile and getFile methods, this should
 # probably be named Storage instead of Uploader. But one change at a
 # time.
@@ -18,12 +19,12 @@ class Uploader:
     but some of the parameters might not be needed with all
     subclasses.
 
-    :param accesskey: Any key that identifies the application requesting 
+    :param accesskey: Any key that identifies the application requesting
                       access (not needed for local storage)
     :param secret: A secret key for the application requesting access
                       (not needed for local storage)
-    :param token: A token, normally retrieved trough a OAuth authorization, 
-                  granting access to a particular user with this app (not 
+    :param token: A token, normally retrieved trough a OAuth authorization,
+                  granting access to a particular user with this app (not
                   needed for S3 or local storage)
     :param path: The path (or bucket) where files are stored within this backend
 
@@ -31,15 +32,15 @@ class Uploader:
     __metaclass__ = ABCMeta
 
     def __init__(self,
-                 app_key = None,
-                 app_secret = None,
-                 token = None,
-                 path = "protokollen"
-    ):
+                 app_key=None,
+                 app_secret=None,
+                 token=None,
+                 path="protokollen"
+                 ):
         pass
 
     @abstractmethod
-    def putFile(self,localFilename, remoteFilename):
+    def putFile(self, localFilename, remoteFilename):
         pass
 
     @abstractmethod
@@ -47,36 +48,39 @@ class Uploader:
         pass
 
     @abstractmethod
-    def fileExists(self,fullfilename):
+    def fileExists(self, fullfilename):
         pass
 
     @abstractmethod
-    def getFileListLength(self,path):
+    def getFileListLength(self, path):
         pass
-
 
     @abstractmethod
     def getNextFile(self):
-        """Iterates through the file store and returns the next available file, in the form of a Key object that identifies the file and storage-dependent metadata."""
+        """Iterates through the file store and returns the next available file,
+           in the form of a Key object that identifies the file and
+           storage-dependent metadata.
+        """
         pass
 
     @abstractmethod
     def getFile(self, key, localFilename):
-        """Retrieves a file identified by key, storing it locally as
-localFilename."""
+        """Retrieves a file identified by key, storing it locally
+           as localFilename.
+        """
         pass
-    
+
     def buildRemoteName(self,
-          name,
-          ext="",
-          path=""):
+                        name,
+                        ext="",
+                        path=""):
         """Concatenate path fragments and filename, for e.g.
            Amazon S3, or some other server.
            `path` can be a string, or a list of strings with path fragments
         """
         fullfilename = ""
         if isinstance(path, list):
-            for path_fragment in path:#easier than join, as we want a trailing path_separator
+            for path_fragment in path:  # easier than join, as we want a trailing path_separator
                 fullfilename += path_fragment + os.sep
         else:
             fullfilename += path
@@ -85,6 +89,7 @@ localFilename."""
             fullfilename += "." + ext
         return fullfilename
 
+
 class S3Uploader(Uploader):
     """Handles file uploads to Amazon S3 buckets. This is the default
     storage backend.
@@ -92,7 +97,7 @@ class S3Uploader(Uploader):
     In order to use this backend, you need to have an Amazon AWS
     account and use the S3 file storage service. You'll need to create two
     different buckets, one for downloaded source documents and one for
-    extracted text. 
+    extracted text.
 
     In login.py, put your AWS Access Key aws_access_key_id, and your
     AWS Secret Access Key as aws_secret_access_key (you can ignore
@@ -124,12 +129,12 @@ class S3Uploader(Uploader):
     # getNextFile) and return a download.File object with .localFile
     def getFile(self, key, localFilename):
         return FileFromS3(key, localFilename)
-        
-    def fileExists(self,fullfilename):
+
+    def fileExists(self, fullfilename):
         return self.connection.fileExistsInBucket(fullfilename)
 
-    def putFile(self,localFilename,s3name):
-        self.connection.putFile(localFilename,s3name)
+    def putFile(self, localFilename, s3name):
+        self.connection.putFile(localFilename, s3name)
 
     def putFileFromString(self, string, s3name):
         self.connection.putFileFromString(string, s3name)
@@ -138,16 +143,17 @@ class S3Uploader(Uploader):
 # mimics the modules.s3.Key interface
 class FakeKey(object):
     def __init__(self, bucket, key):
-        assert isinstance(key, basestring) # keys are really filename strings
+        assert isinstance(key, basestring)  # keys are really filename strings
         # bucket is not used
         self.name = key  # full logical path of the file
         self.path_fragments = key.split("/")
-        self.filename = self.path_fragments.pop() # filename w/o path
+        self.filename = self.path_fragments.pop()  # filename w/o path
         # filename w/o extension and only extension, respectively
-        self.basename, self.extension = os.path.splitext(self.filename) 
+        self.basename, self.extension = os.path.splitext(self.filename)
+
 
 class LocalUploader(Uploader):
-    """Handles file "uploads" to a local directory.
+    """Handles file “uploads” to a local directory.
 
     In order to use this backend, you first need to uncomment the
     relevant lines in settings.py.
@@ -185,9 +191,6 @@ class LocalUploader(Uploader):
         shutil.copy2(localFilename, path)
 
     def getNextFile(self):
-        path = self.path
-
-                
         for root, dirs, files in os.walk(self.path):
             for f in files:
                 fullpath = root + os.sep + f
@@ -208,10 +211,10 @@ class LocalUploader(Uploader):
             os.makedirs(d)
         with open(path, mode) as fp:
             fp.write(string)
-    
-        
+
+
 class DropboxUploader(Uploader):
-    """Handles file uploads to Dropbox folders. 
+    """Handles file uploads to Dropbox folders.
 
     In order to use this backend, you first need to create a Dropbox
     app at https://www.dropbox.com/developers/apps/. You can use
@@ -219,7 +222,7 @@ class DropboxUploader(Uploader):
     files.
 
     In login.py, put your App key as aws_access_key_id and your App
-    secret as aws_secret_access_key. 
+    secret as aws_secret_access_key.
 
     Leave aws_access_token blank at first. The first time you run any
     script which uses this backend, you'll be prompted to authorize
@@ -230,8 +233,8 @@ class DropboxUploader(Uploader):
     """
 #    :param accesskey: The app key
 #    :param secret: The app secret
-#    :param token: The token from the authorization step. If not provided, 
-#                  this backend will guide you through this step. 
+#    :param token: The token from the authorization step. If not provided,
+#                  this backend will guide you through this step.
 #    :param path: The path in the dropbox where files are stored
     def __init__(self,
                  accesskey,
@@ -239,7 +242,7 @@ class DropboxUploader(Uploader):
                  token=None,
                  path="protokollen"):
         # dropbox api requires "absolute" paths?
-        self.path = "/" + path 
+        self.path = "/" + path
         import dropbox
         if not token:
             flow = dropbox.client.DropboxOAuth2FlowNoRedirect(accesskey, secret)
@@ -275,7 +278,7 @@ class DropboxUploader(Uploader):
         key.dbclient = self.connection
         key.rootpath = self.path
         return DropboxFile(key, localFilename)
-        
+
     def fileExists(self, fullfilename):
         try:
             m = self.connection.metadata(self.path+"/"+fullfilename)
@@ -285,11 +288,11 @@ class DropboxUploader(Uploader):
 
     def putFile(self, localFilename, remoteFilename):
         with open(localFilename) as fp:
-            resp = self.connection.put_file(self.path+"/"+ remoteFilename, fp)
+            resp = self.connection.put_file(self.path + "/" + remoteFilename, fp)
 
     def putFileFromString(self, string, remoteFilename):
         fp = BytesIO(string)
-        resp = self.connection.put_file(self.path+"/"+remoteFilename, fp)
+        resp = self.connection.put_file(self.path + "/" + remoteFilename, fp)
 
 
 if __name__ == "__main__":

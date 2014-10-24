@@ -4,6 +4,7 @@
 
 from utils import get_date_from_text
 
+
 class ExtractorBase(object):
     """Base class extractor classes for various document types.
        Contains some common functionality, and definitions of
@@ -26,12 +27,12 @@ class ExtractorBase(object):
 
     def get_date(self):
         """Should return a best guess for the date of the meeting
-           this document refers to. This is normally a found in the 
+           this document refers to. This is normally a found in the
            header.
- 
+
            utils.get_date_from_text can be used as a fallback method.
- 
-           Do NOT rely on metadata to get the date, as this is more 
+
+           Do NOT rely on metadata to get the date, as this is more
            often than not wrong.
         """
         if self.text is None:
@@ -40,6 +41,6 @@ class ExtractorBase(object):
             return get_date_from_text(self.text)
 
 if __name__ == "__main__":
-	print "This module is only intended to be called from other scripts."
-	import sys
-	sys.exit()
+    print "This module is only intended to be called from other scripts."
+    import sys
+    sys.exit()

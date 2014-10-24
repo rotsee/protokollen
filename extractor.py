@@ -9,6 +9,8 @@
 import login
 import settings
 
+from os import path
+
 from modules.interface import Interface
 from modules.download import FileType
 from modules.pdf import PdfExtractor
@@ -20,14 +22,15 @@ def main():
     """Entry point when run from command line"""
 
     command_line_args = [{
-      "short": "-o", "long": "--overwrite",
-      "dest": "overwrite",
-      "action": "store_true",
-      "help": "Overwrite old files and database values."
-      }]
+        "short": "-o",
+        "long": "--overwrite",
+        "dest": "overwrite",
+        "action": "store_true",
+        "help": "Overwrite old files and database values."
+    }]
     ui = Interface(__file__,
-        "Extracts text from files in an Amazon S3 bucket",
-        commandLineArgs=command_line_args)
+                   "Extracts text and metadata from files",
+                   commandLineArgs=command_line_args)
     ui.info("Starting extractor")
     ui.info("Connecting to storage")
     source_files_connection = settings.Storage(login.aws_access_key_id,
@@ -46,41 +49,41 @@ def main():
         # remote storage (no need to do expensive PDF processing if it
         # is.
         if ui.executionMode < Interface.DRY_MODE:
-            remoteFilename = uploader.buildRemoteName(
-                  key.basename,
-                  ext="txt",
-                  path=key.path_fragments)
-            if (uploader.fileExists(remoteFilename) and
-                not ui.args.overwrite):
-                continue #File is already in remote storage
+            remote_filename = uploader.buildRemoteName(
+                key.basename,
+                ext="txt",
+                path=key.path_fragments)
+            if (uploader.fileExists(remote_filename) and
+                    not ui.args.overwrite):
+                continue  # File is already in remote storage
 
-        ui.info("Processing file %s" % key.name)
+        ui.info("Fetching file %s" % key.name)
         try:
-            downloaded_file = source_files_connection.getFile(key, "temp/"+key.filename)
+            temp_filename = path.join("temp", key.filename)
+            downloaded_file = source_files_connection.getFile(
+                key,
+                temp_filename)
         except Exception as e:
-            ui.warning("Could not download %s from storage: %s: %s" %
+            ui.warning("Could not fetch %s from storage: %s: %s" %
                        (key.name, type(e), e))
             continue
 
         filetype = downloaded_file.getFileType()
         if filetype == FileType.PDF:
-            ui.info("Starting pdf extraction from %s" % downloaded_file.localFile)
-            extractor = PdfExtractor(downloaded_file.localFile)
+            ui.info("Extracting text from pdf: %s" % downloaded_file.localFile)
+            extractor = PdfExtractor(temp_filename)
         elif filetype == FileType.DOCX:
-            ui.info("Starting docx extraction from %s" % downloaded_file.localFile)
+            ui.info("Extracting text from docx %s" % downloaded_file.localFile)
             extractor = DocxExtractor(downloaded_file.localFile)
         elif filetype == FileType.DOC:
-            ui.info("Starting doc extraction from %s" % downloaded_file.localFile)
+            ui.info("Extracting text from doc %s" % downloaded_file.localFile)
             extractor = DocExtractor(downloaded_file.localFile)
         else:
             raise ValueError("No extractor for filetype %s" % filetype)
 
-        print extractor.path
-        print extractor.text
-
         try:
             text = extractor.get_text()
-            #uploader.putFileFromString(text, remoteFilename)
+            uploader.putFileFromString(text, remote_filename)
         except Exception as e:
             ui.error("Could not get text from file %s " % key.name)
 
@@ -92,7 +95,8 @@ def main():
             ui.error("Could not get metadata from file %s " % key.name)
 
         try:
-            text = extractor.get_date()
+            date = extractor.get_date()
+            print text
             print key.path_fragments,
             print date
         except Exception as e:

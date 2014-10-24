@@ -158,7 +158,9 @@ def run_harvest(data_set, browser, uploader, ui):
             if ui.executionMode < Interface.SUPERDRY_MODE:
                 ui.debug("Downloading file at %s" % href)
                 local_naked_filename = "temp/"+filename
-                download_file = FileFromWeb(href, local_naked_filename)
+                download_file = FileFromWeb(href,
+                                            local_naked_filename,
+                                            settings.user_agent)
                 if download_file.success:
                     filetype = download_file.getFileType()
                     if filetype in settings.allowedFiletypes:

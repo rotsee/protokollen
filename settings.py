@@ -5,6 +5,9 @@ from modules import upload
 from modules.download import FileType
 allowedFiletypes = [FileType.PDF, FileType.DOC, FileType.DOCX]
 
+user_agent = "ProtoKollen; ProtoCollection (http://protokollen.net)"
+# How do we identfy ourselves on the web?
+
 Storage = upload.S3Uploader
 
 # to use local storage, try
@@ -14,4 +17,3 @@ Storage = upload.S3Uploader
 # to use Dropbox, try
 # Storage = upload.DropboxUploader
 # (and set the aws_* parameters in login.py accordingly)
-

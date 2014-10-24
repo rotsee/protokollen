@@ -16,15 +16,16 @@ from pdfminer.pdfparser import PDFParser, PDFDocument
 from modules.xmp import xmp_to_dict
 from pdfminer.pdftypes import resolve1
 
+
 class PdfExtractor(ExtractorBase):
     """Class for getting plain text from a PDF file.
     """
 
     def get_metadata(self):
         """Returns metadata from both
-    	   the info field (older PDFs) and XMP (newer PDFs).
+           the info field (older PDFs) and XMP (newer PDFs).
            Return format is a .modules.metadata.Metadata object
-    	"""
+        """
         file_pointer = open(self.path, 'rb')
         parser = PDFParser(file_pointer)
         doc = PDFDocument()
@@ -78,12 +79,12 @@ class PdfExtractor(ExtractorBase):
             import subprocess
             try:
                 arglist = ["gs",
-                      "-dNOPAUSE",
-                      "-sOutputFile=temp/page%03d.png",
-                      "-sDEVICE=png16m",
-                      "-r72",
-                      self.path]
-                process = subprocess.call(
+                           "-dNOPAUSE",
+                           "-sOutputFile=temp/page%03d.png",
+                           "-sDEVICE=png16m",
+                           "-r72",
+                           self.path]
+                subprocess.call(
                     args=arglist,
                     stdout=subprocess.STDOUT,
                     stderr=subprocess.STDOUT)
@@ -91,7 +92,7 @@ class PdfExtractor(ExtractorBase):
                 logging.error("Failed to run GhostScript (using `gs`)")
             #Do OCR
             import time
-            time.sleep(1) # make sure the server has time to write the files
+            time.sleep(1)  # make sure the server has time to write the files
             import Image
             import pytesseract
             import os
