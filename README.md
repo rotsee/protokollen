@@ -76,6 +76,7 @@ Contact
 =======
 Find us on [www.protokollen.net](http://www.protokollen.net)
 
+Many people have contributed to ProtoKollen in various ways. For a list of source code contributions, see [github.com/rotsee/protokollen/graphs/contributors](https://github.com/rotsee/protokollen/graphs/contributors)
 
 Licence
 =======
@@ -86,7 +87,7 @@ Everything else distributed under the MIT License (MIT).
 In short: Do whatever you want with it,
 but we would love to hear from you if you find it useful!
 
-Copyright © 2014 [Jens Finnäs](https://twitter.com/jensfinnas), [Peter Grensund](https://twitter.com/grensund), [Leo Wallentin](http://leowallentin.se/leo/en)
+Copyright © 2014 [Contributors](https://github.com/rotsee/protokollen/graphs/contributors)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
