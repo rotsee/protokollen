@@ -3,6 +3,8 @@
    old Microsoft Word (.doc) files. It uses the wv library
 """
 
+from documentBase import ExtractorBase
+
 import subprocess
 from modules.metadata import Metadata
 
@@ -17,14 +19,11 @@ def run_command(command):
                          shell=True)
     return iter(process.stdout.readline, b'')
 
-class DocExtractor(object):
+class DocExtractor(ExtractorBase):
     """Class for getting plain text from a Microsoft Word file.
     """
 
-    def __init__(self, path):
-        self.path = path
-
-    def getMetadata(self):
+    def get_metadata(self):
         """Returns a .modules.metadata.Metadata object
         """
         command = 'wvSummary ' + self.path
@@ -36,7 +35,7 @@ class DocExtractor(object):
         return metadata
 
 
-    def getText(self):
+    def get_text(self):
         """Returns all text content from the document as plain text.
         """
         out = ' /dev/stdout' #ugly, ugly hack. Will only work on *nix

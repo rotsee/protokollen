@@ -7,7 +7,7 @@ import logging
 	Intended to be used with document classes to specifiy the date of the 
 	documents.
 """
-def getDateFromText(text):
+def get_date_from_text(text):
 	import re
 
 	# Specify available date formats (regex)

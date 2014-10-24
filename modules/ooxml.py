@@ -3,18 +3,17 @@
     Office Open XML and modern Mocrosoft Word (.docx) files.
 """
 
+from documentBase import ExtractorBase
+
 from docx import opendocx, getdocumenttext #good for text, bad for metadata
 import openxmllib #good for metadata, bad for text
 from modules.metadata import Metadata
 
-class DocxExtractor(object):
+class DocxExtractor(ExtractorBase):
     """Class for getting plain text from a Office Open XML file.
     """
 
-    def __init__(self, path):
-        self.path = path
-
-    def getMetadata(self):
+    def get_metadata(self):
         """Returns a .modules.metadata.Metadata object
         """
         metadata = Metadata()
@@ -22,7 +21,7 @@ class DocxExtractor(object):
         metadata.add(document.allProperties, "ooxml")
         return metadata
 
-    def getText(self):
+    def get_text(self):
     	"""Returns all text content from the document as plain text.
         """
         document = opendocx(self.path)

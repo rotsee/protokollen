@@ -4,6 +4,8 @@
 
 import logging
 
+from documentBase import ExtractorBase
+
 from pdfminer.pdfinterp import PDFResourceManager, process_pdf
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -14,14 +16,11 @@ from pdfminer.pdfparser import PDFParser, PDFDocument
 from modules.xmp import xmp_to_dict
 from pdfminer.pdftypes import resolve1
 
-class PdfExtractor(object):
+class PdfExtractor(ExtractorBase):
     """Class for getting plain text from a PDF file.
     """
 
-    def __init__(self, path):
-        self.path = path
-
-    def getMetadata(self):
+    def get_metadata(self):
         """Returns metadata from both
     	   the info field (older PDFs) and XMP (newer PDFs).
            Return format is a .modules.metadata.Metadata object
@@ -48,7 +47,7 @@ class PdfExtractor(object):
         file_pointer.close()
         return metadata
 
-    def getText(self):
+    def get_text(self):
         """Returns all text content from the PDF as plain text.
         """
         rsrcmgr = PDFResourceManager()
@@ -94,6 +93,7 @@ class PdfExtractor(object):
                 if file_.endswith(".png"):
                     text += pytesseract.image_to_string(Image.open("temp/" + file_), lang="swe")
                     os.unlink("temp/" + file_)
+        self.text = text
         return text
 
 if __name__ == "__main__":
