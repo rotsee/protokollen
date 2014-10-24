@@ -74,14 +74,31 @@ def main():
             extractor = DocExtractor(downloaded_file.localFile)
         else:
             raise ValueError("No extractor for filetype %s" % filetype)
-        text = extractor.get_text()
-        meta = extractor.get_metadata()
-        date = extractor.get_date()
-        print key.path_fragments,
-        print date
-        downloaded_file.delete()
-        uploader.putFileFromString(text, remoteFilename)
 
+        print extractor.path
+        print extractor.text
+
+        try:
+            text = extractor.get_text()
+            #uploader.putFileFromString(text, remoteFilename)
+        except Exception as e:
+            ui.error("Could not get text from file %s " % key.name)
+
+        try:
+            meta = extractor.get_metadata()
+            print meta.data
+        except Exception as e:
+            print e
+            ui.error("Could not get metadata from file %s " % key.name)
+
+        try:
+            text = extractor.get_date()
+            print key.path_fragments,
+            print date
+        except Exception as e:
+            ui.error("Could not get date from file %s " % key.name)
+
+        downloaded_file.delete()
 
     ui.exit()
 
