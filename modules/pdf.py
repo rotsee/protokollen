@@ -45,6 +45,8 @@ class PdfExtractor(ExtractorBase):
             if "dc" in xmp_dict:
                 metadata.add(xmp_dict["dc"], metadataType="dc")
         file_pointer.close()
+
+        self.metadata = metadata
         return metadata
 
     def get_text(self):
@@ -57,10 +59,12 @@ class PdfExtractor(ExtractorBase):
         laparams.all_texts = True
         device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
 
-        file_pointer = file(self.path, 'rb')
-        process_pdf(rsrcmgr, device, file_pointer)
-        file_pointer.close()
-        device.close()
+        try:
+            file_pointer = file(self.path, 'rb')
+            process_pdf(rsrcmgr, device, file_pointer)
+        finally:
+            file_pointer.close()
+            device.close()
 
         text = retstr.getvalue()
         retstr.close()
