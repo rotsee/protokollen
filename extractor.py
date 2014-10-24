@@ -7,14 +7,14 @@
 """
 
 import login
+import settings
+
 from modules.interface import Interface
-from modules.s3 import S3Connection
-from modules.download import FileFromS3, FileType
+from modules.download import FileType
 from modules.pdf import PdfExtractor
 from modules.ooxml import DocxExtractor
 from modules.doc import DocExtractor
 
-from modules.upload import S3Uploader
 
 def main():
     """Entry point when run from command line"""
@@ -29,17 +29,37 @@ def main():
         "Extracts text from files in an Amazon S3 bucket",
         commandLineArgs=command_line_args)
     ui.info("Starting extractor")
-    ui.info("Connecting to S3")
-    source_files_connection = S3Connection(
-            login.aws_access_key_id,
-            login.aws_secret_access_key,
-            login.aws_bucket_name)
+    ui.info("Connecting to storage")
+    source_files_connection = settings.Storage(login.aws_access_key_id,
+                                               login.aws_secret_access_key,
+                                               login.aws_access_token,
+                                               login.aws_bucket_name)
+
+    if ui.executionMode < Interface.DRY_MODE:
+        uploader = settings.Storage(login.aws_access_key_id,
+                                    login.aws_secret_access_key,
+                                    login.aws_access_token,
+                                    login.aws_text_bucket_name)
+
     for key in source_files_connection.getNextFile():
+        # first of all, check if the processed file already exists in
+        # remote storage (no need to do expensive PDF processing if it
+        # is.
+        if ui.executionMode < Interface.DRY_MODE:
+            remoteFilename = uploader.buildRemoteName(
+                  key.basename,
+                  ext="txt",
+                  path=key.path_fragments)
+            if (uploader.fileExists(remoteFilename) and
+                not ui.args.overwrite):
+                continue #File is already in remote storage
+
         ui.info("Processing file %s" % key.name)
         try:
-            downloaded_file = FileFromS3(key, "temp/"+key.filename)
-        except:
-            ui.warning("Could not download %s from Amazon" % key.name)
+            downloaded_file = source_files_connection.getFile(key, "temp/"+key.filename)
+        except Exception as e:
+            ui.warning("Could not download %s from storage: %s: %s" %
+                       (key.name, type(e), e))
             continue
 
         filetype = downloaded_file.getFileType()
@@ -52,25 +72,13 @@ def main():
         elif filetype == FileType.DOC:
             ui.info("Starting doc extraction from %s" % downloaded_file.localFile)
             extractor = DocExtractor(downloaded_file.localFile)
-
+        else:
+            raise ValueError("No extractor for filetype %s" % filetype)
         text = extractor.getText()
         meta = extractor.getMetadata()
         downloaded_file.delete()
+        uploader.putFileFromString(text, remoteFilename)
 
-        if ui.executionMode < Interface.DRY_MODE:
-            uploader = S3Uploader(
-              login.aws_access_key_id,
-              login.aws_secret_access_key,
-              login.aws_text_bucket_name)
-            remoteFilename = uploader.buildRemoteName(
-                  key.basename,
-                  ext="txt",
-                  path=key.path_fragments)
-            #uploader.connection is a S3Connection, use its putFileFromString method
-            if (uploader.fileExists(remoteFilename)) and (ui.args.overwrite is None):
-                continue #File is already on Amazon            
-            else:
-              uploader.connection.putFileFromString(text, remoteFilename)
 
     ui.exit()
 

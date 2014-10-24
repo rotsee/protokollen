@@ -12,7 +12,6 @@ import settings
 from modules.interface import Interface
 from modules.download import FileFromWeb
 from modules.surfer import Surfer
-from modules.upload import S3Uploader
 from modules.datasheet import CSVFile, GoogleSheet
 
 from collections import deque
@@ -63,8 +62,9 @@ def main():
                      Otherwise, we will look for a Google Spreadsheets ID in login.py."""
         }]
     ui = Interface(__file__,
-        """This script will download all files pointed out by a series of
-           URLs and xPath expressions, and upload them to an Amazon S3 server.""",
+        """This script will download all files pointed out by a series of URLs
+           and xPath expressions, and upload them to the configured
+           storage service. """,
         commandLineArgs=command_line_args)
 
     if ui.args.filename is not None:
@@ -87,19 +87,19 @@ def main():
         ui.info("Running in super dry mode")
         ui.executionMode = Interface.SUPERDRY_MODE
 
-    ui.info("Connecting to S3")
-    uploader = S3Uploader(
-            login.aws_access_key_id,
-            login.aws_secret_access_key,
-            login.aws_bucket_name)
-
+    ui.info("Connecting to storage")
+    uploader = settings.Storage(login.aws_access_key_id,
+                                login.aws_secret_access_key,
+                                login.aws_access_token,
+                                login.aws_bucket_name)
+ 
     ui.info("Setting up virtual browser")
     try:
         browser = Surfer()
         run_harvest(data_set, browser, uploader, ui)
     except Exception as e:
         ui.critical("%s: %s" % (type(e), e))
-        raise e
+        raise
     finally: 
         ui.info("Closing virtual browser")
         browser.kill()
@@ -153,7 +153,7 @@ def run_harvest(data_set, browser, uploader, ui):
                (we don't trust anyone else)
             """
             if uploader.fileExists(remote_naked_filename):
-                continue #File is already on Amazon
+                continue # File already stored
 
             if ui.executionMode < Interface.SUPERDRY_MODE:
                 ui.debug("Downloading file at %s" % href)
