@@ -16,17 +16,18 @@ class DocxExtractor(ExtractorBase):
     def get_metadata(self):
         """Returns a .modules.metadata.Metadata object
         """
-        metadata = Metadata()
+        self.metadata = Metadata()
         document = openxmllib.openXmlDocument(path=self.path)
-        metadata.add(document.allProperties, "ooxml")
-        return metadata
+        self.metadata.add(document.allProperties, "ooxml")
+        return self.metadata
 
     def get_text(self):
     	"""Returns all text content from the document as plain text.
         """
         document = opendocx(self.path)
         paratextlist = getdocumenttext(document)
-        return "\n".join(paratextlist)
+        self.text = "\n".join(paratextlist)
+        return self.text
 
 if __name__ == "__main__":
 	print "This module is only intended to be called from other scripts."

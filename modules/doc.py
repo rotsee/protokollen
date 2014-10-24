@@ -32,6 +32,7 @@ class DocExtractor(ExtractorBase):
             parts = line.strip().replace("\"", "").split(" = ")
             if len(parts) == 2:
                 metadata.add({parts[0]: parts[1]}, "mso")
+        self.metadata = metadata
         return metadata
 
 
@@ -43,6 +44,7 @@ class DocExtractor(ExtractorBase):
         string = ""
         for line in run_command(command):
             string += line
+        self.text = string
         return string
 
 if __name__ == "__main__":

@@ -62,6 +62,9 @@ class PdfExtractor(ExtractorBase):
         try:
             file_pointer = file(self.path, 'rb')
             process_pdf(rsrcmgr, device, file_pointer)
+        except Exception as e:
+            logging.error("Error processing PDF: %s" % e)
+            raise
         finally:
             file_pointer.close()
             device.close()
