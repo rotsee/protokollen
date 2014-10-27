@@ -21,9 +21,16 @@ class ExtractorBase(object):
         raise NotImplementedError('must be overridden by child classes')
 
     def get_text(self):
-    	"""Should returns all text content from the document as plain text.
+    	  """Should returns all text content from the document as plain text.
         """
         raise NotImplementedError('must be overridden by child classes')
+
+    def get_header_text(self):
+      """Should return page headers as raw text.
+         This can be used to guess meeting dates, and document type,
+         e.g. fins out if something is an attachment or actual minutes
+      """
+      raise NotImplementedError('must be overridden by child classes')
 
     def get_date(self):
         """Should return a best guess for the date of the meeting
