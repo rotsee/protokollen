@@ -15,9 +15,10 @@ from modules.surfer import Surfer
 from modules.datasheet import CSVFile, GoogleSheet
 
 from collections import deque
+import copy
 
 
-def click_through_dlclicks(browser, dlclicks_deque):
+def click_through_dlclicks(browser, start_url, dlclicks_deque):
     """Move through a deque of xpath expressions (left to right),
        each xpath describing a click necessary to find and download a document.
 
@@ -32,11 +33,14 @@ def click_through_dlclicks(browser, dlclicks_deque):
         url_list = browser.get_url_list(dlclick)
         """A list of surfer.Url objects"""
         for url in url_list:
+            print("Start by surfnig to %s " % start_url)
+            browser.surf_to(start_url)
             if not url.is_absolute():
                 url.make_absolute(browser.selenium_driver.current_url)
-            if dlclicks_deque:  # more iterations to do?
+            if len(dlclicks_deque) > 0:  # more iterations to do?
                 browser.surf_to(url.href)
-                list_of_hrefs += click_through_dlclicks(browser, dlclicks_deque)
+                deque_copy = copy.deepcopy(dlclicks_deque)
+                list_of_hrefs += click_through_dlclicks(browser, url.href, deque_copy)
             else:
                 list_of_hrefs.append(url.href)
     return list_of_hrefs
@@ -110,19 +114,18 @@ def main():
 
 
 def run_harvest(data_set, browser, uploader, ui):
-    data_set.filter(require=["municipality", "year", "url", "dlclick1"])
-    data_set.shuffle()  # give targets some rest between requests by scrambling the rows
+    data_set.filter(require=["municipality", "url", "dlclick1"])
+    data_set.shuffle()  # give targets some rest between requests
     ui.info("Data contains %d rows" % data_set.getLength())
     # ui.debug(data_set.data)
     preclick_headers = data_set.getEnumeratedHeaders("preclick")
     dlclick_headers = data_set.getEnumeratedHeaders("dlclick")
     for row in data_set.getNext():
         municipality = row["municipality"]
-        year = row["year"]
         preclicks = row.enumerated_columns(preclick_headers)
         dlclicks = row.enumerated_columns(dlclick_headers)
 
-        ui.info("Processing %s %s" % (municipality, year))
+        ui.info("Processing %s " % municipality)
         browser.surf_to(row["url"])
         for preclick in preclicks:
             # preclick is often None which is not a valid value
@@ -130,29 +133,20 @@ def run_harvest(data_set, browser, uploader, ui):
             if preclick:
                 ui.debug("Preclicking %s " % preclick)
                 browser.click_on_stuff(preclick)
-        ui.debug("We are now at the URL %s" % browser.selenium_driver.current_url)
-
+        current_url = browser.selenium_driver.current_url
+        ui.debug("We are now at the URL %s" % current_url)
         ui.info("Getting URL list")
         # make sure our deque doesn't contain any None values
         hrefList = click_through_dlclicks(browser,
+                                          current_url,
                                           deque(filter(None, dlclicks)))
         ui.info("Found %d URLs" % len(hrefList))
         ui.debug(hrefList)
         if len(hrefList) == 0:
-            ui.warning("No URLs found in %s %s" %  (municipality, year))
-        #Sanity check. Do we have a resonable amount of URLs?
-        # FIXME: Vi vet inte förrän alla filer är nerladdade, hur många giltiga filer vi har.
-        #        Bättre att hålla räkning på hur många vi laddar upp, jämför med hur många som fanns
-        #
-        #alreadyUploadedListLength = uploader.getFileListLength(municipality + "/" + year)
-        #if alreadyUploadedListLength > 0:
-        #    length_diff = abs(alreadyUploadedListLength) - len(urlList)
-        #    if (length_diff > sudden_change_threshold) or (len(urlList) < alreadyUploadedListLength):
-        #        ui.warning("""There was a sudden change in the number of download URLs
-        #                    for this municipality and year.""")
+            ui.warning("No URLs found for %s " % municipality)
         for href in hrefList:
             filename = hashlib.md5(href).hexdigest()
-            remote_naked_filename = uploader.buildRemoteName(filename, path=[municipality, year])
+            remote_naked_filename = uploader.buildRemoteName(filename, path=municipality)
             """Full path, but without extension.
                We don't know the proper extension until we have checked the mime-type ourselves
                (we don't trust anyone else)
@@ -172,7 +166,7 @@ def run_harvest(data_set, browser, uploader, ui):
                         remote_full_filename = uploader.buildRemoteName(
                             filename,
                             ext=download_file.getFileExt(),
-                            path=[municipality, year])
+                            path=municipality)
                         if ui.executionMode < Interface.DRY_MODE:
                             uploader.putFile(local_naked_filename, remote_full_filename)
                     else:
