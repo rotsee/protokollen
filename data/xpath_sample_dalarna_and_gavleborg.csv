@@ -1,4 +1,4 @@
-municipality,baseurl,url,preclick1,preclick2,preclick3,dlclick1,dlclick2
+source,baseurl,url,preclick1,preclick2,preclick3,dlclick1,dlclick2
 Avesta kommun,http://www.avesta.se,http://www.avesta.se/Kommunen--Politiken/Offentlighetsprincipen/Protokoll/Kommunstyrelsen/,,,,"//a[contains(.,""2013-"")]",
 Avesta kommun,http://www.avesta.se,http://www.avesta.se/Kommunen--Politiken/Offentlighetsprincipen/Protokoll/Kommunstyrelsen/,,,,"//a[contains(.,""2012-"")]",
 Avesta kommun,http://www.avesta.se,http://www.avesta.se/Kommunen--Politiken/Offentlighetsprincipen/Protokoll/Kommunstyrelsen/,,,,"//a[contains(.,""2014-"")]",

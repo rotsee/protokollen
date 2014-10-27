@@ -85,7 +85,7 @@ def main():
             login.google_client_email,
             login.google_p12_file)
     else:
-        ui.error("No local file given, and no Google Spreadsheet key found.  Cannot proceed.")
+        ui.error("No local file given, and no Google Spreadsheet key found.")
         ui.exit()
 
 #    sudden_change_threshold = ui.args.tolaratedchanges
@@ -114,14 +114,14 @@ def main():
 
 
 def run_harvest(data_set, browser, uploader, ui):
-    data_set.filter(require=["municipality", "url", "dlclick1"])
+    data_set.filter(require=["source", "url", "dlclick1"])
     data_set.shuffle()  # give targets some rest between requests
     ui.info("Data contains %d rows" % data_set.getLength())
     # ui.debug(data_set.data)
     preclick_headers = data_set.getEnumeratedHeaders("preclick")
     dlclick_headers = data_set.getEnumeratedHeaders("dlclick")
     for row in data_set.getNext():
-        municipality = row["municipality"]
+        municipality = row["source"]
         preclicks = row.enumerated_columns(preclick_headers)
         dlclicks = row.enumerated_columns(dlclick_headers)
 
