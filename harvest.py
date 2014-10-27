@@ -29,13 +29,13 @@ def click_through_dlclicks(browser, dlclicks_deque):
     list_of_hrefs = []
     while dlclicks_deque:
         dlclick = dlclicks_deque.popleft()
-        url_list = browser.getUrlList(dlclick)
+        url_list = browser.get_url_list(dlclick)
         """A list of surfer.Url objects"""
         for url in url_list:
             if not url.is_absolute():
                 url.make_absolute(browser.selenium_driver.current_url)
             if dlclicks_deque:  # more iterations to do?
-                browser.surfTo(url.href)
+                browser.surf_to(url.href)
                 list_of_hrefs += click_through_dlclicks(browser, dlclicks_deque)
             else:
                 list_of_hrefs.append(url.href)
@@ -123,13 +123,13 @@ def run_harvest(data_set, browser, uploader, ui):
         dlclicks = row.enumerated_columns(dlclick_headers)
 
         ui.info("Processing %s %s" % (municipality, year))
-        browser.surfTo(row["url"])
+        browser.surf_to(row["url"])
         for preclick in preclicks:
             # preclick is often None which is not a valid value
             # for selenium_driver.find_elements_by_xpath
             if preclick:
                 ui.debug("Preclicking %s " % preclick)
-                browser.clickOnStuff(preclick)
+                browser.click_on_stuff(preclick)
         ui.debug("We are now at the URL %s" % browser.selenium_driver.current_url)
 
         ui.info("Getting URL list")
