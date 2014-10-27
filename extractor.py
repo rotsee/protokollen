@@ -13,9 +13,9 @@ from os import path
 
 from modules.interface import Interface
 from modules.download import FileType
-from modules.pdf import PdfExtractor
-from modules.ooxml import DocxExtractor
-from modules.doc import DocExtractor
+from modules.extractors.pdf import PdfExtractor
+from modules.extractors.ooxml import DocxExtractor
+from modules.extractors.doc import DocExtractor
 
 
 def main():
