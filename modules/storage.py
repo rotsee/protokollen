@@ -29,6 +29,11 @@ class Storage:
     """
     __metaclass__ = ABCMeta
 
+    sep = "/"
+    """Path separator on the storage file system.
+       Can be overriden by child classes, e.g. in LocalUploader.
+    """
+
     def __init__(self,
                  app_key=None,
                  app_secret=None,
@@ -79,9 +84,9 @@ class Storage:
         fullfilename = ""
         if isinstance(path, list):
             for path_fragment in path:  # easier than join, as we want a trailing path_separator
-                fullfilename += path_fragment + os.sep
+                fullfilename += path_fragment + self.sep
         else:
-            fullfilename += path
+            fullfilename += path + self.sep
         fullfilename += name
         if ext != "":
             fullfilename += "." + ext
@@ -167,6 +172,8 @@ class LocalUploader(Storage):
 #    :param secret: Not used
 #    :param token: Not used
 #    :param path: The local filesystem path
+
+    sep = os.sep
 
     def __init__(self,
                  accesskey=None,
