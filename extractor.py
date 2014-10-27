@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 #coding=utf-8
 """This is where we extract plain text and meta data from documents,
-   and uploads it to Amazon and/or a database.
+   and upload it to a storage and/or a database.
    The actual extraction is done by format-specific modules.
    Run `./extractor.py --help` for options.
 """

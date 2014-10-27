@@ -1,19 +1,22 @@
 #coding=utf-8
 """This file contains some commons settings for all scripts
 """
-from modules import upload
+from modules import storage
 from modules.download import FileType
+
 allowedFiletypes = [FileType.PDF, FileType.DOC, FileType.DOCX]
+"""What filetypes should we download and store?"""
 
 user_agent = "ProtoKollen; ProtoCollection (http://protokollen.net)"
-# How do we identfy ourselves on the web?
+"""How do we identify ourselves?"""
 
-Storage = upload.S3Uploader
+Storage = storage.S3Storage
+"""
+ To use local storage, try
+ Storage = storage.LocalUploader
+ (and set the aws_* parameters in login.py accordingly)
 
-# to use local storage, try
-# Storage = upload.LocalUploader
-# (and set the aws_* parameters in login.py accordingly)
-
-# to use Dropbox, try
-# Storage = upload.DropboxUploader
-# (and set the aws_* parameters in login.py accordingly)
+ To use Dropbox, try
+ Storage = storage.DropboxUploader
+ (and set the aws_* parameters in login.py accordingly)
+"""
