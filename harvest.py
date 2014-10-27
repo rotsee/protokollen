@@ -29,15 +29,14 @@ def click_through_dlclicks(browser, start_url, dlclicks_deque):
     """
     list_of_hrefs = []
     while dlclicks_deque:
+        browser.surf_to(start_url)
         dlclick = dlclicks_deque.popleft()
         url_list = browser.get_url_list(dlclick)
         """A list of surfer.Url objects"""
         for url in url_list:
-            browser.surf_to(start_url)
             if not url.is_absolute():
                 url.make_absolute(browser.selenium_driver.current_url)
             if len(dlclicks_deque) > 0:  # more iterations to do?
-                browser.surf_to(url.href)
                 deque_copy = copy.deepcopy(dlclicks_deque)
                 list_of_hrefs += click_through_dlclicks(browser,
                                                         url.href,
