@@ -1,6 +1,7 @@
+#coding=utf-8
+
 """ Utility functions to be used in several modules.
 """
-import logging
 import re
 
 
@@ -35,12 +36,9 @@ def get_date_from_text(text):
         n = c[1]
         # Parse the date
         date = dateParser.parse(c[0], fuzzy=True)
-        if (n < 5):
-            logging.warning("The date only occures %s times in the document. Check for errors." % c[1])
     else:
         # Case: no matcing dates found
         date = None
         n = 0
-        logging.warning("The date parser didn't find any dates.")
 
     return {"date": date, "n": n}
