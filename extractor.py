@@ -81,11 +81,11 @@ def main():
         else:
             raise ValueError("No extractor for filetype %s" % filetype)
 
-        try:
-            text = extractor.get_text()
-            uploader.putFileFromString(text, remote_filename)
-        except Exception as e:
-            ui.error("Could not get text from file %s " % key.name)
+#        try:
+#            text = extractor.get_text()
+#            uploader.putFileFromString(text, remote_filename)
+#        except Exception as e:
+#            ui.error("Could not get text from file %s " % key.name)
 
         try:
             meta = extractor.get_metadata()
@@ -95,12 +95,23 @@ def main():
             ui.error("Could not get metadata from file %s " % key.name)
 
         try:
-            date = extractor.get_date()
-            print text
-            print key.path_fragments,
-            print date
+            fallback_date = extractor.get_date()
+            print fallback_date
         except Exception as e:
             ui.error("Could not get date from file %s " % key.name)
+
+        for page in extractor.get_next_page():
+            page_date = page.get_date() or fallback_date
+            page_header = page.get_header().upper()
+            page_type = 0
+
+            if page_header.find("PROTOKOLL") or\
+               page_header.find("SAMMANTRÄDE"):
+                if page_header.find("KOMMUNSTYRELSE"):
+                    page_type = 1
+
+            print page_type
+            print page_date
 
         downloaded_file.delete()
 
