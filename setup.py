@@ -5,18 +5,18 @@ try:
     from setuptools import setup
 
     install_requires = [
-    'selenium >= 2.4.0',
-    'xvfbwrapper',
-    'python-magic',
-    'oauth2client',
-    'gdata',
-    'pdfminer == 20110515',#Note that API has changed dramatically in later versions
-    'docx', #good for text, bad for metadata
-    'openxmllib', #good for metadata, bad for text
-    'pytesseract',
-    'argcomplete',
-    'pyOpenSSL',  # required, in practice, by oauth2client
-    'boto'
+        'selenium >= 2.4.0',
+        'xvfbwrapper',
+        'python-magic',
+        'oauth2client',
+        'gdata',
+        'pdfminer == 20140328',
+        'docx',  # good for text, bad for metadata
+        'openxmllib',  # good for metadata, bad for text
+        'pytesseract',
+        'argcomplete',
+        'pyOpenSSL',  # required, in practice, by oauth2client
+        'boto'
     ]
 
     try:
@@ -29,10 +29,10 @@ except ImportError:
     from distutils.core import setup
     kws = {}
 
-setup(	name='protokollen',
-		version='0.1',
-		description='This package contains the ProtoCollection Python tools',
-		url='https://github.com/rotsee/protokollen',
-		license='MIT',
-		**kws
-	)
+setup(name='protokollen',
+      version='0.1',
+      description='This package contains the ProtoCollection Python tools',
+      url='https://github.com/rotsee/protokollen',
+      license='MIT',
+      **kws
+      )
