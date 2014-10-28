@@ -19,8 +19,6 @@ from pdfminer.layout import LAParams, LTTextBox, LTTextLine, LTFigure, LTImage
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.pdftypes import resolve1
 
-from modules.utils import get_single_date_from_text
-
 
 class PdfPage(Page):
 
@@ -56,11 +54,6 @@ class PdfPage(Page):
             if text_length > 0:
                 i += 1
         return '\n'.join(header_text)
-
-    def get_date(self):
-        """Returns a date from the header
-        """
-        return get_single_date_from_text(self.get_header())
 
     def _parse_obj(self, lt_obj):
         """Capture all text of a LT* object, and its subobjects

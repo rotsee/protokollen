@@ -2,7 +2,7 @@
 """This module contains the base class for all document classes.
 """
 
-from modules.utils import get_date_from_text
+from modules.utils import get_date_from_text, get_single_date_from_text
 import logging
 
 
@@ -30,13 +30,9 @@ class Page(object):
         raise NotImplementedError('must be overridden by child classes')
 
     def get_date(self):
-        """Return a best guess for the date these minutes were taken,
-           typically by looking in the page header. Do NOT rely on
-           document metadata!
-
-           Returns a datetime object
+        """Returns a datetime date from the page header.
         """
-        raise NotImplementedError('must be overridden by child classes')
+        return get_single_date_from_text(self.get_header())
 
     def get_type(self):
         """Return a best guess for the type of document this page belongs to.
