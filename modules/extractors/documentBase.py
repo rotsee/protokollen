@@ -83,10 +83,11 @@ class ExtractorBase(object):
            Do NOT rely on metadata to get the date, as this is more
            often than not wrong.
         """
-        if self.text is None:
+        text = self.get_text()
+        if text is None or text == "":
             logging.warning("No text in document when looking for a date")
         else:
-            return get_date_from_text(self.text)
+            return get_date_from_text(text)
 
 if __name__ == "__main__":
     print "This module is only intended to be called from other scripts."
