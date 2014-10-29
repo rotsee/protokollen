@@ -96,10 +96,10 @@ def main():
         ui.executionMode = Interface.SUPERDRY_MODE
 
     ui.info("Connecting to storage")
-    uploader = settings.Storage(login.aws_access_key_id,
-                                login.aws_secret_access_key,
-                                login.aws_access_token,
-                                login.aws_bucket_name)
+    uploader = settings.Storage(login.access_key_id,
+                                login.secret_access_key,
+                                login.access_token,
+                                login.bucket_name)
 
     ui.info("Setting up virtual browser")
     try:

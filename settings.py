@@ -14,9 +14,9 @@ Storage = storage.S3Storage
 """
  To use local storage, try
  Storage = storage.LocalUploader
- (and set the aws_* parameters in login.py accordingly)
+ (and set the parameters in login.py accordingly)
 
  To use Dropbox, try
  Storage = storage.DropboxUploader
- (and set the aws_* parameters in login.py accordingly)
+ (and set the parameters in login.py accordingly)
 """

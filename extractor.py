@@ -33,16 +33,16 @@ def main():
                    commandLineArgs=command_line_args)
     ui.info("Starting extractor")
     ui.info("Connecting to storage")
-    source_files_connection = settings.Storage(login.aws_access_key_id,
-                                               login.aws_secret_access_key,
-                                               login.aws_access_token,
-                                               login.aws_bucket_name)
+    source_files_connection = settings.Storage(login.access_key_id,
+                                               login.secret_access_key,
+                                               login.access_token,
+                                               login.bucket_name)
 
     if ui.executionMode < Interface.DRY_MODE:
-        uploader = settings.Storage(login.aws_access_key_id,
-                                    login.aws_secret_access_key,
-                                    login.aws_access_token,
-                                    login.aws_text_bucket_name)
+        uploader = settings.Storage(login.access_key_id,
+                                    login.secret_access_key,
+                                    login.access_token,
+                                    login.text_bucket_name)
 
     for key in source_files_connection.getNextFile():
         # first of all, check if the processed file already exists in
