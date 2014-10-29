@@ -57,7 +57,7 @@ class PdfPage(Page):
     def get_header(self):
         """Tries to guess what text belongs to the page header.
 
-           FIXME We should check actual coordinates for each objects, to find
+           FIXME We should check actual coordinates for each object, to find
            the topmost ones. This is a quick and dirty implementation.
         """
         i = 0
@@ -101,8 +101,23 @@ class PdfPageFromOcr(PdfPage):
         self._text_cache = self.do_ocr()
 
     def get_header(self):
-        """TODO: Using abiword might be the easiest way to get the headers"""
-        return ""
+        rows = self.get_text().split("\n")
+        i = 0
+        header_text = []
+        for row in rows:
+            text_length = len(row.strip())
+            # break on first paragraph
+            if text_length > 100:
+                break
+            # or break on 5th object with content
+            # only text here, hence lower limit than in parent method
+            elif i > 4:
+                break
+            else:
+                header_text.append(row)
+            if text_length > 0:
+                i += 1
+        return '\n'.join(header_text)
 
     def do_ocr(self):
         import subprocess
@@ -120,7 +135,8 @@ class PdfPageFromOcr(PdfPage):
                        self.pdf_path]
             subprocess.call(args=arglist, stderr=subprocess.STDOUT)
         except OSError as e:
-            logging.error("Failed to run GhostScript. I/O error({0}): {1}".format(e.errno, e.strerror))
+            logging.error("Failed to run GhostScript.\
+                           I/O error({0}): {1}".format(e.errno, e.strerror))
         #Do OCR
         import time
         time.sleep(1)  # make sure the server has time to write the files
@@ -183,7 +199,8 @@ class PdfExtractor(ExtractorBase):
             for i in pdf_miner.document.info:
                 metadata.add(i)
             if 'Metadata' in pdf_miner.document.catalog:
-                xmp_metadata = resolve1(pdf_miner.document.catalog['Metadata']).get_data()
+                catalog = pdf_miner.document.catalog['Metadata']
+                xmp_metadata = resolve1(catalog).get_data()
                 xmp_dict = xmp_to_dict(xmp_metadata)
                 #Let's add only the most useful one
                 if "xap" in xmp_dict:
