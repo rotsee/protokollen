@@ -3,10 +3,10 @@
 #Amazon S3 credentials
 #
 access_key_id = "ACCES KEY ID"
-aws_secret_access_key = "SECRET ACCESS KEY"
-aws_access_token = None
-aws_bucket_name = "BUCKET NAME"
-aws_text_bucket_name = "BUCKET NAME"
+secret_access_key = "SECRET ACCESS KEY"
+access_token = None
+bucket_name = "BUCKET NAME"
+text_bucket_name = "BUCKET NAME"
 
 ############### OPTIONAL #######################
 #
