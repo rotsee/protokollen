@@ -26,7 +26,7 @@ class PdfPage(Page):
         self.LTPage = LTPage
         self.page_number = page_number
 
-    def char_count(self):
+    def word_count(self):
         """Returns the number of non whitespace characters.
 
            Used to find out if OCR is needed
@@ -157,7 +157,9 @@ class PdfExtractor(ExtractorBase):
     def get_next_page(self):
         with PdfMinerWrapper(self.path) as document:
             for page in document:
-                #FIXME add OCR here
+                if page.word_count == 0:
+                    pass
+                    #FIXME add OCR here
                 yield page
 
     def get_text(self):

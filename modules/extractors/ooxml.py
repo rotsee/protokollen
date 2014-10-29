@@ -5,9 +5,10 @@
 
 from documentBase import ExtractorBase
 
-from docx import opendocx, getdocumenttext #good for text, bad for metadata
-import openxmllib #good for metadata, bad for text
+from docx import opendocx, getdocumenttext  # good for text, bad for metadata
+import openxmllib  # good for metadata, bad for text
 from modules.metadata import Metadata
+
 
 class DocxExtractor(ExtractorBase):
     """Class for getting plain text from a Office Open XML file.
@@ -22,14 +23,17 @@ class DocxExtractor(ExtractorBase):
         return self.metadata
 
     def get_text(self):
-    	"""Returns all text content from the document as plain text.
+        """Returns all text content from the document as plain text.
         """
         document = opendocx(self.path)
         paratextlist = getdocumenttext(document)
-        self.text = "\n".join(paratextlist)
+        encoded_paratextlist = []
+        for paratext in paratextlist:
+            encoded_paratextlist.append(paratext.encode("utf-8"))
+        self.text = "\n".join(encoded_paratextlist)
         return self.text
 
 if __name__ == "__main__":
-	print "This module is only intended to be called from other scripts."
-	import sys
-	sys.exit()
+    print "This module is only intended to be called from other scripts."
+    import sys
+    sys.exit()

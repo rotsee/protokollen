@@ -34,11 +34,11 @@ class S3Connection(object):
     """Represents a S3 connection
     """
     def __init__(self,
-                 aws_access_key_id,
-                 aws_secret_access_key,
-                 aws_bucket_name="protokollen"):
-        self._conn = _S3Connection(aws_access_key_id, aws_secret_access_key)
-        self._bucket = self._conn.get_bucket(aws_bucket_name)
+                 access_key_id,
+                 secret_access_key,
+                 bucket_name="protokollen"):
+        self._conn = _S3Connection(access_key_id, secret_access_key)
+        self._bucket = self._conn.get_bucket(bucket_name)
 
     def getNextFile(self):
         for key in self._bucket.list():

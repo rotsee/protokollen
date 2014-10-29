@@ -102,10 +102,10 @@ class S3Storage(Storage):
     different buckets, one for downloaded source documents and one for
     extracted text.
 
-    In login.py, put your AWS Access Key aws_access_key_id, and your
-    AWS Secret Access Key as aws_secret_access_key (you can ignore
-    aws_access_token). Finally enter the name of your buckets as
-    aws_bucket_name and aws_text_bucket_name, respectively.
+    In login.py, put your AWS Access Key as access_key_id, and your
+    AWS Secret Access Key as secret_access_key (you can ignore
+    access_token). Finally enter the name of your buckets as
+    bucket_name and text_bucket_name, respectively.
 
     """
 #    :param accesskey: The access key id
@@ -161,9 +161,9 @@ class LocalUploader(Storage):
     In order to use this backend, you first need to uncomment the
     relevant lines in settings.py.
 
-    In login.py, you can ignore aws_access_key_id,
-    aws_secret_access_key and aws_access_token, but the parameters
-    aws_bucket_name and aws_text_bucket_name should be set to the path
+    In login.py, you can ignore  access_key_id,
+    secret_access_key and access_token, but the parameters
+    bucket_name and text_bucket_name should be set to the path
     where downloaded files and extracted text should be stored (the
     directories will be created if they don't exist).
 
@@ -199,7 +199,7 @@ class LocalUploader(Storage):
         for root, dirs, files in os.walk(self.path):
             for f in files:
                 fullpath = root + os.sep + f
-                logicpath = fullpath[len(self.path)+1:]
+                logicpath = fullpath[len(self.path) + 1:]
                 key = FakeKey(None, logicpath)
                 key.localFilename = self.path + os.sep + logicpath
                 yield(key)
@@ -226,13 +226,13 @@ class DropboxUploader(Storage):
     permission type App folder so that it only has access to it's own
     files.
 
-    In login.py, put your App key as aws_access_key_id and your App
-    secret as aws_secret_access_key.
+    In login.py, put your App key as access_key_id and your App
+    secret as secret_access_key.
 
-    Leave aws_access_token blank at first. The first time you run any
+    Leave access_token blank at first. The first time you run any
     script which uses this backend, you'll be prompted to authorize
     the app. Follow the instructions, and an access token will be
-    printed. Put this as the value of aws_access_token to avoid
+    printed. Put this as the value of access_token to avoid
     this...
 
     """
@@ -258,7 +258,7 @@ class DropboxUploader(Storage):
             code = raw_input("Enter the authorization code here: ").strip()
             token, user_id = flow.finish(code)
             print "OK user %s, your token is %s" % (user_id, token)
-            print "Paste it into login.py under aws_access_token"
+            print "Paste it into login.py under access_token"
         self.connection = dropbox.client.DropboxClient(token)
         self.connection.account_info()  # test that the OAuth works
 
@@ -276,7 +276,7 @@ class DropboxUploader(Storage):
                 else:
                     # do not include the leading path, eg
                     # "/staffanm-protokollen-text/"
-                    path = thing['path'][len(self.path)+1:]
+                    path = thing['path'][len(self.path) + 1:]
                     yield FakeKey(None, path)
 
     def getFile(self, key, localFilename):
