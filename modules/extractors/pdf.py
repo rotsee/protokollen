@@ -22,16 +22,36 @@ from pdfminer.pdftypes import resolve1
 
 class PdfPage(Page):
 
-    def __init__(self, LTPage):
+    def __init__(self, LTPage, page_number):
         self.LTPage = LTPage
+        self.page_number = page_number
+
+    def char_count(self):
+        """Returns the number of non whitespace characters.
+
+           Used to find out if OCR is needed
+        """
+
+        import re
+        char_list = re.findall("(\S+)", self.get_text())
+        return len(char_list)
 
     def get_text(self):
-        """Iterate through the list of LT* objects and capture all text
+        """Iterate through the list of LT* objects and capture all text.
+
+           Text is cached on first call.
         """
+        try:
+            return self._text_cache
+        except AttributeError:  # cache is not there
+            pass
+
         text_content = []
         for lt_obj in self.LTPage:
             text_content.append(self._parse_obj(lt_obj))
-        return '\n'.join(text_content)
+        self._text_cache = '\n'.join(text_content)
+
+        return self._text_cache
 
     def get_header(self):
         """Tries to guess what text belongs to the page header.
@@ -93,10 +113,12 @@ class PdfMinerWrapper(object):
         device = PDFPageAggregator(rsrcmgr, laparams=laparams)
         interpreter = PDFPageInterpreter(rsrcmgr, device)
 
+        page_number = 0
         for page in PDFPage.create_pages(self.document):
+            page_number += 1
             interpreter.process_page(page)
             layout = device.get_result()
-            yield PdfPage(layout)
+            yield PdfPage(layout, page_number)
 
     def __iter__(self):
         return iter(self._get_next_page())
