@@ -21,6 +21,8 @@ from pdfminer.pdftypes import resolve1
 
 
 class PdfPage(Page):
+    """Class containing PDF pages extracted with PdfMinerWrapper.
+    """
 
     def __init__(self, LTPage, page_number):
         self.LTPage = LTPage
@@ -31,7 +33,6 @@ class PdfPage(Page):
 
            Used to find out if OCR is needed
         """
-
         import re
         char_list = re.findall("(\S+)", self.get_text())
         return len(char_list)
@@ -89,6 +90,47 @@ class PdfPage(Page):
             for lt_sub_obj in lt_obj:
                 text_content.extend(self._parse_obj(lt_sub_obj))
         return '\n'.join(text_content)
+
+
+class PdfPageFromOcr(PdfPage):
+    """Do OCR on a file, and return a Page object"""
+
+    def __init__(self, path, page_number):
+        self.pdf_path = path
+        self.page_number = page_number
+        self._text_cache = self.do_ocr()
+
+    def get_header(self):
+        """TODO: Using abiword might be the easiest way to get the headers"""
+        return ""
+
+    def do_ocr(self):
+        import subprocess
+        import os
+        temp_filename = os.path.join("temp", "ocr.png")
+        try:
+            arglist = ["gs",
+                       "-dSAFE",
+                       "-dQUIET",
+                       "-o" + temp_filename,
+                       "-sDEVICE=png16m",
+                       "-r300",
+                       "-dFirstPage=" + str(self.page_number),
+                       "-dLastPage=" + str(self.page_number),
+                       self.pdf_path]
+            subprocess.call(args=arglist, stderr=subprocess.STDOUT)
+        except OSError as e:
+            logging.error("Failed to run GhostScript. I/O error({0}): {1}".format(e.errno, e.strerror))
+        #Do OCR
+        import time
+        time.sleep(1)  # make sure the server has time to write the files
+        import Image
+        import pytesseract
+        text = pytesseract.image_to_string(
+            Image.open(temp_filename),
+            lang="swe")
+        os.unlink(temp_filename)
+        return text
 
 
 class PdfMinerWrapper(object):
@@ -157,10 +199,11 @@ class PdfExtractor(ExtractorBase):
     def get_next_page(self):
         with PdfMinerWrapper(self.path) as document:
             for page in document:
-                if page.word_count == 0:
-                    pass
-                    #FIXME add OCR here
-                yield page
+                if page.word_count() == 0:
+                    logging.info("No text, doing OCR. This will take a while.")
+                    yield PdfPageFromOcr(self.path, page.page_number)
+                else:
+                    yield page
 
     def get_text(self):
         """Returns all text content from the PDF as plain text.
@@ -171,42 +214,6 @@ class PdfExtractor(ExtractorBase):
             if text != "":
                 text_list.append(page.get_text())
         text = '\n'.join(text_list)
-
-        if (text is None) or (text.strip() == ""):
-            logging.info("No text found in PDF. Attempting OCR. This will take a while.")
-            #FIXME this should go in a separate method
-            #First, convert to image
-            import subprocess
-            import os
-            temp_file_names = os.path.join("temp", "page%03d.png")
-
-            try:
-                arglist = ["gs",
-                           "-dNOPAUSE",
-                           "-sOutputFile=" + temp_file_names,
-                           "-sDEVICE=png16m",
-                           "-r72",
-                           self.path]
-                subprocess.call(
-                    args=arglist,
-                    stdout=subprocess.STDOUT,
-                    stderr=subprocess.STDOUT)
-            except OSError:
-                logging.error("Failed to run GhostScript (using `gs`)")
-            #Do OCR
-            import time
-            time.sleep(1)  # make sure the server has time to write the files
-            import Image
-            import pytesseract
-            text = ""
-            for file_ in os.listdir("temp"):
-                if file_.endswith(".png"):
-                    path_to_file = os.join("temp", file_)
-                    text += pytesseract.image_to_string(
-                        Image.open(path_to_file),
-                        lang="swe")
-                    os.unlink(path_to_file)
-        self.text = text
         return text
 
 if __name__ == "__main__":
