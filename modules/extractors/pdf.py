@@ -93,8 +93,8 @@ class PdfPage(Page):
 
 
 class PdfPageFromOcr(PdfPage):
-    """Do OCR on a file, and return a Page object"""
-
+    """Represents a OCR:ed page from a PDF file
+    """
     def __init__(self, path, page_number):
         self.pdf_path = path
         self.page_number = page_number
@@ -106,11 +106,11 @@ class PdfPageFromOcr(PdfPage):
         header_text = []
         for row in rows:
             text_length = len(row.strip())
-            # break on first paragraph
+            # Break on first paragraph
             if text_length > 100:
                 break
-            # or break on 5th object with content
-            # only text here, hence lower limit than in parent method
+            # or break on 5th object with content.
+            # Only text here, hence lower limit than in parent method
             elif i > 4:
                 break
             else:
@@ -225,13 +225,18 @@ class PdfExtractor(ExtractorBase):
     def get_text(self):
         """Returns all text content from the PDF as plain text.
         """
+        try:
+            return self._text_cache
+        except AttributeError:  # not cached
+            pass
+
         text_list = []
         for page in self.get_next_page():
-            text = page.get_text().strip()
-            if text != "":
-                text_list.append(page.get_text())
-        text = '\n'.join(text_list)
-        return text
+            text = page.get_text()
+            if text.strip() != "":
+                text_list.append(text)
+        self._text_cache = '\n'.join(text_list)
+        return self._text_cache
 
 if __name__ == "__main__":
     print "This module is only intended to be called from other scripts."
