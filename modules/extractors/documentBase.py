@@ -21,11 +21,22 @@ class Page(object):
        Used in extractor classes.
     """
 
+    page_number = None
+    """Starting with 1, this is the position of this Page object
+       within a file. This is not necessarily the same thing as
+       the page number within the original document, as one file
+       can contain multiple documents, and page breaks can sometimes
+       be put in different places by different renderers (in the
+       case of .doc files, etc.)
+    """
+
     def __init__(self):
         pass
 
     def get_text(self):
         """Should return all plain text in this page.
+
+           Consider caching the result.
         """
         raise NotImplementedError('must be overridden by child classes')
 
@@ -33,15 +44,6 @@ class Page(object):
         """Returns a datetime date from the page header.
         """
         return get_single_date_from_text(self.get_header())
-
-    def get_type(self):
-        """Return a best guess for the type of document this page belongs to.
-           This should be done on page level, as one file can contain multiple
-           documents (e.g. meeting minutes, attachments and invitation).
-
-           Returns a DocumentType, e.g. DocumentType.MEETING_MINUTES
-        """
-        raise NotImplementedError('must be overridden by child classes')
 
 
 class ExtractorBase(object):
