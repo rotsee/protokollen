@@ -214,12 +214,25 @@ class PdfExtractor(ExtractorBase):
             return metadata
 
     def get_next_page(self):
+        """Returns the next Page object, representing a page in the PDF
+           Will do OCR if needed.
+        """
+        try:
+            for page in self._page_cache:
+                yield page
+        except AttributeError:  # not cached
+            pass
+
+        self._page_cache = []
         with PdfMinerWrapper(self.path) as document:
             for page in document:
                 if page.word_count() == 0:
                     logging.info("No text, doing OCR. This will take a while.")
-                    yield PdfPageFromOcr(self.path, page.page_number)
+                    ocr_page = PdfPageFromOcr(self.path, page.page_number)
+                    self._page_cache.append(ocr_page)
+                    yield ocr_page
                 else:
+                    self._page_cache.append(page)
                     yield page
 
     def get_text(self):
