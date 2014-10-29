@@ -7,6 +7,7 @@ test.*
 temp/*
 ./~lock*
 env
+./log
 
 # Allow xpath samples
 !xpath_sample*.csv
