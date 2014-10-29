@@ -11,7 +11,7 @@ try:
         'oauth2client',
         'gdata',
         'pdfminer == 20140328',
-        'docx',  # good for text, bad for metadata
+        'python-docx',  # good for text, bad for metadata
         'openxmllib',  # good for metadata, bad for text
         'pytesseract',
         'argcomplete',
