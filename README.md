@@ -27,8 +27,8 @@ For extractor.py
  * The Python Imaging Library, PIL (tested with version 2.3)
  * GhostScript (tested with version 9.10)
 
-These scripts have been tested under Ubuntu 14.04 and Debian 7. Making them run under Windows would probably require some extra hacking.
- 
+These scripts have been tested under Ubuntu 14.04 and Debian 7.
+
 
 Installation
 ============
