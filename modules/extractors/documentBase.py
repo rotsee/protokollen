@@ -96,17 +96,21 @@ class ExtractorBase(object):
         """Return a best guess for the date of the meeting
            this document refers to, based on the whole text.
 
-           Used a fallback when Page.get_date does not return a
+           Used as a fallback when Page.get_date does not return a
            page specific date.
 
            Do NOT rely on metadata to get the date, as this is more
            often than not wrong.
         """
-        text = self.get_text()
-        if text is None or text == "":
-            logging.warning("No text in document when looking for a date")
-        else:
-            return get_date_from_text(text)
+        date = None
+
+        header_text = self.get_header()
+        date = get_single_date_from_text(header_text)
+
+        if date is None:
+            text = self.get_text()
+            date = get_date_from_text(text)
+        return date
 
 if __name__ == "__main__":
     print "This module is only intended to be called from other scripts."
