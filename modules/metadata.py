@@ -2,9 +2,10 @@
 """This module contains the Metadata class, for storing metadata from files.
 """
 
+
 class Properties():
-    """Contains keys and constants for useful metadata properties from various standards.
-       `dictionary.common` can be overridden by more specific dictionaries, 
+    """Contains keys and constants for useful metadata properties.
+       `dictionary.common` can be overridden by more specific dictionaries,
        see `Creator` vs `mso.Creator`, where Creator has different meanings in
        different contexts.
     """
@@ -21,8 +22,10 @@ class Properties():
         "common": {
             "Producer": SOFTWARE,
             "Creator": SOFTWARE,
+            "Generator": SOFTWARE,
             "CreatorTool": SOFTWARE,
             "Author": AUTHOR,
+            "Company": AUTHOR,
             "contributor": AUTHOR,
             "Last Saved by": AUTHOR,
             "Title": TITLE,
@@ -44,7 +47,7 @@ class Properties():
         },
         "mso": {
         #Microsoft Office .doc files
-            "Creator": AUTHOR,
+            "Creator": SOFTWARE,  # This seems to be ambigous?
         },
         "ooxml": {
             #Office Open XML
@@ -56,6 +59,7 @@ class Properties():
             "date": MODIFICATION_DATE,
         }
     }
+
 
 class Metadata(object):
     """This class will store useful metadata from files,
@@ -91,17 +95,17 @@ class Metadata(object):
         """
 
         foundValue = value
-        if isinstance(value, dict): #if dict: make list
+        if isinstance(value, dict):  # if dict: make list
             foundValue = []
-            for (k,v) in value.iteritems():
+            for (k, v) in value.iteritems():
                 foundValue.append(v)
-        if isinstance(foundValue, list): #if list: iterate
+        if isinstance(foundValue, list):  # if list: iterate
             for v in foundValue:
                 self._mergeInto(key, v)
             return
 
         if foundValue:  # foundValue can be None
-            foundValue = foundValue.strip() #by now, foundValue is a single string
+            foundValue = foundValue.strip()  # by now, foundValue is a string
             if foundValue != "":
                 if key in self.data:
                     if foundValue in self.data[key]:
