@@ -27,13 +27,14 @@ def get_single_date_from_text(text):
         one and one date. None if the number of matches is not 1
     """
 
-    dates = _get_dates_list(text)
+    if text is not None:
+        dates = _get_dates_list(text)
 
-    if (len(dates) == 1):
-        import dateutil.parser as dateParser
-        return dateParser.parse(dates[0], fuzzy=True)
-    else:
-        return None
+        if (len(dates) == 1):
+            import dateutil.parser as dateParser
+            return dateParser.parse(dates[0], fuzzy=True)
+        else:
+            return None
 
 
 def get_date_from_text(text):
@@ -43,20 +44,21 @@ def get_date_from_text(text):
         documents.
     """
 
-    dates = _get_dates_list(text)
+    if text is not None:
+        dates = _get_dates_list(text)
 
-    if (len(dates) > 0):
-        from collections import Counter
-        import dateutil.parser as dateParser
+        if (len(dates) > 0):
+            from collections import Counter
+            import dateutil.parser as dateParser
 
-        # Count occurences of each date and get the most common one
-        c = Counter(dates).most_common(1)[0]
-        n = c[1]
-        # Parse the date
-        date = dateParser.parse(c[0], fuzzy=True)
-    else:
-        # Case: no matcing dates found
-        date = None
-        n = 0
+            # Count occurences of each date and get the most common one
+            c = Counter(dates).most_common(1)[0]
+            n = c[1]
+            # Parse the date
+            date = dateParser.parse(c[0], fuzzy=True)
+        else:
+            # Case: no matcing dates found
+            date = None
+            n = 0
 
-    return {"date": date, "n": n}
+        return {"date": date, "n": n}

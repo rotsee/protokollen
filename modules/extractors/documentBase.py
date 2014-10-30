@@ -40,10 +40,25 @@ class Page(object):
         """
         raise NotImplementedError('must be overridden by child classes')
 
+    def get_header(self):
+        """Should return a best guess for the header (if any) of this page,
+           or None if no headers were found.
+        """
+        return None
+
     def get_date(self):
         """Returns a datetime date from the page header.
         """
         return get_single_date_from_text(self.get_header())
+
+    def word_count(self):
+        """Returns the number of non whitespace characters.
+
+           Used to find out if OCR is needed
+        """
+        import re
+        char_list = re.findall("(\S+)", self.get_text())
+        return len(char_list)
 
 
 class ExtractorBase(object):
@@ -65,6 +80,12 @@ class ExtractorBase(object):
         """Should return all text content from the document as plain text.
         """
         raise NotImplementedError('must be overridden by child classes')
+
+    def get_header(self):
+        """Should return the generic page header content for pages in
+           this document. Prefer Page.get_header if available.
+        """
+        return ""
 
     def get_next_page(self):
         """Should yield a Page object
