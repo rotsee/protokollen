@@ -94,17 +94,11 @@ def main():
             print e
             ui.error("Could not get metadata from file %s " % key.name)
 
-        try:
-            fallback_date = extractor.get_date()
-            print fallback_date
-        except Exception as e:
-            ui.error("Could not get date from file %s " % key.name)
-
         for page in extractor.get_next_page():
-            page_date = page.get_date() or fallback_date
-            page_header = page.get_header().upper()
+            page_date = page.get_date() or extractor.get_date()
+            page_header = page.get_header() or extractor.get_header()
+            page_header = page_header.upper()
             page_type = 0
-
             if page_header.find("PROTOKOLL") or\
                page_header.find("SAMMANTRÄDE"):
                 if page_header.find("KOMMUNSTYRELSE"):
