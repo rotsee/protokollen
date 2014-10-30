@@ -28,15 +28,6 @@ class PdfPage(Page):
         self.LTPage = LTPage
         self.page_number = page_number
 
-    def word_count(self):
-        """Returns the number of non whitespace characters.
-
-           Used to find out if OCR is needed
-        """
-        import re
-        char_list = re.findall("(\S+)", self.get_text())
-        return len(char_list)
-
     def get_text(self):
         """Iterate through the list of LT* objects and capture all text.
 
