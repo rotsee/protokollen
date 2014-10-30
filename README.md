@@ -22,6 +22,7 @@ For extractor.py
 ----------------
  * wvText and wvSummary from `wv` (tested with version 1.2.1),
    using either `lynx` or `elinks` (but not `links`)
+ * AbiWord (tested with version 3.0.0)
  * Tesseract >= version 3.02.02
  * Swedish data for Tesseract (a file called `SWE.traineddata` in current versions, that must be put in Tesseract's data directory)
  * The Python Imaging Library, PIL (tested with version 2.3)

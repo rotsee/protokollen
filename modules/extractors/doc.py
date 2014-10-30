@@ -9,18 +9,6 @@ import subprocess
 from modules.metadata import Metadata
 
 
-def run_command(command):
-    """Runs a shell command and captures stdout.
-       This is for wvText (and very hackish).
-       We should probably rather let wv write to a file.
-    """
-    process = subprocess.Popen(command,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.STDOUT,
-                               shell=True)
-    return iter(process.stdout.readline, b'')
-
-
 class DocPage(Page):
 
     def __init__(self):
@@ -43,10 +31,12 @@ class DocExtractor(ExtractorBase):
 
     def get_metadata(self):
         """Returns a metadata.Metadata object
+           Using wVSummary
         """
         command = 'wvSummary ' + self.path
+        output = subprocess.check_output(command, shell=True)
         metadata = Metadata()
-        for line in run_command(command):
+        for line in output.split("\n"):
             parts = line.strip().replace("\"", "").split(" = ")
             if len(parts) == 2:
                 metadata.add({parts[0]: parts[1]}, "mso")
@@ -100,12 +90,23 @@ class DocExtractor(ExtractorBase):
         except AttributeError:  # not cached
             pass
 
-        out = ' /dev/stdout'  # ugly, ugly hack. Will only work on *nix
-        command = 'wvText ' + self.path + out
-        string = ""
-        for line in run_command(command):
-            string += line
-        self._text_cache = string
+        import subprocess
+        import os
+        temp_filename = os.path.join("temp", "tmp.txt")
+        try:
+            arglist = ["abiword",
+                       self.path,
+                       "--to=txt",
+                       "--to-name=" + temp_filename
+                       ]
+            subprocess.call(args=arglist, stderr=subprocess.STDOUT)
+        except OSError:
+            raise OSError
+
+        self._text_cache = ""
+        with open(temp_filename, 'rb') as file_:
+            self._text_cache = file_.read()
+        os.unlink(temp_filename)
         return self._text_cache
 
 if __name__ == "__main__":
