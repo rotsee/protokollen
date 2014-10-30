@@ -58,7 +58,6 @@ class RtfExtractor(DocExtractor):
                     date_str = "-".join(date_parts)
                     metadata.add({tag_name: date_str})
 
-
         os.unlink(temp_filename)
         return metadata
 
