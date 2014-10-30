@@ -29,6 +29,9 @@ class RtfExtractor(DocExtractor):
 
     def get_metadata(self):
         """Returns a metadata.Metadata object
+
+           See http://www.biblioscape.com/rtf15_spec.htm
+           for RTF metadata specification
         """
         import os
         temp_filename = os.path.join("temp", "tmp.rtf.xml")
@@ -48,7 +51,11 @@ class RtfExtractor(DocExtractor):
                 if tag.text is not None:
                     metadata.add({tag_name: tag.text})
                 elif tag.get("year") is not None and tag.get("year") != "0":
-                    date_str = tag.get("year") + "-" + tag.get("month").zfill(2) + "-" + tag.get("day").zfill(2)
+                    date_parts = []
+                    date_parts.append(tag.get("year"))
+                    date_parts.append(tag.get("month").zfill(2) or "01")
+                    date_parts.append(tag.get("day").zfill(2) or "01")
+                    date_str = "-".join(date_parts)
                     metadata.add({tag_name: date_str})
 
 
