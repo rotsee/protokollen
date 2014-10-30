@@ -1,6 +1,6 @@
 #coding=utf-8
 """This module includes tools for handling and extracting text from
-   old Microsoft Word (.doc) files. It uses the wv library
+   old Microsoft Word (.doc) files. It uses the Abiword
 """
 
 from modules.extractors.documentBase import ExtractorBase, Page
@@ -38,7 +38,7 @@ class DocExtractor(ExtractorBase):
     """Class for getting plain text from a Microsoft Word file.
     """
 
-    NS_ABW = "{http://www.abisource.com/awml.dtd}"
+    NS_ABW = "http://www.abisource.com/awml.dtd"
     """XML namespace for Abiword documents"""
 
     def get_metadata(self):
@@ -66,18 +66,18 @@ class DocExtractor(ExtractorBase):
                        "--to-name=" + temp_filename
                        ]
             subprocess.call(args=arglist, stderr=subprocess.STDOUT)
-        except OSError as e:
-            pass
+        except OSError:
+            raise OSError
 
         import xml.etree.ElementTree as ET
         tree = ET.parse(temp_filename)
         root = tree.getroot()
 
         text = ""
-        for section in root.find(".//" + self.NS_ABW + "section[@type='header']"):
+        section = root.find(".//{%s}section[@type='header']" % self.NS_ABW)
+        if len(section) > 0:
             for tag in section.iterfind(".//*"):
                 if tag.text is not None:
-                    print tag.text
                     text += tag.text
 
         os.unlink(temp_filename)
