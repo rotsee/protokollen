@@ -2,20 +2,21 @@
 
 import logging
 
+
 class Row(dict):
     """Represents a row in a datasheet
     """
 
-    def __init__(self,*arg,**kw):
+    def __init__(self, *arg, **kw):
         super(Row, self).__init__(*arg, **kw)
 
     def enumerated_columns(self, enumerated_header):
-	    """Return a list of column values corresponding to an enumerated header.
-	    """
-	    columns = []
-	    for header in enumerated_header:
-	        columns.append(self.get(header,None))
-	    return columns
+        """Return a list of column values corresponding to an enumerated header.
+        """
+        columns = []
+        for header in enumerated_header:
+            columns.append(self.get(header, None))
+        return columns
 
 
 class DataSet(object):
@@ -35,7 +36,7 @@ class DataSet(object):
             if not key in self.headers:
                 self.headers.append(key)
 
-    def getEnumeratedHeaders(self, name, start_from=1):
+    def get_enumerated_headers(self, name, start_from=1):
         """Returns a list of headers (keys) on the form
            [name1, name2, name3]
         """
@@ -46,7 +47,7 @@ class DataSet(object):
             i += 1
         return header_list
 
-    def getLength(self):
+    def get_length(self):
         """Total number of rows in DataSet
         """
         return len(self.data)
@@ -55,7 +56,7 @@ class DataSet(object):
         """Filter out rows, depending on requires and/or disallowed keys.
            `require` and `disallow` are lists of keys.
         """
-        filteredList = []
+        filtered_list = []
         for row in self.data:
             ok = True
             for r in require or []:
@@ -68,8 +69,8 @@ class DataSet(object):
                     ok = False
                     break
             if ok:
-                filteredList.append(row)
-        self.data = filteredList
+                filtered_list.append(row)
+        self.data = filtered_list
 
     def shuffle(self):
         """Randomly (kind of) reorder the rows
@@ -77,7 +78,7 @@ class DataSet(object):
         from random import shuffle
         shuffle(self.data)
 
-    def getNext(self):
+    def get_next(self):
         """Get the rows, one at a time:
 
               for row in my_data.getNext():
@@ -86,16 +87,17 @@ class DataSet(object):
         for row in self.data:
             yield row
 
+
 class CSVFile(DataSet):
     """Represents data from a CSV file. Data is loaded on init.
        First row is assumed to contain headers
     """
-    def __init__(self,filename,delimiter=',',quotechar='"'):
+    def __init__(self, filename, delimiter=',', quotechar='"'):
         import csv
         self.delimiter = delimiter
         self.quotechar = quotechar
-        self.filename  = filename
-        self.data  = []
+        self.filename = filename
+        self.data = []
         self.width = 0
         self.headers = []
 
@@ -116,7 +118,7 @@ class CSVFile(DataSet):
                                 col_name = self.headers[i]
                                 row_dict[col_name] = col or None
                             else:
-                                pass #skip columns outside headers
+                                pass  # skip columns outside headers
                             i += 1
                         self.data.append(Row(row_dict))
         except OSError as err:
@@ -128,10 +130,10 @@ class GoogleSheet(DataSet):
        First row is assumed to contain headers.
     """
     def __init__(self,
-        googleSheetKey,
-        client_email,
-        p12file="google_api.p12",
-        sheet=1):
+                 googleSheetKey,
+                 client_email,
+                 p12file="google_api.p12",
+                 sheet=1):
         self.key = googleSheetKey
         self.data = []
         self.headers = []
@@ -154,7 +156,7 @@ class GoogleSheet(DataSet):
         ssfeed = gd_client.GetSpreadsheets()
         wsfeed = gd_client.GetWorksheets(self.key)
         #If given a sheet name, rather then a number, look up corresponding id
-        if self.is_number(sheet) == False:
+        if not self.is_number(sheet):
             sheetIDs = self._worksheet_ids(wsfeed)
             if sheet in sheetIDs:
                 self.sheet = sheetIDs[sheet]
@@ -163,21 +165,22 @@ class GoogleSheet(DataSet):
         else:
             self.sheet = sheet
 
-        listFeed = gd_client.GetListFeed(self.key,self.sheet)
+        listFeed = gd_client.GetListFeed(self.key, self.sheet)
         for i, entry in enumerate(listFeed.entry):
             row_dictionary = entry.to_dict()
             self.data.append(Row(row_dictionary))
             self._append_keys_to_header(row_dictionary)
 
-    def _getPrivateKeyFromP12File(self,filename):
+    def _getPrivateKeyFromP12File(self, filename):
         f = file(filename, 'rb')
         private_key = f.read()
         f.close()
         return private_key
 
-    def _worksheet_ids(self,feed):
+    def _worksheet_ids(self, feed):
         import urlparse
         import os
+
         def _id(entry):
             split = urlparse.urlsplit(entry.id.text)
             return os.path.basename(split.path)
@@ -186,7 +189,7 @@ class GoogleSheet(DataSet):
             for entry in feed.entry
         ])
 
-    def is_number(self,string):
+    def is_number(self, string):
         """Check if input is a number"""
         try:
             float(string)

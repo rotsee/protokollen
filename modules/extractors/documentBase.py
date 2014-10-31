@@ -99,8 +99,8 @@ class ExtractorBase(object):
            Used as a fallback when Page.get_date does not return a
            page specific date.
 
-           Do NOT rely on metadata to get the date, as this is more
-           often than not wrong.
+           Do NOT rely on metadata to get the date, as that will
+           more often than not be wrong.
         """
         date = None
 

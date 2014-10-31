@@ -116,11 +116,11 @@ def main():
 def run_harvest(data_set, browser, uploader, ui):
     data_set.filter(require=["source", "url", "dlclick1"])
     data_set.shuffle()  # give targets some rest between requests
-    ui.info("Data contains %d rows" % data_set.getLength())
+    ui.info("Data contains %d rows" % data_set.get_length())
     # ui.debug(data_set.data)
-    preclick_headers = data_set.getEnumeratedHeaders("preclick")
-    dlclick_headers = data_set.getEnumeratedHeaders("dlclick")
-    for row in data_set.getNext():
+    preclick_headers = data_set.get_enumerated_headers("preclick")
+    dlclick_headers = data_set.get_enumerated_headers("dlclick")
+    for row in data_set.get_next():
         municipality = row["source"]
         preclicks = row.enumerated_columns(preclick_headers)
         dlclicks = row.enumerated_columns(dlclick_headers)
