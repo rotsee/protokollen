@@ -52,20 +52,22 @@ Run `python harvest.py --help` for more info on how to feed data into the script
 
 [Here is an example csv file](https://github.com/rotsee/protokollen/blob/master/data/xpath_sample_dalarna_and_gavleborg.csv) with xPaths from Dalarna and Gävleborg. The table should contain the following columns:
 
- * `source`: Used to categorize documents. In our case names of municipalities.
- * `baseurl`: The starting point for the harvest.
- * Zero or more `preclick1`, `preclick2`, ...: xPaths pointing at stuff (e.g. form elements) that need to be clicked in order to access the list of documents.
- * One or more `dlclick1`, `dlclick2`, ...: xPaths pointing at the links that need too be followed for each download. All paths will be followed recursively:
+* `source`: Used to categorize documents. In our case names of municipalities.
+* `baseurl`: The starting point for the harvest.
+* Zero or more `preclick1`, `preclick2`, ...: xPaths pointing at stuff (e.g. form elements) that need to be clicked in order to access the list of documents.
+* One or more `dlclick1`, `dlclick2`, ...: xPaths pointing at the links that need too be followed for each download. All paths will be followed recursively:
 
+&nbpsp; 
 
-    url─>preclick1─>preclick2─┬─>dlclick1─┬>dlclick2─>Sålunda kommunstyrelse 2008-01-24.pdf
-                              │           ├>dlclick2─>Sålunda kommunstyrelse 2008-03-14.pdf
-                              │           ├>dlclick2─>Sålunda kommunstyrelse 2008-05-02.pdf
-                              │           ├>dlclick2─>Sålunda kommunstyrelse 2008-06-12.pdf
-                              │           └>dlclick2─>Bil. 1: Motion om namnbyte på kommunen.pdf
-                              └─>dlclick1─┬>dlclick2─>Ingalunda kommunstyrelse 2008-07-24.pdf
-                                          ├>dlclick2─>Ingalunda kommunstyrelse 2008-09-11.pdf
-                                          └>dlclick2─>Ingalunda kommunstyrelse 2008-11-26.pdf 
+     url─>preclick1─>preclick2─┬─>dlclick1─┬>dlclick2─>Sålunda kommunstyrelse 2008-01-24.pdf
+                               │           ├>dlclick2─>Sålunda kommunstyrelse 2008-03-14.pdf
+                               │           ├>dlclick2─>Sålunda kommunstyrelse 2008-05-02.pdf
+                               │           ├>dlclick2─>Sålunda kommunstyrelse 2008-06-12.pdf
+                               │           └>dlclick2─>Bil. 1: Motion om namnbyte på kommunen.pdf
+                               └─>dlclick1─┬>dlclick2─>Ingalunda kommunstyrelse 2008-07-24.pdf
+                                           ├>dlclick2─>Ingalunda kommunstyrelse 2008-09-11.pdf
+                                           └>dlclick2─>Ingalunda kommunstyrelse 2008-11-26.pdf 
+
 
 Extracting data from documents
 ------------------------------
