@@ -57,7 +57,7 @@ Run `python harvest.py --help` for more info on how to feed data into the script
 * Zero or more `preclick1`, `preclick2`, ...: xPaths pointing at stuff (e.g. form elements) that need to be clicked in order to access the list of documents.
 * One or more `dlclick1`, `dlclick2`, ...: xPaths pointing at the links that need too be followed for each download. All paths will be followed recursively:
 
-&nbpsp; 
+&nbsp; 
 
      url─>preclick1─>preclick2─┬─>dlclick1─┬>dlclick2─>Sålunda kommunstyrelse 2008-01-24.pdf
                                │           ├>dlclick2─>Sålunda kommunstyrelse 2008-03-14.pdf
