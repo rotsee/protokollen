@@ -18,7 +18,7 @@ from collections import deque
 import copy
 
 
-def click_through_dlclicks(browser, start_url, dlclicks_deque):
+def click_through_dlclicks(browser, dlclicks_deque, start_url=None):
     """Move through a deque of xpath expressions (left to right),
        each xpath describing a click necessary to find and download a document.
 
@@ -29,7 +29,15 @@ def click_through_dlclicks(browser, start_url, dlclicks_deque):
     """
     list_of_hrefs = []
     while dlclicks_deque:
-        browser.surf_to(start_url)
+        # During the first iteration we should not go to any url,
+        # as the current browser view might be the result of a
+        # preclick sequence (e.g. posting a form, using a flash
+        # control, ajax-load a list on click, interacting with
+        # a HTML5 canvas, etc)
+        #
+        # Just get the list of URLs at the current page
+        if start_url is not None:
+            browser.surf_to(start_url)
         dlclick = dlclicks_deque.popleft()
         url_list = browser.get_url_list(dlclick)
         """A list of surfer.Url objects"""
@@ -39,8 +47,8 @@ def click_through_dlclicks(browser, start_url, dlclicks_deque):
             if len(dlclicks_deque) > 0:  # more iterations to do?
                 deque_copy = copy.deepcopy(dlclicks_deque)
                 list_of_hrefs += click_through_dlclicks(browser,
-                                                        url.href,
-                                                        deque_copy)
+                                                        deque_copy,
+                                                        url.href)
             else:
                 list_of_hrefs.append(url.href)
     return list_of_hrefs
@@ -125,20 +133,22 @@ def run_harvest(data_set, browser, uploader, ui):
         preclicks = row.enumerated_columns(preclick_headers)
         dlclicks = row.enumerated_columns(dlclick_headers)
 
-        ui.info("Processing %s " % municipality)
+        ui.info("Processing %s at URL %s" % (municipality, row["url"]))
         browser.surf_to(row["url"])
+        ui.debug("We are now at the URL %s" % browser.selenium_driver.current_url)
         for preclick in preclicks:
             # preclick is often None which is not a valid value
             # for selenium_driver.find_elements_by_xpath
-            if preclick:
+            if preclick is not None:
                 ui.debug("Preclicking %s " % preclick)
-                browser.click_on_stuff(preclick)
-        current_url = browser.selenium_driver.current_url
-        ui.debug("We are now at the URL %s" % current_url)
-        ui.info("Getting URL list")
-        # make sure our deque doesn't contain any None values
+                try:
+                    browser.click_on_stuff(preclick)
+                except Exception as e:
+                    ui.warning("Could not do preclick in %s (xPath: %s).\
+                                Error message was %s" % (municipality, preclick, e))
+        ui.debug("Getting URL list from %s" % row["dlclick1"])
+        # use filter to make sure our deque doesn't contain any None values
         hrefList = click_through_dlclicks(browser,
-                                          current_url,
                                           deque(filter(None, dlclicks)))
         ui.info("Found %d URLs" % len(hrefList))
         ui.debug(hrefList)
@@ -152,6 +162,7 @@ def run_harvest(data_set, browser, uploader, ui):
                (we don't trust anyone else)
             """
             if uploader.fileExists(remote_naked_filename):
+                ui.debug("%s already exists in storage" % href)
                 continue  # File already stored
 
             if ui.executionMode < Interface.SUPERDRY_MODE:
