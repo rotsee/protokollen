@@ -13,10 +13,14 @@ Prerequisites
 
 For harvester.py
 ----------------
- * Firefox (tested with version 32.0 and 33.0)
+ * Firefox (tested with version 32.0 and 33.0) or Chrome (tested with version 38.0)
  * Xvfb (tested with version 1.15.1)
  * [Service-account credentials](https://developers.google.com/console/help/new/#serviceaccounts) from the [Google developers console](https://console.developers.google.com/), if you wish to use Google Spreadsheets as the source for your harvesting. Not needed if you use a local CSV file.
  * python-magic (installed by setup.py) and libmagic (needs to be installed separately)
+
+ The ChromeDriver executable for your OS must be inside the bin directory for Chrome to work.
+ Get it from http://chromedriver.storage.googleapis.com/index.html
+ Firefox should work out of the box.
  
 For extractor.py
 ----------------
@@ -54,7 +58,7 @@ Run `python harvest.py --help` for more info on how to feed data into the script
 
 * `source`: Used to categorize documents. In our case names of municipalities.
 * `baseurl`: The starting point for the harvest.
-* Zero or more `preclick1`, `preclick2`, ...: xPaths pointing at stuff (e.g. form elements) that need to be clicked in order to access the list of documents.
+* Zero or more `preclick1`, `preclick2`, ...: xPaths pointing at stuff (e.g. form elements) that need to be clicked in order to access the list of documents. This is only rarely needed.
 * One or more `dlclick1`, `dlclick2`, ...: xPaths pointing at the links that need too be followed for each download. All paths will be followed recursively:
 
 &nbsp; 
@@ -104,7 +108,8 @@ Many people have contributed to ProtoKollen in various ways. For a list of sourc
 Licence
 =======
 This repository ships with [Tesseract](https://code.google.com/p/tesseract-ocr/) OCR training data for Swedish,
-available under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0).
+available under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0),
+
 
 Everything else distributed under the MIT License (MIT).
 In short: Do whatever you want with it,
