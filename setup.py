@@ -16,7 +16,8 @@ try:
         'pytesseract',
         'argcomplete',
         'pyOpenSSL',  # required, in practice, by oauth2client
-        'boto'
+        'boto',
+        'elasticsearch'
     ]
 
     try:
