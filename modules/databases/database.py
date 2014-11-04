@@ -12,10 +12,10 @@ class Database(object):
         pass
 
     def put(self, key, attr, value):
-        pass
+        raise NotImplementedError('must be overridden by child classes')
 
     def get(self, key, attr):
-        pass
+        raise NotImplementedError('must be overridden by child classes')
 
 if __name__ == "__main__":
     print "This module is only intended to be called from other scripts."
