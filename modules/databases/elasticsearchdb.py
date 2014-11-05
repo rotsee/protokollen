@@ -26,14 +26,19 @@ class ElasticSearch(Database):
         except NotFoundError:
             return None
 
-    def put(self, key, attr, value):
+    def put(self, key, attr, value, overwrite=False):
+        """Will return True if a value was written, or False
+        """
         body = self._get_id(key) or {}
-        body[attr] = value
-        self.es.index(index=self.index,
-                      doc_type=self.doctype,
-                      id=key,
-                      body=body)
-        pass
+        if overwrite or (attr not in body):
+            body[attr] = value
+            self.es.index(index=self.index,
+                          doc_type=self.doctype,
+                          id=key,
+                          body=body)
+            return True
+        else:
+            return False
 
     def get(self, key, attr):
         res = self._get_id(key)
