@@ -17,6 +17,7 @@ For harvester.py
  * Xvfb (tested with version 1.15.1)
  * [Service-account credentials](https://developers.google.com/console/help/new/#serviceaccounts) from the [Google developers console](https://console.developers.google.com/), if you wish to use Google Spreadsheets as the source for your harvesting. Not needed if you use a local CSV file.
  * python-magic (installed by setup.py) and libmagic (needs to be installed separately)
+ * Optionally a database, to keep track of downloaded files. Elastic Search is supported (tested with version 1.0.1)
 
  The ChromeDriver executable for your OS must be inside the bin directory for Chrome to work.
  Get it from http://chromedriver.storage.googleapis.com/index.html
@@ -28,9 +29,10 @@ For extractor.py
    using either `lynx` or `elinks` (but not `links`)
  * AbiWord (tested with version 3.0.0)
  * Tesseract >= version 3.02.02
- * Swedish data for Tesseract (a file called `SWE.traineddata` in current versions, that must be put in Tesseract's data directory)
+ * Language data for Tesseract (for Swedish: a file called [`SWE.traineddata`](https://code.google.com/p/tesseract-ocr/downloads/detail?name=swe.traineddata.gz), that must be put in Tesseract's data directory)
  * The Python Imaging Library, PIL (tested with version 2.3)
  * GhostScript (tested with version 9.10)
+ * Optionally a database, to store text and metadata. Elastic Search is supported (tested with version 1.0.1)
 
 These scripts have been tested under Ubuntu 14.04 and Debian 7.
 
@@ -40,9 +42,8 @@ Installation
 
  * Clone this repository
  * From the protokollen directory, run `python setup.py develop`
- * Copy `login.template.py` to `login.py`, and add your Amazon S3 and Google API credentials there,
-   as well as the names of the S3 buckets you want to use to store documents and text files.
- * Copy your Google API p12 file to `google_api.p12` (or specify another path in `login.py`)
+ * Copy `login.template.py` to `login.py`, and all relevant credentials there
+ * If using a Google Docs sheet: Copy your Google API p12 file to `google_api.p12` (or specify another path in `login.py`)
 
 
 Using ProtoCollection
@@ -50,7 +51,7 @@ Using ProtoCollection
 
 Harvesting documents
 ---------------------
-The harvesting script `harvest.py` takes a table with URLs and xPath expressions. It will fetch any new, valid files encountered, and put them in a storage. uRLs and xPaths can be provided throgh a CSV file, or a Google Spreadsheet document.
+The harvesting script `harvest.py` takes a table with URLs and xPath expressions. It will fetch any new, valid files encountered, and put them in a storage, after checking their mime type. uRLs and xPaths can be provided throgh a CSV file, or a Google Spreadsheet document.
 
 Run `python harvest.py --help` for more info on how to feed data into the script, or `pydoc ./harvest.py` (or `pdoc ./harvest.py`) for API help.
 
@@ -58,7 +59,7 @@ Run `python harvest.py --help` for more info on how to feed data into the script
 
 * `source`: Used to categorize documents. In our case names of municipalities.
 * `baseurl`: The starting point for the harvest.
-* Zero or more `preclick1`, `preclick2`, ...: xPaths pointing at stuff (e.g. form elements) that need to be clicked in order to access the list of documents. This is only rarely needed.
+* Zero or more `preclick1`, `preclick2`, ...: xPaths pointing at stuff (e.g. form elements) that need to be clicked in order to access the list of documents. This is only rarely needed, when there is no way to access to real starting point from an URL.
 * One or more `dlclick1`, `dlclick2`, ...: xPaths pointing at the links that need too be followed for each download. All paths will be followed recursively:
 
 &nbsp; 
@@ -75,16 +76,10 @@ Run `python harvest.py --help` for more info on how to feed data into the script
 
 Extracting data from documents
 ------------------------------
-The extraction script `extractor.py` will go through files in an Amazon S3 bucket, and try to extract plain text and metadata from them, page by page. It understands pdf, docx and doc files, and can also do OCR on scanned pdf-files.
+The extraction script `extractor.py` will go through files in a storage, and try to extract plain text and metadata from them, page by page. It understands pdf, docx and doc files, and can also do OCR on scanned pdf-files.
 
 Run `python extractor.py --help` for more info, or `pydoc ./extractor.py` (or `pdoc ./extractor.py`) for API help.
 
-TBD:
-
- * Separate document headers
- * Some very,very basic text analysis, using those headers
- * Store metadata and file pointers in a database
- * Handle each page separately, as files can often contain multiple documents, and documents be spread across multiple files.
 
 Analyzing data
 --------------
