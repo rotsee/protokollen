@@ -15,6 +15,14 @@ datePatterns = [
 """
 
 
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+
 def _get_dates_list(text):
     dates = []
     for pattern in datePatterns:
