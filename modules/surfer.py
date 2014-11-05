@@ -3,8 +3,9 @@ import logging
 
 from selenium.webdriver import Firefox, Chrome
 from selenium.webdriver.support.ui import Select
-from selenium.webdriver.support.events import EventFiringWebDriver, AbstractEventListener
-import selenium as selenium2
+from selenium.webdriver.support.events import EventFiringWebDriver,\
+                                              AbstractEventListener
+from selenium.common.exceptions import InvalidSelectorException
 from xvfbwrapper import Xvfb
 import urlparse
 
@@ -42,6 +43,15 @@ class Surfer:
            trigger javascript event
         """
 
+    def _get_nearest_ancestor(self, element, tagname):
+        ancestor = ''
+        while ancestor.tag_name != tagname and ancestor is not None:
+            try:
+                ancestor = element.find_element_by_xpath("..")
+            except InvalidSelectorException:
+                ancestor = None
+        return ancestor
+
     def surf_to(self, url):
         """Simply go to an URL"""
         self.selenium_driver.get(url)
@@ -61,31 +71,34 @@ class Surfer:
             logging.warning("No elements found for xPath `%s`" % xPath)
         else:
             for element in elementList:
+                element.click()
                 if element.tag_name == "option":
-                    value = element.get_attribute("value")
-                    parent = element.find_element_by_xpath("..")
-                    if parent.tag_name == "optgroup":
-                        parent = parent.find_element_by_xpath("..")
-                    if parent.tag_name == "select":
-                        element.click()
-                        select = Select(parent)
-                        select.select_by_value(value)
+                    parent = self._get_nearest_ancestor(element, "select")
+#                    parent = element.find_element_by_xpath("..")
+#                    if parent.tag_name == "optgroup":
+#                        parent = parent.find_element_by_xpath("..")
+#                    if parent.tag_name == "select":
+                    if parent is not None:
+                        # Should be selcted already, when clicking, but it seems
+                        # this does not always happen
+                        value = element.get_attribute("value") or None
+                        if value is not None:
+                            select = Select(parent)
+                            select.select_by_value(value)
                         # Manually trigger some JS events
                         select_id = parent.get_attribute("id") or None
                         if select_id is not None:
-                            js_function = "window.triggerChange=function(){\
-                                                var el = document.getElementById(\'" + select_id + "\');\
-                                                el.dispatchEvent(new Event('change', { 'bubbles': true }));\
-                                                el.dispatchEvent(new Event('select', { 'bubbles': true }));\
-                                                el.dispatchEvent(new Event('click', { 'bubbles': true }));\
-                                           }"
+                            js_function = """
+    window.triggerChange=function(){\
+        var el = document.getElementById('""" + select_id + """');\
+        el.dispatchEvent(new Event('change', { 'bubbles': true }));\
+        el.dispatchEvent(new Event('select', { 'bubbles': true }));\
+        el.dispatchEvent(new Event('click', { 'bubbles': true }));\
+    };"""
                             self.selenium_driver.execute_script(js_function)
                             self.selenium_driver.execute_script("triggerChange();")
-#                            self.selenium_driver.fire_event(self.selenium_driver,("id", select_id), "change")
                     else:
                         raise Exception("No <select> parent found for <option>")
-                else:
-                    element.click()
             self.selenium_driver.implicitly_wait(self.extra_delay)
 
     def get_url_list(self, xPath):
