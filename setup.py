@@ -17,7 +17,9 @@ try:
         'argcomplete',
         'pyOpenSSL',  # required, in practice, by oauth2client
         'boto',
-        'elasticsearch'
+        'elasticsearch',
+        'numpy',  # for nltk. Not needed.
+        'nltk'
     ]
 
     try:
