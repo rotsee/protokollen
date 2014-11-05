@@ -14,6 +14,8 @@
 ########################################################################
 #db_server = 'localhost'
 #db_port = 9200
+#db_table = 'documents'
+#"""Index name (ES), table name (SQL), etc"""
 
 ########################################################################
 # Google API credentials, if you want to fetch your harvesting         #
