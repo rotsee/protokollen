@@ -2,7 +2,7 @@
 #coding=utf-8
 """This script will download all files pointed out by a series of URLs
    and xPath expressions, and put them in a storage (e.g. a local folder
-   or an Amazon S3 server.
+   or an Amazon S3 server).
 
    Run `./harvest.py --help` for options.
 """
@@ -33,12 +33,9 @@ def click_through_dlclicks(browser,
        Executes a callback function on the very last page of each branch
     """
 
-    if len(dlclicks_deque) == 0:
-        callback(browser)
-    else:
+    if len(dlclicks_deque) > 0:
         dlclick = dlclicks_deque.popleft()
         element_list = browser.get_element_list(dlclick)
-        """A list of Selenium Web Elements"""
         for element in element_list:
             new_dlclicks_deque = deepcopy(dlclicks_deque)
             browser.with_open_in_new_window(element,
@@ -49,6 +46,8 @@ def click_through_dlclicks(browser,
                                             new_dlclicks_deque,
                                             callback=callback
                                             )
+    else:
+        callback(browser)
 
 
 def main():
@@ -60,33 +59,13 @@ def main():
        data_set: A DataSet object with instructions for the harvester
        browser: A Surfer object, e.g. a wrapper for a selenium browser
 
+       Command line options are in harvest_args.py
+
     """
-    command_line_args = [
-        {
-            "short": "-s", "long": "--super-dry",
-            "dest": "superdryrun",
-            "action": "store_true",
-            "help": "A dry run where we do not even download any files."
-        }, {
-            "short": "-t", "long": "--tolarated-changes",
-            "type": int,
-            "default": 1,
-            "dest": "tolaratedchanges",
-            "metavar": "CHANGES",
-            "help": """When should we warn about suspicios changes in the
-                       number of protocols?
-                       1 means that anything other that zero or one new
-                       protocols is considered suspicios."""
-        }, {
-            "short": "-f", "long": "--file",
-            "dest": "filename",
-            "help": "Enter a file name, if your data is in a local CSV file."
-        }]
     ui = Interface(__file__,
                    """This script will download all files pointed out by
                       a series of URLs and xPath expressions, and upload
-                      them to the configured storage service. """,
-                   commandLineArgs=command_line_args)
+                      them to the configured storage service. """)
 
     if ui.args.filename is not None:
         ui.info("Harvesting from CSV file `%s`" % ui.args.filename)
@@ -167,6 +146,7 @@ def run_harvest(data_set, browser, uploader, ui, db):
         url_list = []
 
         def _append_to_list(browser):
+            ui.debug("Adding URL %s" % browser.selenium_driver.current_url)
             url_list.append(browser.selenium_driver.current_url)
         # use filter to make sure our deque doesn't contain any None values
         click_through_dlclicks(browser,

@@ -23,6 +23,9 @@ class Interface:
     DRY_MODE = 1
 
     def __init__(self, name, description, commandLineArgs=[]):
+        """Command line arguments can also be put in a file named
+           SCRIPTNAME_args.py, e.g. `harvest_args.py`
+        """
         self.parser = argparse.ArgumentParser(description)
         self.parser.add_argument(
             "-l", "--loglevel",
@@ -38,6 +41,18 @@ class Interface:
             dest="dryrun",
             action='store_true',
             help="Dry run. Do not upload any files, or put stuff in databases.")
+
+        # Check for FILENAME_args.py file
+        import __main__
+        import os
+        try:
+            filename = os.path.basename(__main__.__file__)
+            filename = os.path.splitext(filename)[0]
+            args_from_file = __import__(filename + "_args")
+            commandLineArgs = commandLineArgs + args_from_file.args
+        except ImportError:
+            pass
+
         for c in commandLineArgs:
             self.parser.add_argument(
                 c.pop("short", None),
