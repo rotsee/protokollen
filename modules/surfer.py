@@ -1,12 +1,15 @@
 #coding=utf-8
 import logging
 
-from selenium.webdriver import Firefox, Chrome
+from selenium.webdriver import Firefox, Chrome, FirefoxProfile
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.events import EventFiringWebDriver,\
                                               AbstractEventListener
+from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import InvalidSelectorException
 from xvfbwrapper import Xvfb
+from time import sleep
+from copy import deepcopy
 import urlparse
 
 
@@ -33,7 +36,10 @@ class Surfer:
         self.vdisplay = Xvfb()
         self.vdisplay.start()
         if browser == "firefox":
-            driver = Firefox()
+            profile = FirefoxProfile()
+            # Open links in same window
+            profile.set_preference("browser.link.open_newwindow", 1)
+            driver = Firefox(profile)
         elif browser == "chrome":
             driver = Chrome(executable_path='bin/chromedriver')
         else:
@@ -42,6 +48,9 @@ class Surfer:
         """selenium_driver is a EventFiringWebDriver, so that it can
            trigger javascript event
         """
+        self.browser_version = \
+            self.selenium_driver.capabilities['browserName'] \
+            + self.selenium_driver.capabilities['version']
 
     def _get_nearest_ancestor(self, element, tagname):
         ancestor = ''
@@ -52,13 +61,38 @@ class Surfer:
                 ancestor = None
         return ancestor
 
+    def with_open_in_new_window(self, element, callback_, *args, **kwargs):
+        """Shift-clicks on an element to open a new window,
+           calls the callback function, and then closes the
+           window and returns.
+           This is useful for iterating through a link tree
+           we cannot easily step back in (e.g. where the starting
+           the result of a POST request)
+
+           Callback function is called like this: `callback(Surfer, arguments)`
+           with a Surfer object placed in the new window
+
+           Returns the result of `callback`
+        """
+        element.send_keys(Keys.SHIFT + Keys.ENTER)
+        self.selenium_driver.implicitly_wait(self.extra_delay)
+        #FIXME implicitly_wait doesnät work on FF?
+        sleep(self.extra_delay)
+        windows = self.selenium_driver.window_handles
+        self.selenium_driver.switch_to_window(windows[-1])
+        res = callback_(self, *args, **kwargs)
+        self.selenium_driver.close()
+        windows = self.selenium_driver.window_handles
+        self.selenium_driver.switch_to_window(windows[-1])
+        return res
+
     def surf_to(self, url):
         """Simply go to an URL"""
         self.selenium_driver.get(url)
         self.selenium_driver.implicitly_wait(self.extra_delay)
 
     def click_on_stuff(self, xPath):
-        """Will click on any elemts pointed out by xPath.
+        """Will click on any elements pointed out by xPath.
 
            Options in select menus will be selected, and an
            onChange event fired (as this does not always happen automatically):
@@ -72,20 +106,18 @@ class Surfer:
         else:
             for element in elementList:
                 element.click()
+                print "Tag name:",
+                print element.tag_name
                 if element.tag_name == "option":
                     parent = self._get_nearest_ancestor(element, "select")
-#                    parent = element.find_element_by_xpath("..")
-#                    if parent.tag_name == "optgroup":
-#                        parent = parent.find_element_by_xpath("..")
-#                    if parent.tag_name == "select":
                     if parent is not None:
-                        # Should be selcted already, when clicking, but it seems
-                        # this does not always happen
+                        # Should be selected already, when clicking,
+                        # but it seems like this does not always happen
                         value = element.get_attribute("value") or None
                         if value is not None:
                             select = Select(parent)
                             select.select_by_value(value)
-                        # Manually trigger some JS events
+                        # Manually trigger JS events
                         select_id = parent.get_attribute("id") or None
                         if select_id is not None:
                             js_function = """
@@ -102,13 +134,17 @@ class Surfer:
             self.selenium_driver.implicitly_wait(self.extra_delay)
 
     def get_url_list(self, xPath):
-        urlList = []
-        elementList = self.selenium_driver.find_elements_by_xpath(xPath)
-        for element in elementList:
+        url_list = []
+        element_list = self.selenium_driver.find_elements_by_xpath(xPath)
+        for element in element_list:
             href = element.get_attribute("href")
             if href is not None:
-                urlList.append(Url(href))
-        return urlList  # list of Url objects
+                url_list.append(Url(href))
+        return url_list  # list of Url objects
+
+    def get_element_list(self, xPath):
+        element_list = self.selenium_driver.find_elements_by_xpath(xPath)
+        return element_list
 
     def kill(self):
         self.selenium_driver.close()
