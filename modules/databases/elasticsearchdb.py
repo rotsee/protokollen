@@ -1,5 +1,5 @@
 #coding=utf-8
-"""This module contains the base class for all document classes.
+"""This module contains a class for interacting with ElasticSearch
 """
 
 from modules.databases.database import Database
@@ -32,11 +32,11 @@ class ElasticSearch(Database):
         body = self._get_id(key) or {}
         if overwrite or (attr not in body):
             body[attr] = value
-            self.es.index(index=self.index,
-                          doc_type=self.doctype,
-                          id=key,
-                          body=body)
-            return True
+            result = self.es.index(index=self.index,
+                                   doc_type=self.doctype,
+                                   id=key,
+                                   body=body)
+            return result
         else:
             return False
 

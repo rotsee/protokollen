@@ -1,5 +1,5 @@
 #coding=utf-8
-"""This module contains the base class for all document classes.
+"""This module contains the base class for all database classes.
 """
 
 
