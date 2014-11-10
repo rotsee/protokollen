@@ -24,7 +24,7 @@ class Interface:
 
     def __init__(self, name, description, commandLineArgs=[]):
         """Command line arguments can also be put in a file named
-           SCRIPTNAME_args.py, e.g. `harvest_args.py`
+           SCRIPTNAME_args.py, e.g. `harvest_args.py`.
         """
         self.parser = argparse.ArgumentParser(description)
         self.parser.add_argument(
@@ -70,7 +70,7 @@ class Interface:
             self.logger.info("Running in dry mode")
             self.executionMode = self.DRY_MODE
 
-    #Conveniance shortcuts logging methods
+    #Convenience shortcuts to logger methods
     def log(self, msg, mode=logging.INFO):
         self.logger.log(mode, msg)
     def debug(self, *args, **kwargs):

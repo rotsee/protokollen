@@ -1,15 +1,12 @@
 #coding=utf-8
-import logging
-
 from selenium.webdriver import Firefox, Chrome, FirefoxProfile
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.events import EventFiringWebDriver,\
-                                              AbstractEventListener
+                                            AbstractEventListener
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import InvalidSelectorException
 from xvfbwrapper import Xvfb
 from time import sleep
-from copy import deepcopy
 import urlparse
 
 
@@ -50,7 +47,9 @@ class Surfer:
         """
         self.browser_version = \
             self.selenium_driver.capabilities['browserName'] \
+            + " " \
             + self.selenium_driver.capabilities['version']
+        """Browser name and version, e.g. 'Firefox 33.0' """
 
     def _get_nearest_ancestor(self, element, tagname):
         ancestor = ''
@@ -102,12 +101,10 @@ class Surfer:
         """
         elementList = self.selenium_driver.find_elements_by_xpath(xPath)
         if not elementList:
-            logging.warning("No elements found for xPath `%s`" % xPath)
+            raise("No elements found for xPath `%s`" % xPath)
         else:
             for element in elementList:
                 element.click()
-                print "Tag name:",
-                print element.tag_name
                 if element.tag_name == "option":
                     parent = self._get_nearest_ancestor(element, "select")
                     if parent is not None:
