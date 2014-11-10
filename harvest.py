@@ -85,7 +85,7 @@ def main():
     # if a database type is defined in settings.py
     try:
         db = settings.Database(login.db_server,
-                               login.db_table,
+                               login.db_harvest_table,
                                "info",
                                port=login.db_port
                                )

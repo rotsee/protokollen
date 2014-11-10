@@ -14,8 +14,11 @@
 ########################################################################
 #db_server = 'localhost'
 #db_port = 9200
-#db_table = 'documents'
-#"""Index name (ES), table name (SQL), etc"""
+#db_harvest_table = 'files'
+#db_extactor_table = 'texts'
+#"""Index name (ES), table name (SQL), etc
+#   for harvested files and extracted texts, respectively
+#"""
 
 ########################################################################
 # Google API credentials, if you want to fetch your harvesting         #

@@ -31,7 +31,7 @@ def main():
     ui = Interface(__file__,
                    "Extracts text and metadata from files",
                    commandLineArgs=command_line_args)
-    ui.info("Starting extractor")
+
     ui.info("Connecting to storage")
     source_files_connection = settings.Storage(login.access_key_id,
                                                login.secret_access_key,
@@ -43,6 +43,19 @@ def main():
                                     login.secret_access_key,
                                     login.access_token,
                                     login.text_bucket_name)
+
+    # Setup database for indexing uploaded files,
+    # and storing metadata
+    ui.info("Connecting to database")
+    try:
+        db = settings.Database(login.db_server,
+                               login.db_table,
+                               "info",
+                               port=login.db_port
+                               )
+    except (TypeError, NameError) as e:
+        ui.info("No database setup found, using DebuggerDB")
+        db = None
 
     for key in source_files_connection.getNextFile():
         # first of all, check if the processed file already exists in
