@@ -16,6 +16,7 @@ from modules.download import FileType
 from modules.extractors.pdf import PdfExtractor
 from modules.extractors.ooxml import DocxExtractor
 from modules.extractors.doc import DocExtractor
+from modules.databases.debuggerdb import DebuggerDB
 
 
 def main():
@@ -39,7 +40,7 @@ def main():
                                                login.bucket_name)
 
     if ui.executionMode < Interface.DRY_MODE:
-        uploader = settings.Storage(login.access_key_id,
+        destination_files_connection = settings.Storage(login.access_key_id,
                                     login.secret_access_key,
                                     login.access_token,
                                     login.text_bucket_name)
@@ -49,24 +50,24 @@ def main():
     ui.info("Connecting to database")
     try:
         db = settings.Database(login.db_server,
-                               login.db_table,
+                               login.db_extactor_table,
                                "info",
                                port=login.db_port
                                )
     except (TypeError, NameError) as e:
         ui.info("No database setup found, using DebuggerDB")
-        db = None
+        db = DebuggerDB(None, login.db_extactor_table or "TABLE")
 
     for key in source_files_connection.getNextFile():
         # first of all, check if the processed file already exists in
         # remote storage (no need to do expensive PDF processing if it
         # is.
         if ui.executionMode < Interface.DRY_MODE:
-            remote_filename = uploader.buildRemoteName(
+            remote_filename = destination_files_connection.buildRemoteName(
                 key.basename,
                 ext="txt",
                 path=key.path_fragments)
-            if (uploader.fileExists(remote_filename) and
+            if (destination_files_connection.fileExists(remote_filename) and
                     not ui.args.overwrite):
                 continue  # File is already in remote storage
 

@@ -26,6 +26,15 @@ class Database(object):
     def put(self, key, attr, value):
         raise NotImplementedError('must be overridden by child classes')
 
+    def put_dict(self, key, attr, dict_):
+        """Should normally be overwritten by child classes, to use a more
+           efficient method.
+        """
+        success = False
+        for (k, v) in dict_.iteritems():
+            success = success and self.put(key, k, v)
+        return success
+
     def get(self, key, attr):
         raise NotImplementedError('must be overridden by child classes')
 

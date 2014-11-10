@@ -20,6 +20,12 @@ class Debugger(Database):
         print "Storing %s in %s.%s.%s" % (value, self.table, key, attr)
         return True
 
+    def put_dict(self, key, attr, dict_):
+        """Will return True if a value was written, or False
+        """
+        print "Storing %s in %s.%s.%s" % (dict_, self.table, key, attr)
+        return True
+
     def get(self, key, attr):
         return None
 
