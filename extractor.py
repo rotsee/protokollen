@@ -16,6 +16,7 @@ from modules.download import FileType
 from modules.extractors.pdf import PdfExtractor
 from modules.extractors.ooxml import DocxExtractor
 from modules.extractors.doc import DocExtractor
+from modules.extractors.rtf import RtfExtractor
 from modules.databases.debuggerdb import DebuggerDB
 
 
@@ -38,12 +39,10 @@ def main():
                                                login.secret_access_key,
                                                login.access_token,
                                                login.bucket_name)
-
-    if ui.executionMode < Interface.DRY_MODE:
-        destination_files_connection = settings.Storage(login.access_key_id,
-                                    login.secret_access_key,
-                                    login.access_token,
-                                    login.text_bucket_name)
+    destination_files_connection = settings.Storage(login.access_key_id,
+                                                    login.secret_access_key,
+                                                    login.access_token,
+                                                    login.text_bucket_name)
 
     # Setup database for indexing uploaded files,
     # and storing metadata
@@ -54,7 +53,7 @@ def main():
                                "info",
                                port=login.db_port
                                )
-    except (TypeError, NameError) as e:
+    except (TypeError, NameError, AttributeError) as e:
         ui.info("No database setup found, using DebuggerDB")
         db = DebuggerDB(None, login.db_extactor_table or "TABLE")
 
@@ -74,52 +73,50 @@ def main():
         ui.info("Fetching file %s" % key.name)
         try:
             temp_filename = path.join("temp", key.filename)
-            downloaded_file = source_files_connection.getFile(
-                key,
-                temp_filename)
+            downloaded_file = source_files_connection.getFile(key,
+                                                              temp_filename)
         except Exception as e:
             ui.warning("Could not fetch %s from storage: %s: %s" %
                        (key.name, type(e), e))
             continue
 
+        dbkey = db.create_key([key.path, key.filename])
+
         filetype = downloaded_file.getFileType()
         if filetype == FileType.PDF:
-            ui.info("Extracting text from pdf: %s" % downloaded_file.localFile)
-            extractor = PdfExtractor(temp_filename)
+            Extractor = PdfExtractor
         elif filetype == FileType.DOCX:
-            ui.info("Extracting text from docx %s" % downloaded_file.localFile)
-            extractor = DocxExtractor(downloaded_file.localFile)
+            Extractor = DocxExtractor
         elif filetype == FileType.DOC:
-            ui.info("Extracting text from doc %s" % downloaded_file.localFile)
-            extractor = DocExtractor(downloaded_file.localFile)
+            Extractor = DocExtractor
+        elif filetype == FileType.RTF:
+            Extractor = RtfExtractor
         else:
             raise ValueError("No extractor for filetype %s" % filetype)
 
-#        try:
-#            text = extractor.get_text()
-#            uploader.putFileFromString(text, remote_filename)
-#        except Exception as e:
-#            ui.error("Could not get text from file %s " % key.name)
-
+        ui.info("Extracting text with %s from %s" %
+                (Extractor.__name__, downloaded_file.localFile))
+        extractor = Extractor(temp_filename)
         try:
             meta = extractor.get_metadata()
-            print meta.data
+            db.put(dbkey, "metadata", meta.data)
         except Exception as e:
-            print e
-            ui.error("Could not get metadata from file %s " % key.name)
+            ui.error("Could not get metadata from %s. %s" % (key.name, e))
+
+        db.put(dbkey, "text", extractor.get_text())
 
         for page in extractor.get_next_page():
             page_date = page.get_date() or extractor.get_date()
+            db.put(dbkey, "meeting-date", page_date)
             page_header = page.get_header() or extractor.get_header()
+            db.put(dbkey, "header", page_date)
             page_header = page_header.upper()
             page_type = 0
             if page_header.find("PROTOKOLL") or\
                page_header.find("SAMMANTRÄDE"):
                 if page_header.find("KOMMUNSTYRELSE"):
                     page_type = 1
-
-            print page_type
-            print page_date
+            db.put(dbkey, "document-type", page_type)
 
         downloaded_file.delete()
 
