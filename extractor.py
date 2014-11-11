@@ -80,11 +80,6 @@ def main():
         extractor = downloaded_file.extractor
         ui.info("Extracting text with %s from %s" %
                 (extractor.__class__.__name__, downloaded_file.localFile))
-        try:
-            meta = extractor.get_metadata()
-            db.put(dbkey, "metadata", meta.data)
-        except Exception as e:
-            ui.error("Could not get metadata from %s. %s" % (key.name, e))
 
         db.put(dbkey, "text", extractor.get_text())
 

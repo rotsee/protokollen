@@ -198,11 +198,13 @@ def run_harvest(data_set, browser, uploader, ui, db):
                             if "year" in row and is_number(row["year"]):
                                 ui.debug("Adding year to DB as %s.year " % dbkey)
                                 db.put(dbkey, "year", row["year"])
-
-                            ui.debug("Extracting metadata")
-                            metadata = download_file.extractor.get_metadata()
-                            ui.debug("Adding metadata to DB as %s.metadata " % dbkey)
-                            db.put(dbkey, "metadata", json.dumps(metadata.data))
+                            try:
+                                ui.debug("Extracting metadata")
+                                meta = download_file.extractor.get_metadata()
+                                ui.debug("Adding metadata to DB as %s.metadata " % dbkey)
+                                db.put(dbkey, "metadata", json.dumps(meta.data))
+                            except Exception as e:
+                                ui.error("Could not get metadata from %s. %s" % (dbkey, e))
 
                     else:
                         ui.warning("%s is not an allowed mime type"
