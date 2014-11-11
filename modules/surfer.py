@@ -1,5 +1,6 @@
 #coding=utf-8
 from selenium.webdriver import Firefox, Chrome, FirefoxProfile
+from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.events import EventFiringWebDriver,\
                                             AbstractEventListener
@@ -36,9 +37,19 @@ class Surfer:
             profile = FirefoxProfile()
             # Open links in same window
             profile.set_preference("browser.link.open_newwindow", 1)
+            # Download to temp dir. Not actually used.
+            profile.set_preference("browser.download.dir", "temp")
+            profile.set_preference("browser.download.folderList", 2)
+            profile.set_preference("browser.download.manager.showWhenStarting", "False")
+            # Add extension for overriding Content-Disposition headers
+            profile.add_extension(extension='bin/inlinedisposition-1.0.2.4-sm+fx.xpi')
+            profile.set_preference("extensions.InlineDisposition.currentVersion", "1.0.2.4")  # Avoid startup screen
             driver = Firefox(profile)
         elif browser == "chrome":
-            driver = Chrome(executable_path='bin/chromedriver')
+            # Add extension for overriding Content-Disposition headers
+            options = webdriver.ChromeOptions()
+            options.add_extension('bin/undisposition.crx')
+            driver = Chrome(executable_path='bin/chromedriver', chrome_options=options)
         else:
             raise Exception("Not a valid browser name")
         self.selenium_driver = EventFiringWebDriver(driver, CustomListener())
