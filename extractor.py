@@ -12,11 +12,6 @@ import settings
 from os import path
 
 from modules.interface import Interface
-from modules.download import FileType
-from modules.extractors.pdf import PdfExtractor
-from modules.extractors.ooxml import DocxExtractor
-from modules.extractors.doc import DocExtractor
-from modules.extractors.rtf import RtfExtractor
 from modules.databases.debuggerdb import DebuggerDB
 
 
@@ -82,21 +77,9 @@ def main():
 
         dbkey = db.create_key([key.path, key.filename])
 
-        filetype = downloaded_file.getFileType()
-        if filetype == FileType.PDF:
-            Extractor = PdfExtractor
-        elif filetype == FileType.DOCX:
-            Extractor = DocxExtractor
-        elif filetype == FileType.DOC:
-            Extractor = DocExtractor
-        elif filetype == FileType.RTF:
-            Extractor = RtfExtractor
-        else:
-            raise ValueError("No extractor for filetype %s" % filetype)
-
+        extractor = downloaded_file.extractor
         ui.info("Extracting text with %s from %s" %
-                (Extractor.__name__, downloaded_file.localFile))
-        extractor = Extractor(temp_filename)
+                (extractor.__class__.__name__, downloaded_file.localFile))
         try:
             meta = extractor.get_metadata()
             db.put(dbkey, "metadata", meta.data)
