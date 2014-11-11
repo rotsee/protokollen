@@ -20,12 +20,13 @@ class Key(BotoKey):
                 self.name = key
             else:  # if initiated with an existing key
                 super(Key, self).__init__(bucket, key.name)
-                self.name = key.name
+                self.name = key.name  # 'foo/bar/helloworld.txt'
 
-            self.path_fragments = self.name.split("/")
-            self.filename = self.path_fragments.pop()
-            self.extension = self.filename.split(".")[-1]
-            self.basename = self.filename.split(".")[0]
+            self.path_fragments = self.name.split("/")  # ['foo', 'bar', 'helloworld.txt']
+            self.filename = self.path_fragments.pop()  # 'helloworld.txt'
+            self.path = "/".join(self.path_fragments)  # 'foo/bar'
+            self.extension = self.filename.split(".")[-1]  # 'txt'
+            self.basename = self.filename.split(".")[0]  # 'helloworld'
         else:
             super(Key, self).__init__(bucket)
 
