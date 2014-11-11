@@ -5,7 +5,7 @@
 from modules.databases.database import Database
 
 
-class Debugger(Database):
+class DebuggerDB(Database):
     """This class acts like a Database object,
        but dumps stuff to the screen, rather than storing them.
     """

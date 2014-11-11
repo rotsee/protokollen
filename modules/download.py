@@ -3,6 +3,11 @@ import logging
 import os
 import shutil
 
+from modules.extractors.pdf import PdfExtractor
+from modules.extractors.ooxml import DocxExtractor
+from modules.extractors.doc import DocExtractor
+from modules.extractors.rtf import RtfExtractor
+
 
 class FileType:
     UNKNOWN = 0
@@ -13,7 +18,7 @@ class FileType:
     RTF = 5
     TXT = 6
 
-    mimeToTypeDict = {
+    mime_to_type_dict = {
         'application/pdf': PDF,
         'application/x-pdf': PDF,
         'application/msword': DOC,
@@ -26,7 +31,7 @@ class FileType:
         'text/plain': TXT
     }
 
-    extToTypeDict = {
+    ext_to_type_dict = {
         'pdf': PDF,
         'doc': DOC,
         'dot': DOC,
@@ -40,7 +45,7 @@ class FileType:
         'txt': TXT
     }
 
-    typeToExtDict = {
+    type_to_ext_dict = {
         UNKNOWN: None,
         PDF: "pdf",
         DOC: "doc",
@@ -48,6 +53,13 @@ class FileType:
         ODT: "odt",
         RTF: "rtf",
         TXT: "txt"
+    }
+
+    type_to_extractor_dict = {
+        PDF: PdfExtractor,
+        DOCX: DocxExtractor,
+        DOC: DocExtractor,
+        RTF: RtfExtractor
     }
 
 
@@ -75,13 +87,22 @@ class File(object):
         os.unlink(self.localFile)
 
     def getFileType(self):
-        return FileType.extToTypeDict.get(self.localFile.split(".")[-1], None)
+        """ This default method only uses the extension of the file, not
+            self.mimeType (which only gets set by the subclass
+            FileFromWeb, which uses an alternate implementation of this method)
+        """
+        return FileType.ext_to_type_dict.get(self.localFile.split(".")[-1], None)
 
-        # This default method only uses the extension of the file, not
-        # self.mimeType (which only gets set by the subclass
-        # FileFromWeb, which uses an alternate implementation of this method)
     def getFileExt(self):
-        return FileType.typeToExtDict.get(self.getFileType(), None)
+        return FileType.type_to_ext_dict.get(self.getFileType(), None)
+
+    @property
+    def extractor(self):
+        """Returns an extractor object suitable for analyzing this file
+        """
+        Extractor = FileType.type_to_extractor_dict.get(self.getFileType(), None)
+        extractor = Extractor(self.localFile)
+        return extractor
 
 
 class LocalFile(File):
@@ -105,7 +126,7 @@ class FileFromWeb(File):
     def __init__(self,
                  url,
                  localFile,
-                 userAgent):
+                 userAgent='Mozilla/5.0 (compatible)'):
             self.localFile = localFile
             self.success = False
             self.mimeType = None
@@ -136,10 +157,10 @@ class FileFromWeb(File):
             else:
                 logging.warning("Failed to download file from %s" % url)
 
-        # moved this now alternate implementation from the base class
-        # since FileFromWeb is the only subclass using it.
     def getFileType(self):
-        return FileType.mimeToTypeDict.get(self.mimeType, None)
+        """Return filetype based on mimeType
+        """
+        return FileType.mime_to_type_dict.get(self.mimeType, None)
 
 
 class FileFromS3(File):
