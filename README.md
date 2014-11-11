@@ -105,7 +105,11 @@ Licence
 This repository ships with [Tesseract](https://code.google.com/p/tesseract-ocr/) OCR data for Swedish,
 released under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0),
 
-and an XMP [metadata parser](http://blog.matt-swain.com/post/25650072381/a-lightweight-xmp-parser-for-extracting-pdf-metadata-in) by Matt Swain, released under the MIT license.
+and an XMP [metadata parser](http://blog.matt-swain.com/post/25650072381/a-lightweight-xmp-parser-for-extracting-pdf-metadata-in) by Matt Swain, released under the MIT license,
+
+and the Chrome [Undisposition plugin](https://chrome.google.com/webstore/detail/undisposition/hjfncfijclafkkfifjelofbeclipplfi), copyright (c) 2012-2013, ciel, released under both the [BSD License](https://code.google.com/p/ctouch/source/browse/COPYING.md), and [Creative Commons CC0](http://creativecommons.org/publicdomain/zero/1.0/),
+
+and the Firefox [InlineDisposition extension](https://addons.mozilla.org/en-US/firefox/addon/inlinedisposition/), copyright [Kai Liu](http://code.kliu.org/), and released under [BSD License](http://opensource.org/licenses/bsd-license.php).
 
 Everything else is copyright © 2014 [Protokollen Contributors](https://github.com/rotsee/protokollen/graphs/contributors), released under the MIT License (MIT).
 
