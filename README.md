@@ -102,15 +102,16 @@ Many people have contributed to ProtoKollen in various ways. For a list of sourc
 
 Licence
 =======
-This repository ships with [Tesseract](https://code.google.com/p/tesseract-ocr/) OCR training data for Swedish,
-available under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0),
+This repository ships with [Tesseract](https://code.google.com/p/tesseract-ocr/) OCR data for Swedish,
+released under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0),
 
+and an XMP [metadata parser](http://blog.matt-swain.com/post/25650072381/a-lightweight-xmp-parser-for-extracting-pdf-metadata-in) by Matt Swain, released under the MIT license.
 
-Everything else distributed under the MIT License (MIT).
-In short: Do whatever you want with it,
+Everything else is copyright © 2014 [Protokollen Contributors](https://github.com/rotsee/protokollen/graphs/contributors), released under the MIT License (MIT).
+
+In short: You can do whatever you want with it,
 but we would love to hear from you if you find it useful!
 
-Copyright © 2014 [Contributors](https://github.com/rotsee/protokollen/graphs/contributors)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
