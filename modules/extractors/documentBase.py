@@ -3,7 +3,6 @@
 """
 
 from modules.utils import get_date_from_text, get_single_date_from_text
-import logging
 
 
 class DocumentType(object):
