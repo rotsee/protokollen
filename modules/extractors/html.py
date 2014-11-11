@@ -23,6 +23,11 @@ class HtmlExtractor(ExtractorBase):
     """Class for handling HTML file data extraction.
     """
 
+    def __init__(self, path, **kwargs):
+        self.path = path
+        self.text = None
+        self.content_xpath = kwargs.get('html', None)
+
     def get_next_page(self):
         page = HtmlPage()
         page._text = self.get_text()
@@ -34,7 +39,7 @@ class HtmlExtractor(ExtractorBase):
     def get_metadata(self):
         """Returns a metadata.Metadata object
         """
-        return None
+        return Metadata()
 
 
 if __name__ == "__main__":
