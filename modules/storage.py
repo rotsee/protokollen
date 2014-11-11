@@ -7,7 +7,6 @@ from abc import ABCMeta, abstractmethod
 
 from download import FileFromS3, LocalFile, DropboxFile
 
-
 class Storage:
     """Abstract class for file storage.
     Subclasses are used for putting files on remote
@@ -108,17 +107,13 @@ class S3Storage(Storage):
     bucket_name and text_bucket_name, respectively.
 
     """
-#    :param accesskey: The access key id
-#    :param secret: The secret access key
-#    :param token: Not used for this storage backend
-#    :param path: The bucket name
-
     def __init__(self,
                  accesskey,
                  secret,
                  token=None,
                  path="protokollen"):
         import s3
+        self.bucket = path
         self.connection = s3.S3Connection(accesskey, secret, path)
 
     def getFileListLength(self, pathFragment):
@@ -126,7 +121,8 @@ class S3Storage(Storage):
 
     # this'll return a Key or Key-like object with .filename, .name
     def getNextFile(self):
-        return self.connection.getNextFile()
+        for k in self.connection.getNextFile():
+            yield k
 
     # this'll retrieve the file identified by key (returned from
     # getNextFile) and return a download.File object with .localFile
@@ -143,16 +139,19 @@ class S3Storage(Storage):
         self.connection.putFileFromString(string, s3name)
 
 
-# mimics the modules.s3.Key interface
 class FakeKey(object):
+    """ Mimics the modules.s3.Key interface
+    """
     def __init__(self, bucket, key):
         assert isinstance(key, basestring)  # keys are really filename strings
         # bucket is not used
-        self.name = key  # full logical path of the file
+        self.name = key
+        """full logical path of the file """
         self.path_fragments = key.split("/")
-        self.filename = self.path_fragments.pop()  # filename w/o path
-        # filename w/o extension and only extension, respectively
+        self.filename = self.path_fragments.pop()
+        """ filename w/o path """
         self.basename, self.extension = os.path.splitext(self.filename)
+        """ filename w/o extension and only extension, respectively """
 
 
 class LocalUploader(Storage):
