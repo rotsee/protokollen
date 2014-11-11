@@ -7,6 +7,7 @@ from modules.extractors.pdf import PdfExtractor
 from modules.extractors.ooxml import DocxExtractor
 from modules.extractors.doc import DocExtractor
 from modules.extractors.rtf import RtfExtractor
+from modules.extractors.html import HtmlExtractor
 
 
 class FileType:
@@ -17,6 +18,7 @@ class FileType:
     ODT = 4
     RTF = 5
     TXT = 6
+    HTML = 7
 
     mime_to_type_dict = {
         'application/pdf': PDF,
@@ -28,7 +30,10 @@ class FileType:
         'application/x-rtf': RTF,
         'text/richtext': RTF,
         'text/rtf': RTF,
-        'text/plain': TXT
+        'text/plain': TXT,
+        'text/html': HTML,
+        'text/x-server-parsed-html': HTML,
+        'application/xhtml+xml': HTML
     }
 
     ext_to_type_dict = {
@@ -42,7 +47,12 @@ class FileType:
         'odt': ODT,
         'fodt': ODT,
         'rtf': RTF,
-        'txt': TXT
+        'txt': TXT,
+        'htm': HTML,
+        'html': HTML,
+        'htm': HTML,
+        'html': HTML,
+        'xhtml': HTML
     }
 
     type_to_ext_dict = {
@@ -52,14 +62,16 @@ class FileType:
         DOCX: "docx",
         ODT: "odt",
         RTF: "rtf",
-        TXT: "txt"
+        TXT: "txt",
+        HTML: "html"
     }
 
     type_to_extractor_dict = {
         PDF: PdfExtractor,
         DOCX: DocxExtractor,
         DOC: DocExtractor,
-        RTF: RtfExtractor
+        RTF: RtfExtractor,
+        HTML: HtmlExtractor
     }
 
 

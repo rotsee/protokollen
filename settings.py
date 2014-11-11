@@ -4,7 +4,11 @@
 from modules import storage
 from modules.download import FileType
 
-allowedFiletypes = [FileType.PDF, FileType.DOC, FileType.DOCX, FileType.RTF]
+allowedFiletypes = [FileType.PDF,
+                    FileType.DOC,
+                    FileType.DOCX,
+                    FileType.RTF,
+                    FileType.HTML]
 """What filetypes should we download and store?"""
 
 user_agent = "Protokollen (http://protokollen.net)"
