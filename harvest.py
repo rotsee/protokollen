@@ -189,6 +189,9 @@ def run_harvest(data_set, browser, uploader, ui, db):
                     ui.debug("Adding municipality to DB as %s.municipality " % dbkey)
                     result = db.put(dbkey, "municipality", municipality)
                     ui.debug(result)
+                    ui.debug("Adding harvesting data to DB as %s.harvesting_rules " % dbkey)
+                    result = db.put(dbkey, "harvesting_rules", row)
+                    ui.debug(result)
                     if "year" in row and is_number(row["year"]):
                         ui.debug("Adding year to DB as %s.year " % dbkey)
                         db.put(dbkey, "year", row["year"])
