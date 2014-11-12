@@ -5,7 +5,7 @@ try:
     from setuptools import setup
 
     install_requires = [
-        'selenium >= 2.4.0',
+        'selenium >= 2.6.0',
         'xvfbwrapper',
         'python-magic',
         'oauth2client',
@@ -18,8 +18,9 @@ try:
         'pyOpenSSL',  # required, in practice, by oauth2client
         'boto',
         'elasticsearch',
-        'numpy',  # for nltk. Not needed.
-        'nltk'
+        'numpy',  # for nltk. Not *actually* needed.
+        'nltk',
+        'beautifulsoup4'
     ]
 
     try:
