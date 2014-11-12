@@ -14,8 +14,8 @@
 ########################################################################
 #db_server = 'localhost'
 #db_port = 9200
-#db_harvest_table = 'files'
-#db_extactor_table = 'texts'
+db_harvest_table = 'files'
+db_extactor_table = 'documents'
 #"""Index name (ES), table name (SQL), etc
 #   for harvested files and extracted texts, respectively
 #"""
