@@ -5,6 +5,7 @@
 from modules.databases.database import Database
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError
+from datetime import datetime
 
 
 class ElasticSearch(Database):
@@ -32,6 +33,7 @@ class ElasticSearch(Database):
         body = self._get_id(key) or {}
         if overwrite or (attr not in body):
             body[attr] = value
+            body["last_updated"] = datetime.now()
             result = self.es.index(index=self.index,
                                    doc_type=self.doctype,
                                    id=key,
