@@ -55,7 +55,7 @@ class Properties():
             "doccomm": DESCRIPTION,
         },
         "mso": {
-        #Microsoft Office .doc files
+            # Microsoft Office .doc files
             "Creator": SOFTWARE,  # This seems to be ambigous?
         },
         "ooxml": {
@@ -63,9 +63,29 @@ class Properties():
             "creator": AUTHOR,
         },
         "dc": {
-        #Dublin Core
+            # Dublin Core
             "creator": AUTHOR,
             "date": MODIFICATION_DATE,
+        },
+        "html": {
+            # DC, as used in HTML meta tags
+            "DC.Description": DESCRIPTION,
+            "DC.Date.Published": CREATION_DATE,
+            "DC.Date.Modified": MODIFICATION_DATE,
+            "DC.Date.Created": CREATION_DATE,
+            "DC.Creator": AUTHOR,
+            "DC.Publisher": ORGANISATION,
+            "DC.Title": TITLE,
+            # Other occuring meta tags
+            "ms.topics": DESCRIPTION,
+            "companyname": ORGANISATION,
+            "createdby": AUTHOR,
+            "web_author": AUTHOR,
+            # og
+            "og:title": TITLE,
+            "og:description": DESCRIPTION,
+            "twitter:title": TITLE,
+            "twitter:description": DESCRIPTION
         }
     }
 
