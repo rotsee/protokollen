@@ -185,7 +185,7 @@ class LocalUploader(Storage):
         raise NotImplementedError
 
     def fileExists(self, fullfilename):
-        return os.path.exists(self.path + os.sep + fullfilename)
+        return os.path.exists(self.path + self.sep + fullfilename)
 
     def putFile(self, localFilename, remoteFilename):
         path = self.path + os.sep + remoteFilename
