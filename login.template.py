@@ -2,11 +2,11 @@
 # Storage credentials, if you want to use a remote storage for files   #
 # and extracted text chunks                                            #
 ########################################################################
-#access_key_id = "ACCES KEY ID"
-#secret_access_key = "SECRET ACCESS KEY"
-#access_token = None
-#bucket_name = "BUCKET NAME"  # For Amazon S3
-#text_bucket_name = "BUCKET NAME"  # For Amazon S3
+access_key_id = None
+secret_access_key = None
+access_token = None
+bucket_name = "files"  # For Amazon S3
+text_bucket_name = "text"  # For Amazon S3
 
 ########################################################################
 # Database credentials, if you want to index downloaded files          #
@@ -15,7 +15,7 @@
 #db_server = 'localhost'
 #db_port = 9200
 db_harvest_table = 'files'
-db_extactor_table = 'documents'
+db_extactor_table = 'text'
 #"""Index name (ES), table name (SQL), etc
 #   for harvested files and extracted texts, respectively
 #"""
