@@ -9,18 +9,19 @@
 
 import login
 import settings
-import json
 
 from os import path
 from hashlib import md5
 from collections import deque
 from copy import deepcopy
+from json import dumps
 
 from modules.interface import Interface
 from modules.download import FileFromWeb
 from modules.surfer import Surfer
 from modules.datasheet import CSVFile, GoogleSheet
 from modules.utils import is_number
+from modules.databases.debuggerdb import DebuggerDB
 
 
 def click_through_dlclicks(browser,
@@ -33,7 +34,6 @@ def click_through_dlclicks(browser,
 
        Executes a callback function on the very last page of each branch
     """
-
     if len(dlclicks_deque) > 0:
         dlclick = dlclicks_deque.popleft()
         element_list = browser.get_element_list(dlclick)
@@ -42,7 +42,7 @@ def click_through_dlclicks(browser,
             browser.with_open_in_new_window(element,
                                             # Callback function,
                                             # followed by its parameters
-                                            # browser will be prepended
+                                            # `browser` will be prepended
                                             click_through_dlclicks,
                                             new_dlclicks_deque,
                                             callback=callback
@@ -61,7 +61,6 @@ def main():
        browser: A Surfer object, e.g. a wrapper for a selenium browser
 
        Command line options are in harvest_args.py
-
     """
     ui = Interface(__file__,
                    """This script will download all files pointed out by
@@ -82,30 +81,25 @@ def main():
         ui.error("No local file given, and no Google Spreadsheet key found.")
         ui.exit()
 
-    # Setup database for indexing downloaded files,
-    # if a database type is defined in settings.py
+    ui.info("Setting up db connection for storing data on downloaded files.")
     try:
         db = settings.Database(login.db_server,
                                login.db_harvest_table,
                                "info",
                                port=login.db_port
                                )
-    except (TypeError, NameError) as e:
-        ui.info("No database setup found.")
-        db = None
-
-#    sudden_change_threshold = ui.args.tolaratedchanges
+    except (TypeError, NameError, AttributeError):
+        ui.info("No database setup found, using DebuggerDB")
+        db = DebuggerDB(None, login.db_harvest_table or "TABLE")
 
     Interface.SUPERDRY_MODE = 2  # add an extra level of dryness
     if ui.args.superdryrun:
         ui.info("Running in super dry mode")
         ui.executionMode = Interface.SUPERDRY_MODE
 
-    ui.info("Connecting to storage")
-    uploader = settings.Storage(login.access_key_id,
-                                login.secret_access_key,
-                                login.access_token,
-                                login.bucket_name)
+    ui.info("Connecting to file storage")
+    uploader = settings.Storage(login.access_key_id, login.secret_access_key,
+                                login.access_token, login.bucket_name)
 
     ui.info("Setting up virtual browser")
     try:
@@ -134,6 +128,7 @@ def run_harvest(data_set, browser, uploader, ui, db):
         ui.info("Processing %s at URL %s" % (municipality, row["url"]))
         browser.surf_to(row["url"])
         ui.debug("We are now at %s" % browser.selenium_driver.current_url)
+
         for preclick in filter(None, preclicks):
             ui.debug("Preclicking %s " % preclick)
             try:
@@ -149,7 +144,6 @@ def run_harvest(data_set, browser, uploader, ui, db):
         def _append_to_list(browser):
             ui.debug("Adding URL %s" % browser.selenium_driver.current_url)
             url_list.append(browser.selenium_driver.current_url)
-        # use filter to make sure our deque doesn't contain any None values
         click_through_dlclicks(browser,
                                deque(filter(None, dlclicks)),
                                callback=_append_to_list)
@@ -171,47 +165,48 @@ def run_harvest(data_set, browser, uploader, ui, db):
 
             if ui.executionMode < Interface.SUPERDRY_MODE:
                 ui.debug("Downloading file at %s" % url)
-                local_naked_filename = path.join("temp", filename)
+                local_filename = path.join("temp", filename)
                 download_file = FileFromWeb(url,
-                                            local_naked_filename,
+                                            local_filename,
                                             settings.user_agent)
-                if download_file.success:
-                    filetype = download_file.getFileType()
-                    if filetype in settings.allowedFiletypes and\
-                       ui.executionMode < Interface.DRY_MODE:
-                        file_ext = download_file.getFileExt()
-                        uploader.putFile(local_naked_filename,
-                                         uploader.buildRemoteName(filename,
-                                                                  ext=file_ext,
-                                                                  path=municipality)
-                                         )
-                        if db is not None:
-                            # Use path + filename as db key
-                            dbkey = db.create_key([municipality,
-                                                  filename + "." + file_ext])
-                            ui.debug("Adding file origin to DB as %s.origin " % dbkey)
-                            result = db.put(dbkey, "origin", url)
-                            ui.debug(result)
-                            ui.debug("Adding municipality to DB as %s.municipality " % dbkey)
-                            result = db.put(dbkey, "municipality", municipality)
-                            ui.debug(result)
-                            if "year" in row and is_number(row["year"]):
-                                ui.debug("Adding year to DB as %s.year " % dbkey)
-                                db.put(dbkey, "year", row["year"])
-                            try:
-                                ui.debug("Extracting metadata")
-                                meta = download_file.extractor.get_metadata()
-                                ui.debug("Adding metadata to DB as %s.metadata " % dbkey)
-                                db.put(dbkey, "metadata", json.dumps(meta.data))
-                            except Exception as e:
-                                ui.error("Could not get metadata from %s. %s" % (dbkey, e))
+                filetype = download_file.getFileType()
+                if filetype in settings.allowedFiletypes and\
+                   ui.executionMode < Interface.DRY_MODE:
+                    # Upload file
+                    file_ext = download_file.getFileExt()
+                    uploader.putFile(local_filename,
+                                     uploader.buildRemoteName(filename,
+                                                              ext=file_ext,
+                                                              path=municipality)
+                                     )
+                    # Store file info in DB
+                    # Use path + filename as db key
+                    dbkey = db.create_key([municipality,
+                                          filename + "." + file_ext])
+                    ui.debug("Adding file origin to DB as %s.origin " % dbkey)
+                    result = db.put(dbkey, "origin", url)
+                    ui.debug(result)
+                    ui.debug("Adding municipality to DB as %s.municipality " % dbkey)
+                    result = db.put(dbkey, "municipality", municipality)
+                    ui.debug(result)
+                    if "year" in row and is_number(row["year"]):
+                        ui.debug("Adding year to DB as %s.year " % dbkey)
+                        db.put(dbkey, "year", row["year"])
+                    try:
+                        ui.debug("Extracting metadata")
+                        # Sent in all datasheet values, in case needed
+                        # HtmlExtractor uses them
+                        extractor = download_file.extractor(row)
+                        meta = extractor.get_metadata()
+                        ui.debug("Adding metadata to DB as %s.metadata " % dbkey)
+                        db.put(dbkey, "metadata", dumps(meta.data))
+                    except Exception as e:
+                        ui.error("Could not get metadata from %s. %s" % (dbkey, e))
 
-                    else:
-                        ui.warning("%s is not an allowed mime type"
-                                   % download_file.mimeType)
-                    download_file.delete()
                 else:
-                    ui.warning("Download failed for %s" % url)
+                    ui.warning("%s is not an allowed mime type"
+                               % download_file.mimeType)
+                download_file.delete()
 
 if __name__ == '__main__':
     main()
