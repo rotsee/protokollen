@@ -103,17 +103,18 @@ class File(object):
             self.mimeType (which only gets set by the subclass
             FileFromWeb, which uses an alternate implementation of this method)
         """
-        return FileType.ext_to_type_dict.get(self.localFile.split(".")[-1], None)
+        return FileType.ext_to_type_dict.get(self.localFile.split(".")[-1],
+                                             None)
 
     def getFileExt(self):
         return FileType.type_to_ext_dict.get(self.getFileType(), None)
 
-    @property
-    def extractor(self):
+    def extractor(self, **kwargs):
         """Returns an extractor object suitable for analyzing this file
         """
-        Extractor = FileType.type_to_extractor_dict.get(self.getFileType(), None)
-        extractor = Extractor(self.localFile)
+        Extractor = FileType.type_to_extractor_dict.get(self.getFileType(),
+                                                        None)
+        extractor = Extractor(self.localFile, **kwargs)
         return extractor
 
 
