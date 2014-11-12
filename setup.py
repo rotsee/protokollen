@@ -20,7 +20,9 @@ try:
         'elasticsearch',
         'numpy',  # for nltk. Not *actually* needed.
         'nltk',
-        'beautifulsoup4'
+        'beautifulsoup4',
+        'html5lib',
+        'html2text'
     ]
 
     try:
