@@ -22,7 +22,8 @@ try:
         'nltk',
         'beautifulsoup4',
         'html5lib',
-        'html2text'
+        'html2text',
+        'rtf2xml'
     ]
 
     try:
