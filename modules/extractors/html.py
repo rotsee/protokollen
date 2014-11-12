@@ -8,6 +8,7 @@ from modules.metadata import Metadata
 
 from bs4 import BeautifulSoup
 from html2text import html2text
+from lxml import html as ehtml
 
 
 class HtmlPage(Page):
@@ -22,15 +23,14 @@ class HtmlPage(Page):
         return self._text
 
     def get_header(self):
-        """Return a best guess for the header (if any) of this page,
-           or None if no headers were found.
+        """Handled at document level (HtmlExtractor)
         """
-        # ta allt som kommer före en tagg med > 100 ch || en <h>
         return None
 
     def get_date(self):
-        #Hur hantera Malmö? Manuellt?
-        pass
+        """Handled at document level (HtmlExtractor)
+        """
+        return None
 
 
 class HtmlExtractor(ExtractorBase):
@@ -39,9 +39,16 @@ class HtmlExtractor(ExtractorBase):
 
     def __init__(self, path, **kwargs):
         self.path = path
-        self.text = None
-        self.content_xpath = kwargs.get('html', None)
-        self.soup = BeautifulSoup(open(path))
+        self.content_xpath = kwargs.get('html', '//body')
+        print self.content_xpath
+        with open(self.path, "rb") as file_:
+            html = file_.read()
+            html = html.decode('utf-8')
+            html = self._get_content_portion(html)
+            self.content_html = html
+            self.content_soup = BeautifulSoup(html)
+        with open(self.path, "rb") as file_:
+            self.soup = BeautifulSoup(file_)
 
     def get_next_page(self):
         """Return the whole document in one page (we have no such
@@ -52,23 +59,52 @@ class HtmlExtractor(ExtractorBase):
         page._text = self.get_text()
         yield page
 
+    def get_header(self):
+        """Return a best guess for the header (if any) of this page,
+           or None if no headers were found.
+        """
+        header_tags = []
+        for tag in self.content_soup.descendants:
+            #Break on bread text
+            if tag.string is not None and len(tag.string) > 70:
+                break
+            if tag.string is not None and len(tag.string) > 1:
+                header_tags.append(tag.string.strip())
+            #Break after <h_>-tag
+            if tag.name in ['h1', 'h2', 'h3', 'h4', 'h5']:
+                break
+        print header_tags
+        return "\n".join(header_tags)
+
+    def get_date(self):
+        """Handled at document level (HtmlExtractor)
+        """
+        return None
+
+    def _get_content_portion(self, html):
+        """Use an xPath expression, `self.html`, to carve out
+           the actual content.
+        """
+        root = ehtml.fromstring(html)
+        html_list = root.xpath(self.content_xpath)
+        try:
+            html_out = html_list[0]
+            html = ehtml.tostring(html_out)
+        except IndexError:
+            raise "Html xPath didn't match anything"
+        return html
+
     def get_text(self):
         """Will return the whole document, or a portion pointed out by
            `self.content_xpath`, as markdown text.
         """
-        with open(self.path, "rb") as file_:
-            html = file_.read()
-            html = html.decode('utf-8')
-            if self.content_xpath is not None:
-                from lxml import html as ehtml
-                root = ehtml.fromstring(html)
-                html_list = root.xpath(self.content_xpath)
-                try:
-                    html_out = html_list[0]
-                    html = ehtml.tostring(html_out)
-                except IndexError:
-                    raise "Html xPath didn't match anything"
-            return html2text(html)
+        try:
+            return self._text_cache
+        except AttributeError:  # not cached
+            pass
+
+        self._text_cache = html2text(self.content_html)
+        return self._text_cache
 
     def get_metadata(self):
         """Returns a metadata.Metadata object
