@@ -17,12 +17,12 @@ class RtfExtractor(DocExtractor):
 
     NS_RTF = "http://rtf2xml.sourceforge.net/"
 
-    def namespace(self, element):
+    def _namespace(self, element):
         import re
         m = re.match('\{.*\}', element.tag)
         return m.group(0) if m else ''
 
-    def tag_name(self, element):
+    def _tag_name(self, element):
         import re
         m = re.match('\{.*\}(.*)', element.tag)
         return m.group(1) if m else ''
@@ -47,7 +47,7 @@ class RtfExtractor(DocExtractor):
         section = root.find(".//{%s}doc-information" % self.NS_RTF)
         if len(section) > 0:
             for tag in section.iterfind(".//*"):
-                tag_name = self.tag_name(tag)
+                tag_name = self._tag_name(tag)
                 if tag.text is not None:
                     metadata.add({tag_name: tag.text})
                 elif tag.get("year") is not None and tag.get("year") != "0":
