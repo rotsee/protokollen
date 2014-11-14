@@ -187,8 +187,10 @@ class PdfExtractor(ExtractorBase):
         """
         with PdfMinerWrapper(self.path) as pdf_miner:
             metadata = Metadata()
+
             for i in pdf_miner.document.info:
                 metadata.add(i)
+
             if 'Metadata' in pdf_miner.document.catalog:
                 catalog = pdf_miner.document.catalog['Metadata']
                 xmp_metadata = resolve1(catalog).get_data()
