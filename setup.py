@@ -5,7 +5,7 @@ try:
     from setuptools import setup
 
     install_requires = [
-        'selenium >= 2.6.0',
+        'selenium >= 2.43.0',
         'xvfbwrapper',
         'python-magic',
         'oauth2client',
