@@ -1,0 +1,81 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module interface</title>
+<meta charset="utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>interface</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/leo/Frilansjobb/protokollen/protokollen/modules/interface.py">/home/leo/Frilansjobb/protokollen/protokollen/modules/interface.py</a></font></td></tr></table>
+    <p><tt>This&nbsp;module&nbsp;is&nbsp;included&nbsp;in&nbsp;the&nbsp;main&nbsp;entry&nbsp;points&nbsp;of&nbsp;ProtoKollen,<br>
+to&nbsp;provide&nbsp;common&nbsp;functionality,&nbsp;such&nbsp;as&nbsp;error&nbsp;handling,&nbsp;etc.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="argcomplete.html">argcomplete</a><br>
+</td><td width="25%" valign=top><a href="argparse.html">argparse</a><br>
+</td><td width="25%" valign=top><a href="logging.html">logging</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="interface.html#Interface">Interface</a>
+</font></dt></dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Interface">class <strong>Interface</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>This&nbsp;class&nbsp;represents&nbsp;the&nbsp;common&nbsp;user&nbsp;interface&nbsp;shared&nbsp;amongst<br>
+ProtoKollen&nbsp;scripts.<br>
+It&nbsp;handles&nbsp;error&nbsp;message&nbsp;formatting,&nbsp;alerts,&nbsp;and&nbsp;the&nbsp;like.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Interface-__init__"><strong>__init__</strong></a>(self, name, description, commandLineArgs<font color="#909090">=[]</font>)</dt><dd><tt>Command&nbsp;line&nbsp;arguments&nbsp;can&nbsp;also&nbsp;be&nbsp;put&nbsp;in&nbsp;a&nbsp;file&nbsp;named<br>
+SCRIPTNAME_args.py,&nbsp;e.g.&nbsp;`harvest_args.py`.</tt></dd></dl>
+
+<dl><dt><a name="Interface-critical"><strong>critical</strong></a>(self, *args, **kwargs)</dt></dl>
+
+<dl><dt><a name="Interface-debug"><strong>debug</strong></a>(self, *args, **kwargs)</dt></dl>
+
+<dl><dt><a name="Interface-dryMode"><strong>dryMode</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Interface-error"><strong>error</strong></a>(self, *args, **kwargs)</dt></dl>
+
+<dl><dt><a name="Interface-exit"><strong>exit</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Interface-info"><strong>info</strong></a>(self, *args, **kwargs)</dt></dl>
+
+<dl><dt><a name="Interface-log"><strong>log</strong></a>(self, msg, mode<font color="#909090">=20</font>)</dt><dd><tt>#Convenience&nbsp;shortcuts&nbsp;to&nbsp;logger&nbsp;methods</tt></dd></dl>
+
+<dl><dt><a name="Interface-warning"><strong>warning</strong></a>(self, *args, **kwargs)</dt></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>DRY_MODE</strong> = 1</dl>
+
+<dl><dt><strong>NORMAL_MODE</strong> = 0</dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>FORMAT</strong> = '%(asctime)s %(levelname)s: %(message)s'</td></tr></table>
+</body></html>

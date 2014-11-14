@@ -1,0 +1,64 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module database</title>
+<meta charset="utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>database</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/leo/Frilansjobb/protokollen/protokollen/modules/databases/database.py">/home/leo/Frilansjobb/protokollen/protokollen/modules/databases/database.py</a></font></td></tr></table>
+    <p><tt>This&nbsp;module&nbsp;contains&nbsp;the&nbsp;base&nbsp;class&nbsp;for&nbsp;all&nbsp;database&nbsp;classes.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="database.html#Database">Database</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Database">class <strong>Database</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Base&nbsp;for&nbsp;database&nbsp;classes.&nbsp;Child&nbsp;classes&nbsp;should&nbsp;implement<br>
+a&nbsp;`put`&nbsp;and&nbsp;a&nbsp;`get`&nbsp;method.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Database-__init__"><strong>__init__</strong></a>(self, server, table, category<font color="#909090">=None</font>, port<font color="#909090">=None</font>)</dt><dd><tt>Table&nbsp;i&nbsp;a&nbsp;SQL&nbsp;table,&nbsp;ES&nbsp;index,&nbsp;etc.<br>
+Category,&nbsp;if&nbsp;used,&nbsp;is&nbsp;a&nbsp;ES&nbsp;document&nbsp;type,&nbsp;or&nbsp;similar.</tt></dd></dl>
+
+<dl><dt><a name="Database-create_key"><strong>create_key</strong></a>(self, parts<font color="#909090">=None</font>)</dt><dd><tt>We&nbsp;might&nbsp;want&nbsp;keys&nbsp;to&nbsp;correspond&nbsp;somehow&nbsp;to&nbsp;filenames&nbsp;and&nbsp;paths.<br>
+For&nbsp;instance,&nbsp;if&nbsp;we&nbsp;create&nbsp;keys&nbsp;like&nbsp;`path-file`,&nbsp;they&nbsp;will&nbsp;be<br>
+consistent&nbsp;with&nbsp;ElasticSearch's&nbsp;`amazon-s3-river`&nbsp;plugin,&nbsp;see<br>
+https://github.com/lbroudoux/es-amazon-s3-river/blob/master/src/main/java/com/github/lbroudoux/elasticsearch/river/s3/river/S3River.java#LC508</tt></dd></dl>
+
+<dl><dt><a name="Database-get"><strong>get</strong></a>(self, key, attr)</dt></dl>
+
+<dl><dt><a name="Database-put"><strong>put</strong></a>(self, key, attr, value)</dt></dl>
+
+<dl><dt><a name="Database-put_dict"><strong>put_dict</strong></a>(self, key, attr, dict_)</dt><dd><tt>Should&nbsp;normally&nbsp;be&nbsp;overwritten&nbsp;by&nbsp;child&nbsp;classes,&nbsp;to&nbsp;use&nbsp;a&nbsp;more<br>
+efficient&nbsp;method.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

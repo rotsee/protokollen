@@ -1,0 +1,885 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module s3</title>
+<meta charset="utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>s3</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/leo/Frilansjobb/protokollen/protokollen/modules/s3.py">/home/leo/Frilansjobb/protokollen/protokollen/modules/s3.py</a></font></td></tr></table>
+    <p><tt>This&nbsp;module&nbsp;contains&nbsp;classes&nbsp;for&nbsp;interacting&nbsp;with&nbsp;Amazon&nbsp;S3,<br>
+including&nbsp;an&nbsp;extension&nbsp;for&nbsp;boto.s3.key.<a href="#Key">Key</a></tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="s3.html#S3Connection">S3Connection</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="boto.s3.key.html#Key">boto.s3.key.Key</a>(<a href="__builtin__.html#object">__builtin__.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="s3.html#Key">Key</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Key">class <strong>Key</strong></a>(<a href="boto.s3.key.html#Key">boto.s3.key.Key</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>extends&nbsp;the&nbsp;boto.s3.key.<a href="#Key">Key</a>&nbsp;class&nbsp;with&nbsp;some&nbsp;helpful<br>
+name&nbsp;splitting&nbsp;features,&nbsp;to&nbsp;get&nbsp;“files”&nbsp;and&nbsp;“folders”.<br>
+Can&nbsp;take&nbsp;an&nbsp;existing&nbsp;boto&nbsp;<a href="#Key">Key</a>&nbsp;<a href="__builtin__.html#object">object</a>,&nbsp;or&nbsp;a&nbsp;key&nbsp;string<br>
+as&nbsp;it's&nbsp;second&nbsp;argument.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="s3.html#Key">Key</a></dd>
+<dd><a href="boto.s3.key.html#Key">boto.s3.key.Key</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="Key-__init__"><strong>__init__</strong></a>(self, bucket<font color="#909090">=None</font>, key<font color="#909090">=None</font>)</dt></dl>
+
+<hr>
+Methods inherited from <a href="boto.s3.key.html#Key">boto.s3.key.Key</a>:<br>
+<dl><dt><a name="Key-__iter__"><strong>__iter__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Key-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Key-add_email_grant"><strong>add_email_grant</strong></a>(self, permission, email_address, headers<font color="#909090">=None</font>)</dt><dd><tt>Convenience&nbsp;method&nbsp;that&nbsp;provides&nbsp;a&nbsp;quick&nbsp;way&nbsp;to&nbsp;add&nbsp;an&nbsp;email&nbsp;grant<br>
+to&nbsp;a&nbsp;key.&nbsp;This&nbsp;method&nbsp;retrieves&nbsp;the&nbsp;current&nbsp;ACL,&nbsp;creates&nbsp;a&nbsp;new<br>
+grant&nbsp;based&nbsp;on&nbsp;the&nbsp;parameters&nbsp;passed&nbsp;in,&nbsp;adds&nbsp;that&nbsp;grant&nbsp;to&nbsp;the&nbsp;ACL<br>
+and&nbsp;then&nbsp;PUT's&nbsp;the&nbsp;new&nbsp;ACL&nbsp;back&nbsp;to&nbsp;S3.<br>
+&nbsp;<br>
+:type&nbsp;permission:&nbsp;string<br>
+:param&nbsp;permission:&nbsp;The&nbsp;permission&nbsp;being&nbsp;granted.&nbsp;Should&nbsp;be&nbsp;one&nbsp;of:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(READ,&nbsp;WRITE,&nbsp;READ_ACP,&nbsp;WRITE_ACP,&nbsp;FULL_CONTROL).<br>
+&nbsp;<br>
+:type&nbsp;email_address:&nbsp;string<br>
+:param&nbsp;email_address:&nbsp;The&nbsp;email&nbsp;address&nbsp;associated&nbsp;with&nbsp;the&nbsp;AWS<br>
+&nbsp;&nbsp;&nbsp;&nbsp;account&nbsp;your&nbsp;are&nbsp;granting&nbsp;the&nbsp;permission&nbsp;to.<br>
+&nbsp;<br>
+:type&nbsp;recursive:&nbsp;boolean<br>
+:param&nbsp;recursive:&nbsp;A&nbsp;boolean&nbsp;value&nbsp;to&nbsp;controls&nbsp;whether&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;command&nbsp;will&nbsp;apply&nbsp;the&nbsp;grant&nbsp;to&nbsp;all&nbsp;keys&nbsp;within&nbsp;the&nbsp;bucket<br>
+&nbsp;&nbsp;&nbsp;&nbsp;or&nbsp;not.&nbsp;&nbsp;The&nbsp;default&nbsp;value&nbsp;is&nbsp;False.&nbsp;&nbsp;By&nbsp;passing&nbsp;a&nbsp;True<br>
+&nbsp;&nbsp;&nbsp;&nbsp;value,&nbsp;the&nbsp;call&nbsp;will&nbsp;iterate&nbsp;through&nbsp;all&nbsp;keys&nbsp;in&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bucket&nbsp;and&nbsp;apply&nbsp;the&nbsp;same&nbsp;grant&nbsp;to&nbsp;each&nbsp;key.&nbsp;&nbsp;CAUTION:&nbsp;If<br>
+&nbsp;&nbsp;&nbsp;&nbsp;you&nbsp;have&nbsp;a&nbsp;lot&nbsp;of&nbsp;keys,&nbsp;this&nbsp;could&nbsp;take&nbsp;a&nbsp;long&nbsp;time!</tt></dd></dl>
+
+<dl><dt><a name="Key-add_user_grant"><strong>add_user_grant</strong></a>(self, permission, user_id, headers<font color="#909090">=None</font>, display_name<font color="#909090">=None</font>)</dt><dd><tt>Convenience&nbsp;method&nbsp;that&nbsp;provides&nbsp;a&nbsp;quick&nbsp;way&nbsp;to&nbsp;add&nbsp;a&nbsp;canonical<br>
+user&nbsp;grant&nbsp;to&nbsp;a&nbsp;key.&nbsp;&nbsp;This&nbsp;method&nbsp;retrieves&nbsp;the&nbsp;current&nbsp;ACL,<br>
+creates&nbsp;a&nbsp;new&nbsp;grant&nbsp;based&nbsp;on&nbsp;the&nbsp;parameters&nbsp;passed&nbsp;in,&nbsp;adds&nbsp;that<br>
+grant&nbsp;to&nbsp;the&nbsp;ACL&nbsp;and&nbsp;then&nbsp;PUT's&nbsp;the&nbsp;new&nbsp;ACL&nbsp;back&nbsp;to&nbsp;S3.<br>
+&nbsp;<br>
+:type&nbsp;permission:&nbsp;string<br>
+:param&nbsp;permission:&nbsp;The&nbsp;permission&nbsp;being&nbsp;granted.&nbsp;Should&nbsp;be&nbsp;one&nbsp;of:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(READ,&nbsp;WRITE,&nbsp;READ_ACP,&nbsp;WRITE_ACP,&nbsp;FULL_CONTROL).<br>
+&nbsp;<br>
+:type&nbsp;user_id:&nbsp;string<br>
+:param&nbsp;user_id:&nbsp;The&nbsp;canonical&nbsp;user&nbsp;id&nbsp;associated&nbsp;with&nbsp;the&nbsp;AWS<br>
+&nbsp;&nbsp;&nbsp;&nbsp;account&nbsp;your&nbsp;are&nbsp;granting&nbsp;the&nbsp;permission&nbsp;to.<br>
+&nbsp;<br>
+:type&nbsp;display_name:&nbsp;string<br>
+:param&nbsp;display_name:&nbsp;An&nbsp;option&nbsp;string&nbsp;containing&nbsp;the&nbsp;user's<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Display&nbsp;Name.&nbsp;&nbsp;Only&nbsp;required&nbsp;on&nbsp;Walrus.</tt></dd></dl>
+
+<dl><dt><a name="Key-change_storage_class"><strong>change_storage_class</strong></a>(self, new_storage_class, dst_bucket<font color="#909090">=None</font>, validate_dst_bucket<font color="#909090">=True</font>)</dt><dd><tt>Change&nbsp;the&nbsp;storage&nbsp;class&nbsp;of&nbsp;an&nbsp;existing&nbsp;key.<br>
+Depending&nbsp;on&nbsp;whether&nbsp;a&nbsp;different&nbsp;destination&nbsp;bucket&nbsp;is&nbsp;supplied<br>
+or&nbsp;not,&nbsp;this&nbsp;will&nbsp;either&nbsp;move&nbsp;the&nbsp;item&nbsp;within&nbsp;the&nbsp;bucket,&nbsp;preserving<br>
+all&nbsp;metadata&nbsp;and&nbsp;ACL&nbsp;info&nbsp;bucket&nbsp;changing&nbsp;the&nbsp;storage&nbsp;class&nbsp;or&nbsp;it<br>
+will&nbsp;copy&nbsp;the&nbsp;item&nbsp;to&nbsp;the&nbsp;provided&nbsp;destination&nbsp;bucket,&nbsp;also<br>
+preserving&nbsp;metadata&nbsp;and&nbsp;ACL&nbsp;info.<br>
+&nbsp;<br>
+:type&nbsp;new_storage_class:&nbsp;string<br>
+:param&nbsp;new_storage_class:&nbsp;The&nbsp;new&nbsp;storage&nbsp;class&nbsp;for&nbsp;the&nbsp;<a href="#Key">Key</a>.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Possible&nbsp;values&nbsp;are:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;STANDARD<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;REDUCED_REDUNDANCY<br>
+&nbsp;<br>
+:type&nbsp;dst_bucket:&nbsp;string<br>
+:param&nbsp;dst_bucket:&nbsp;The&nbsp;name&nbsp;of&nbsp;a&nbsp;destination&nbsp;bucket.&nbsp;&nbsp;If&nbsp;not<br>
+&nbsp;&nbsp;&nbsp;&nbsp;provided&nbsp;the&nbsp;current&nbsp;bucket&nbsp;of&nbsp;the&nbsp;key&nbsp;will&nbsp;be&nbsp;used.<br>
+&nbsp;<br>
+:type&nbsp;validate_dst_bucket:&nbsp;bool<br>
+:param&nbsp;validate_dst_bucket:&nbsp;If&nbsp;True,&nbsp;will&nbsp;validate&nbsp;the&nbsp;dst_bucket<br>
+&nbsp;&nbsp;&nbsp;&nbsp;by&nbsp;using&nbsp;an&nbsp;extra&nbsp;list&nbsp;request.</tt></dd></dl>
+
+<dl><dt><a name="Key-close"><strong>close</strong></a>(self, fast<font color="#909090">=False</font>)</dt><dd><tt>Close&nbsp;this&nbsp;key.<br>
+&nbsp;<br>
+:type&nbsp;fast:&nbsp;bool<br>
+:param&nbsp;fast:&nbsp;True&nbsp;if&nbsp;you&nbsp;want&nbsp;the&nbsp;connection&nbsp;to&nbsp;be&nbsp;closed&nbsp;without&nbsp;first<br>
+reading&nbsp;the&nbsp;content.&nbsp;This&nbsp;should&nbsp;only&nbsp;be&nbsp;used&nbsp;in&nbsp;cases&nbsp;where&nbsp;subsequent<br>
+calls&nbsp;don't&nbsp;need&nbsp;to&nbsp;return&nbsp;the&nbsp;content&nbsp;from&nbsp;the&nbsp;open&nbsp;HTTP&nbsp;connection.<br>
+Note:&nbsp;As&nbsp;explained&nbsp;at<br>
+<a href="http://docs.python.org/2/library/httplib.html#httplib.HTTPConnection.getresponse">http://docs.python.org/2/library/httplib.html#httplib.HTTPConnection.getresponse</a>,<br>
+callers&nbsp;must&nbsp;read&nbsp;the&nbsp;whole&nbsp;response&nbsp;before&nbsp;sending&nbsp;a&nbsp;new&nbsp;request&nbsp;to&nbsp;the<br>
+server.&nbsp;Calling&nbsp;<a href="#Key">Key</a>.<a href="#Key-close">close</a>(fast=True)&nbsp;and&nbsp;making&nbsp;a&nbsp;subsequent&nbsp;request&nbsp;to<br>
+the&nbsp;server&nbsp;will&nbsp;work&nbsp;because&nbsp;boto&nbsp;will&nbsp;get&nbsp;an&nbsp;httplib&nbsp;exception&nbsp;and<br>
+close/reopen&nbsp;the&nbsp;connection.</tt></dd></dl>
+
+<dl><dt><a name="Key-compute_md5"><strong>compute_md5</strong></a>(self, fp, size<font color="#909090">=None</font>)</dt><dd><tt>:type&nbsp;fp:&nbsp;file<br>
+:param&nbsp;fp:&nbsp;File&nbsp;pointer&nbsp;to&nbsp;the&nbsp;file&nbsp;to&nbsp;MD5&nbsp;hash.&nbsp;&nbsp;The&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;pointer&nbsp;will&nbsp;be&nbsp;reset&nbsp;to&nbsp;the&nbsp;same&nbsp;position&nbsp;before&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method&nbsp;returns.<br>
+&nbsp;<br>
+:type&nbsp;size:&nbsp;int<br>
+:param&nbsp;size:&nbsp;(optional)&nbsp;The&nbsp;Maximum&nbsp;number&nbsp;of&nbsp;bytes&nbsp;to&nbsp;read<br>
+&nbsp;&nbsp;&nbsp;&nbsp;from&nbsp;the&nbsp;file&nbsp;pointer&nbsp;(fp).&nbsp;This&nbsp;is&nbsp;useful&nbsp;when&nbsp;uploading<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;file&nbsp;in&nbsp;multiple&nbsp;parts&nbsp;where&nbsp;the&nbsp;file&nbsp;is&nbsp;being&nbsp;split<br>
+&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;place&nbsp;into&nbsp;different&nbsp;parts.&nbsp;Less&nbsp;bytes&nbsp;may&nbsp;be&nbsp;available.</tt></dd></dl>
+
+<dl><dt><a name="Key-copy"><strong>copy</strong></a>(self, dst_bucket, dst_key, metadata<font color="#909090">=None</font>, reduced_redundancy<font color="#909090">=False</font>, preserve_acl<font color="#909090">=False</font>, encrypt_key<font color="#909090">=False</font>, validate_dst_bucket<font color="#909090">=True</font>)</dt><dd><tt>Copy&nbsp;this&nbsp;<a href="#Key">Key</a>&nbsp;to&nbsp;another&nbsp;bucket.<br>
+&nbsp;<br>
+:type&nbsp;dst_bucket:&nbsp;string<br>
+:param&nbsp;dst_bucket:&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;destination&nbsp;bucket<br>
+&nbsp;<br>
+:type&nbsp;dst_key:&nbsp;string<br>
+:param&nbsp;dst_key:&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;destination&nbsp;key<br>
+&nbsp;<br>
+:type&nbsp;metadata:&nbsp;dict<br>
+:param&nbsp;metadata:&nbsp;Metadata&nbsp;to&nbsp;be&nbsp;associated&nbsp;with&nbsp;new&nbsp;key.&nbsp;&nbsp;If<br>
+&nbsp;&nbsp;&nbsp;&nbsp;metadata&nbsp;is&nbsp;supplied,&nbsp;it&nbsp;will&nbsp;replace&nbsp;the&nbsp;metadata&nbsp;of&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;source&nbsp;key&nbsp;being&nbsp;copied.&nbsp;&nbsp;If&nbsp;no&nbsp;metadata&nbsp;is&nbsp;supplied,&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;source&nbsp;key's&nbsp;metadata&nbsp;will&nbsp;be&nbsp;copied&nbsp;to&nbsp;the&nbsp;new&nbsp;key.<br>
+&nbsp;<br>
+:type&nbsp;reduced_redundancy:&nbsp;bool<br>
+:param&nbsp;reduced_redundancy:&nbsp;If&nbsp;True,&nbsp;this&nbsp;will&nbsp;force&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;storage&nbsp;class&nbsp;of&nbsp;the&nbsp;new&nbsp;<a href="#Key">Key</a>&nbsp;to&nbsp;be&nbsp;REDUCED_REDUNDANCY<br>
+&nbsp;&nbsp;&nbsp;&nbsp;regardless&nbsp;of&nbsp;the&nbsp;storage&nbsp;class&nbsp;of&nbsp;the&nbsp;key&nbsp;being&nbsp;copied.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;Reduced&nbsp;Redundancy&nbsp;Storage&nbsp;(RRS)&nbsp;feature&nbsp;of&nbsp;S3,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;provides&nbsp;lower&nbsp;redundancy&nbsp;at&nbsp;lower&nbsp;storage&nbsp;cost.<br>
+&nbsp;<br>
+:type&nbsp;preserve_acl:&nbsp;bool<br>
+:param&nbsp;preserve_acl:&nbsp;If&nbsp;True,&nbsp;the&nbsp;ACL&nbsp;from&nbsp;the&nbsp;source&nbsp;key&nbsp;will<br>
+&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;copied&nbsp;to&nbsp;the&nbsp;destination&nbsp;key.&nbsp;&nbsp;If&nbsp;False,&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;destination&nbsp;key&nbsp;will&nbsp;have&nbsp;the&nbsp;default&nbsp;ACL.&nbsp;&nbsp;Note&nbsp;that<br>
+&nbsp;&nbsp;&nbsp;&nbsp;preserving&nbsp;the&nbsp;ACL&nbsp;in&nbsp;the&nbsp;new&nbsp;key&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;will&nbsp;require&nbsp;two<br>
+&nbsp;&nbsp;&nbsp;&nbsp;additional&nbsp;API&nbsp;calls&nbsp;to&nbsp;S3,&nbsp;one&nbsp;to&nbsp;retrieve&nbsp;the&nbsp;current<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ACL&nbsp;and&nbsp;one&nbsp;to&nbsp;set&nbsp;that&nbsp;ACL&nbsp;on&nbsp;the&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>.&nbsp;&nbsp;If&nbsp;you<br>
+&nbsp;&nbsp;&nbsp;&nbsp;don't&nbsp;care&nbsp;about&nbsp;the&nbsp;ACL,&nbsp;a&nbsp;value&nbsp;of&nbsp;False&nbsp;will&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;significantly&nbsp;more&nbsp;efficient.<br>
+&nbsp;<br>
+:type&nbsp;encrypt_key:&nbsp;bool<br>
+:param&nbsp;encrypt_key:&nbsp;If&nbsp;True,&nbsp;the&nbsp;new&nbsp;copy&nbsp;of&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;will<br>
+&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;encrypted&nbsp;on&nbsp;the&nbsp;server-side&nbsp;by&nbsp;S3&nbsp;and&nbsp;will&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;an&nbsp;encrypted&nbsp;form&nbsp;while&nbsp;at&nbsp;rest&nbsp;in&nbsp;S3.<br>
+&nbsp;<br>
+:type&nbsp;validate_dst_bucket:&nbsp;bool<br>
+:param&nbsp;validate_dst_bucket:&nbsp;If&nbsp;True,&nbsp;will&nbsp;validate&nbsp;the&nbsp;dst_bucket<br>
+&nbsp;&nbsp;&nbsp;&nbsp;by&nbsp;using&nbsp;an&nbsp;extra&nbsp;list&nbsp;request.<br>
+&nbsp;<br>
+:rtype:&nbsp;:class:`boto.s3.key.<a href="#Key">Key</a>`&nbsp;or&nbsp;subclass<br>
+:returns:&nbsp;An&nbsp;instance&nbsp;of&nbsp;the&nbsp;newly&nbsp;created&nbsp;key&nbsp;<a href="__builtin__.html#object">object</a></tt></dd></dl>
+
+<dl><dt><a name="Key-delete"><strong>delete</strong></a>(self, headers<font color="#909090">=None</font>)</dt><dd><tt>Delete&nbsp;this&nbsp;key&nbsp;from&nbsp;S3</tt></dd></dl>
+
+<dl><dt><a name="Key-endElement"><strong>endElement</strong></a>(self, name, value, connection)</dt></dl>
+
+<dl><dt><a name="Key-exists"><strong>exists</strong></a>(self, headers<font color="#909090">=None</font>)</dt><dd><tt>Returns&nbsp;True&nbsp;if&nbsp;the&nbsp;key&nbsp;exists<br>
+&nbsp;<br>
+:rtype:&nbsp;bool<br>
+:return:&nbsp;Whether&nbsp;the&nbsp;key&nbsp;exists&nbsp;on&nbsp;S3</tt></dd></dl>
+
+<dl><dt><a name="Key-generate_url"><strong>generate_url</strong></a>(self, expires_in, method<font color="#909090">='GET'</font>, headers<font color="#909090">=None</font>, query_auth<font color="#909090">=True</font>, force_http<font color="#909090">=False</font>, response_headers<font color="#909090">=None</font>, expires_in_absolute<font color="#909090">=False</font>, version_id<font color="#909090">=None</font>, policy<font color="#909090">=None</font>, reduced_redundancy<font color="#909090">=False</font>, encrypt_key<font color="#909090">=False</font>)</dt><dd><tt>Generate&nbsp;a&nbsp;URL&nbsp;to&nbsp;access&nbsp;this&nbsp;key.<br>
+&nbsp;<br>
+:type&nbsp;expires_in:&nbsp;int<br>
+:param&nbsp;expires_in:&nbsp;How&nbsp;long&nbsp;the&nbsp;url&nbsp;is&nbsp;valid&nbsp;for,&nbsp;in&nbsp;seconds<br>
+&nbsp;<br>
+:type&nbsp;method:&nbsp;string<br>
+:param&nbsp;method:&nbsp;The&nbsp;method&nbsp;to&nbsp;use&nbsp;for&nbsp;retrieving&nbsp;the&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(default&nbsp;is&nbsp;GET)<br>
+&nbsp;<br>
+:type&nbsp;headers:&nbsp;dict<br>
+:param&nbsp;headers:&nbsp;Any&nbsp;headers&nbsp;to&nbsp;pass&nbsp;along&nbsp;in&nbsp;the&nbsp;request<br>
+&nbsp;<br>
+:type&nbsp;query_auth:&nbsp;bool<br>
+:param&nbsp;query_auth:<br>
+&nbsp;<br>
+:type&nbsp;force_http:&nbsp;bool<br>
+:param&nbsp;force_http:&nbsp;If&nbsp;True,&nbsp;http&nbsp;will&nbsp;be&nbsp;used&nbsp;instead&nbsp;of&nbsp;https.<br>
+&nbsp;<br>
+:type&nbsp;response_headers:&nbsp;dict<br>
+:param&nbsp;response_headers:&nbsp;A&nbsp;dictionary&nbsp;containing&nbsp;HTTP<br>
+&nbsp;&nbsp;&nbsp;&nbsp;headers/values&nbsp;that&nbsp;will&nbsp;override&nbsp;any&nbsp;headers&nbsp;associated<br>
+&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;the&nbsp;stored&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;in&nbsp;the&nbsp;response.&nbsp;&nbsp;See<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://goo.gl/EWOPb">http://goo.gl/EWOPb</a>&nbsp;for&nbsp;details.<br>
+&nbsp;<br>
+:type&nbsp;expires_in_absolute:&nbsp;bool<br>
+:param&nbsp;expires_in_absolute:<br>
+&nbsp;<br>
+:type&nbsp;version_id:&nbsp;string<br>
+:param&nbsp;version_id:&nbsp;The&nbsp;version_id&nbsp;of&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;to&nbsp;GET.&nbsp;If&nbsp;specified<br>
+&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;overrides&nbsp;any&nbsp;value&nbsp;in&nbsp;the&nbsp;key.<br>
+&nbsp;<br>
+:type&nbsp;policy:&nbsp;:class:`boto.s3.acl.CannedACLStrings`<br>
+:param&nbsp;policy:&nbsp;A&nbsp;canned&nbsp;ACL&nbsp;policy&nbsp;that&nbsp;will&nbsp;be&nbsp;applied&nbsp;to&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;new&nbsp;key&nbsp;in&nbsp;S3.<br>
+&nbsp;<br>
+:type&nbsp;reduced_redundancy:&nbsp;bool<br>
+:param&nbsp;reduced_redundancy:&nbsp;If&nbsp;True,&nbsp;this&nbsp;will&nbsp;set&nbsp;the&nbsp;storage<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;of&nbsp;the&nbsp;new&nbsp;<a href="#Key">Key</a>&nbsp;to&nbsp;be&nbsp;REDUCED_REDUNDANCY.&nbsp;The&nbsp;Reduced<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Redundancy&nbsp;Storage&nbsp;(RRS)&nbsp;feature&nbsp;of&nbsp;S3,&nbsp;provides&nbsp;lower<br>
+&nbsp;&nbsp;&nbsp;&nbsp;redundancy&nbsp;at&nbsp;lower&nbsp;storage&nbsp;cost.<br>
+&nbsp;<br>
+:type&nbsp;encrypt_key:&nbsp;bool<br>
+:param&nbsp;encrypt_key:&nbsp;If&nbsp;True,&nbsp;the&nbsp;new&nbsp;copy&nbsp;of&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;will<br>
+&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;encrypted&nbsp;on&nbsp;the&nbsp;server-side&nbsp;by&nbsp;S3&nbsp;and&nbsp;will&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;an&nbsp;encrypted&nbsp;form&nbsp;while&nbsp;at&nbsp;rest&nbsp;in&nbsp;S3.<br>
+&nbsp;<br>
+:rtype:&nbsp;string<br>
+:return:&nbsp;The&nbsp;URL&nbsp;to&nbsp;access&nbsp;the&nbsp;key</tt></dd></dl>
+
+<dl><dt><a name="Key-get_acl"><strong>get_acl</strong></a>(self, headers<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="Key-get_contents_as_string"><strong>get_contents_as_string</strong></a>(self, headers<font color="#909090">=None</font>, cb<font color="#909090">=None</font>, num_cb<font color="#909090">=10</font>, torrent<font color="#909090">=False</font>, version_id<font color="#909090">=None</font>, response_headers<font color="#909090">=None</font>)</dt><dd><tt>Retrieve&nbsp;an&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;from&nbsp;S3&nbsp;using&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;<a href="#Key">Key</a>&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;as&nbsp;the<br>
+key&nbsp;in&nbsp;S3.&nbsp;&nbsp;Return&nbsp;the&nbsp;contents&nbsp;of&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;as&nbsp;a&nbsp;string.<br>
+See&nbsp;get_contents_to_file&nbsp;method&nbsp;for&nbsp;details&nbsp;about&nbsp;the<br>
+parameters.<br>
+&nbsp;<br>
+:type&nbsp;headers:&nbsp;dict<br>
+:param&nbsp;headers:&nbsp;Any&nbsp;additional&nbsp;headers&nbsp;to&nbsp;send&nbsp;in&nbsp;the&nbsp;request<br>
+&nbsp;<br>
+:type&nbsp;cb:&nbsp;function<br>
+:param&nbsp;cb:&nbsp;a&nbsp;callback&nbsp;function&nbsp;that&nbsp;will&nbsp;be&nbsp;called&nbsp;to&nbsp;report<br>
+&nbsp;&nbsp;&nbsp;&nbsp;progress&nbsp;on&nbsp;the&nbsp;upload.&nbsp;&nbsp;The&nbsp;callback&nbsp;should&nbsp;accept&nbsp;two<br>
+&nbsp;&nbsp;&nbsp;&nbsp;integer&nbsp;parameters,&nbsp;the&nbsp;first&nbsp;representing&nbsp;the&nbsp;number&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bytes&nbsp;that&nbsp;have&nbsp;been&nbsp;successfully&nbsp;transmitted&nbsp;to&nbsp;S3&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;second&nbsp;representing&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;to&nbsp;be&nbsp;transmitted<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="__builtin__.html#object">object</a>.<br>
+&nbsp;<br>
+:type&nbsp;cb:&nbsp;int<br>
+:param&nbsp;num_cb:&nbsp;(optional)&nbsp;If&nbsp;a&nbsp;callback&nbsp;is&nbsp;specified&nbsp;with&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cb&nbsp;parameter&nbsp;this&nbsp;parameter&nbsp;determines&nbsp;the&nbsp;granularity&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;callback&nbsp;by&nbsp;defining&nbsp;the&nbsp;maximum&nbsp;number&nbsp;of&nbsp;times&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;callback&nbsp;will&nbsp;be&nbsp;called&nbsp;during&nbsp;the&nbsp;file&nbsp;transfer.<br>
+&nbsp;<br>
+:type&nbsp;torrent:&nbsp;bool<br>
+:param&nbsp;torrent:&nbsp;If&nbsp;True,&nbsp;returns&nbsp;the&nbsp;contents&nbsp;of&nbsp;a&nbsp;torrent&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;as&nbsp;a&nbsp;string.<br>
+&nbsp;<br>
+:type&nbsp;response_headers:&nbsp;dict<br>
+:param&nbsp;response_headers:&nbsp;A&nbsp;dictionary&nbsp;containing&nbsp;HTTP<br>
+&nbsp;&nbsp;&nbsp;&nbsp;headers/values&nbsp;that&nbsp;will&nbsp;override&nbsp;any&nbsp;headers&nbsp;associated<br>
+&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;the&nbsp;stored&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;in&nbsp;the&nbsp;response.&nbsp;&nbsp;See<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://goo.gl/EWOPb">http://goo.gl/EWOPb</a>&nbsp;for&nbsp;details.<br>
+&nbsp;<br>
+:type&nbsp;version_id:&nbsp;str<br>
+:param&nbsp;version_id:&nbsp;The&nbsp;ID&nbsp;of&nbsp;a&nbsp;particular&nbsp;version&nbsp;of&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;this&nbsp;parameter&nbsp;is&nbsp;not&nbsp;supplied&nbsp;but&nbsp;the&nbsp;<a href="#Key">Key</a>&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;has<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;``version_id``&nbsp;attribute,&nbsp;that&nbsp;value&nbsp;will&nbsp;be&nbsp;used&nbsp;when<br>
+&nbsp;&nbsp;&nbsp;&nbsp;retrieving&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>.&nbsp;&nbsp;You&nbsp;can&nbsp;set&nbsp;the&nbsp;<a href="#Key">Key</a>&nbsp;<a href="__builtin__.html#object">object</a>'s<br>
+&nbsp;&nbsp;&nbsp;&nbsp;``version_id``&nbsp;attribute&nbsp;to&nbsp;None&nbsp;to&nbsp;always&nbsp;grab&nbsp;the&nbsp;latest<br>
+&nbsp;&nbsp;&nbsp;&nbsp;version&nbsp;from&nbsp;a&nbsp;version-enabled&nbsp;bucket.<br>
+&nbsp;<br>
+:rtype:&nbsp;string<br>
+:returns:&nbsp;The&nbsp;contents&nbsp;of&nbsp;the&nbsp;file&nbsp;as&nbsp;a&nbsp;string</tt></dd></dl>
+
+<dl><dt><a name="Key-get_contents_to_file"><strong>get_contents_to_file</strong></a>(self, fp, headers<font color="#909090">=None</font>, cb<font color="#909090">=None</font>, num_cb<font color="#909090">=10</font>, torrent<font color="#909090">=False</font>, version_id<font color="#909090">=None</font>, res_download_handler<font color="#909090">=None</font>, response_headers<font color="#909090">=None</font>)</dt><dd><tt>Retrieve&nbsp;an&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;from&nbsp;S3&nbsp;using&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;<a href="#Key">Key</a>&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;as&nbsp;the<br>
+key&nbsp;in&nbsp;S3.&nbsp;&nbsp;Write&nbsp;the&nbsp;contents&nbsp;of&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;to&nbsp;the&nbsp;file&nbsp;pointed<br>
+to&nbsp;by&nbsp;'fp'.<br>
+&nbsp;<br>
+:type&nbsp;fp:&nbsp;File&nbsp;-like&nbsp;<a href="__builtin__.html#object">object</a><br>
+:param&nbsp;fp:<br>
+&nbsp;<br>
+:type&nbsp;headers:&nbsp;dict<br>
+:param&nbsp;headers:&nbsp;additional&nbsp;HTTP&nbsp;headers&nbsp;that&nbsp;will&nbsp;be&nbsp;sent&nbsp;with<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;GET&nbsp;request.<br>
+&nbsp;<br>
+:type&nbsp;cb:&nbsp;function<br>
+:param&nbsp;cb:&nbsp;a&nbsp;callback&nbsp;function&nbsp;that&nbsp;will&nbsp;be&nbsp;called&nbsp;to&nbsp;report<br>
+&nbsp;&nbsp;&nbsp;&nbsp;progress&nbsp;on&nbsp;the&nbsp;upload.&nbsp;&nbsp;The&nbsp;callback&nbsp;should&nbsp;accept&nbsp;two<br>
+&nbsp;&nbsp;&nbsp;&nbsp;integer&nbsp;parameters,&nbsp;the&nbsp;first&nbsp;representing&nbsp;the&nbsp;number&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bytes&nbsp;that&nbsp;have&nbsp;been&nbsp;successfully&nbsp;transmitted&nbsp;to&nbsp;S3&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;second&nbsp;representing&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;to&nbsp;be&nbsp;transmitted<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="__builtin__.html#object">object</a>.<br>
+&nbsp;<br>
+:type&nbsp;cb:&nbsp;int<br>
+:param&nbsp;num_cb:&nbsp;(optional)&nbsp;If&nbsp;a&nbsp;callback&nbsp;is&nbsp;specified&nbsp;with&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cb&nbsp;parameter&nbsp;this&nbsp;parameter&nbsp;determines&nbsp;the&nbsp;granularity&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;callback&nbsp;by&nbsp;defining&nbsp;the&nbsp;maximum&nbsp;number&nbsp;of&nbsp;times&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;callback&nbsp;will&nbsp;be&nbsp;called&nbsp;during&nbsp;the&nbsp;file&nbsp;transfer.<br>
+&nbsp;<br>
+:type&nbsp;torrent:&nbsp;bool<br>
+:param&nbsp;torrent:&nbsp;If&nbsp;True,&nbsp;returns&nbsp;the&nbsp;contents&nbsp;of&nbsp;a&nbsp;torrent<br>
+&nbsp;&nbsp;&nbsp;&nbsp;file&nbsp;as&nbsp;a&nbsp;string.<br>
+&nbsp;<br>
+:type&nbsp;res_upload_handler:&nbsp;ResumableDownloadHandler<br>
+:param&nbsp;res_download_handler:&nbsp;If&nbsp;provided,&nbsp;this&nbsp;handler&nbsp;will<br>
+&nbsp;&nbsp;&nbsp;&nbsp;perform&nbsp;the&nbsp;download.<br>
+&nbsp;<br>
+:type&nbsp;response_headers:&nbsp;dict<br>
+:param&nbsp;response_headers:&nbsp;A&nbsp;dictionary&nbsp;containing&nbsp;HTTP<br>
+&nbsp;&nbsp;&nbsp;&nbsp;headers/values&nbsp;that&nbsp;will&nbsp;override&nbsp;any&nbsp;headers&nbsp;associated<br>
+&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;the&nbsp;stored&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;in&nbsp;the&nbsp;response.&nbsp;&nbsp;See<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://goo.gl/EWOPb">http://goo.gl/EWOPb</a>&nbsp;for&nbsp;details.<br>
+&nbsp;<br>
+:type&nbsp;version_id:&nbsp;str<br>
+:param&nbsp;version_id:&nbsp;The&nbsp;ID&nbsp;of&nbsp;a&nbsp;particular&nbsp;version&nbsp;of&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;this&nbsp;parameter&nbsp;is&nbsp;not&nbsp;supplied&nbsp;but&nbsp;the&nbsp;<a href="#Key">Key</a>&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;has<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;``version_id``&nbsp;attribute,&nbsp;that&nbsp;value&nbsp;will&nbsp;be&nbsp;used&nbsp;when<br>
+&nbsp;&nbsp;&nbsp;&nbsp;retrieving&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>.&nbsp;&nbsp;You&nbsp;can&nbsp;set&nbsp;the&nbsp;<a href="#Key">Key</a>&nbsp;<a href="__builtin__.html#object">object</a>'s<br>
+&nbsp;&nbsp;&nbsp;&nbsp;``version_id``&nbsp;attribute&nbsp;to&nbsp;None&nbsp;to&nbsp;always&nbsp;grab&nbsp;the&nbsp;latest<br>
+&nbsp;&nbsp;&nbsp;&nbsp;version&nbsp;from&nbsp;a&nbsp;version-enabled&nbsp;bucket.</tt></dd></dl>
+
+<dl><dt><a name="Key-get_contents_to_filename"><strong>get_contents_to_filename</strong></a>(self, filename, headers<font color="#909090">=None</font>, cb<font color="#909090">=None</font>, num_cb<font color="#909090">=10</font>, torrent<font color="#909090">=False</font>, version_id<font color="#909090">=None</font>, res_download_handler<font color="#909090">=None</font>, response_headers<font color="#909090">=None</font>)</dt><dd><tt>Retrieve&nbsp;an&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;from&nbsp;S3&nbsp;using&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;<a href="#Key">Key</a>&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;as&nbsp;the<br>
+key&nbsp;in&nbsp;S3.&nbsp;&nbsp;Store&nbsp;contents&nbsp;of&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;to&nbsp;a&nbsp;file&nbsp;named&nbsp;by&nbsp;'filename'.<br>
+See&nbsp;get_contents_to_file&nbsp;method&nbsp;for&nbsp;details&nbsp;about&nbsp;the<br>
+parameters.<br>
+&nbsp;<br>
+:type&nbsp;filename:&nbsp;string<br>
+:param&nbsp;filename:&nbsp;The&nbsp;filename&nbsp;of&nbsp;where&nbsp;to&nbsp;put&nbsp;the&nbsp;file&nbsp;contents<br>
+&nbsp;<br>
+:type&nbsp;headers:&nbsp;dict<br>
+:param&nbsp;headers:&nbsp;Any&nbsp;additional&nbsp;headers&nbsp;to&nbsp;send&nbsp;in&nbsp;the&nbsp;request<br>
+&nbsp;<br>
+:type&nbsp;cb:&nbsp;function<br>
+:param&nbsp;cb:&nbsp;a&nbsp;callback&nbsp;function&nbsp;that&nbsp;will&nbsp;be&nbsp;called&nbsp;to&nbsp;report<br>
+&nbsp;&nbsp;&nbsp;&nbsp;progress&nbsp;on&nbsp;the&nbsp;upload.&nbsp;&nbsp;The&nbsp;callback&nbsp;should&nbsp;accept&nbsp;two<br>
+&nbsp;&nbsp;&nbsp;&nbsp;integer&nbsp;parameters,&nbsp;the&nbsp;first&nbsp;representing&nbsp;the&nbsp;number&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bytes&nbsp;that&nbsp;have&nbsp;been&nbsp;successfully&nbsp;transmitted&nbsp;to&nbsp;S3&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;second&nbsp;representing&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;to&nbsp;be&nbsp;transmitted<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="__builtin__.html#object">object</a>.<br>
+&nbsp;<br>
+:type&nbsp;cb:&nbsp;int<br>
+:param&nbsp;num_cb:&nbsp;(optional)&nbsp;If&nbsp;a&nbsp;callback&nbsp;is&nbsp;specified&nbsp;with&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cb&nbsp;parameter&nbsp;this&nbsp;parameter&nbsp;determines&nbsp;the&nbsp;granularity&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;callback&nbsp;by&nbsp;defining&nbsp;the&nbsp;maximum&nbsp;number&nbsp;of&nbsp;times&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;callback&nbsp;will&nbsp;be&nbsp;called&nbsp;during&nbsp;the&nbsp;file&nbsp;transfer.<br>
+&nbsp;<br>
+:type&nbsp;torrent:&nbsp;bool<br>
+:param&nbsp;torrent:&nbsp;If&nbsp;True,&nbsp;returns&nbsp;the&nbsp;contents&nbsp;of&nbsp;a&nbsp;torrent&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;as&nbsp;a&nbsp;string.<br>
+&nbsp;<br>
+:type&nbsp;res_upload_handler:&nbsp;ResumableDownloadHandler<br>
+:param&nbsp;res_download_handler:&nbsp;If&nbsp;provided,&nbsp;this&nbsp;handler&nbsp;will<br>
+&nbsp;&nbsp;&nbsp;&nbsp;perform&nbsp;the&nbsp;download.<br>
+&nbsp;<br>
+:type&nbsp;response_headers:&nbsp;dict<br>
+:param&nbsp;response_headers:&nbsp;A&nbsp;dictionary&nbsp;containing&nbsp;HTTP<br>
+&nbsp;&nbsp;&nbsp;&nbsp;headers/values&nbsp;that&nbsp;will&nbsp;override&nbsp;any&nbsp;headers&nbsp;associated<br>
+&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;the&nbsp;stored&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;in&nbsp;the&nbsp;response.&nbsp;&nbsp;See<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://goo.gl/EWOPb">http://goo.gl/EWOPb</a>&nbsp;for&nbsp;details.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+:type&nbsp;version_id:&nbsp;str<br>
+:param&nbsp;version_id:&nbsp;The&nbsp;ID&nbsp;of&nbsp;a&nbsp;particular&nbsp;version&nbsp;of&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;this&nbsp;parameter&nbsp;is&nbsp;not&nbsp;supplied&nbsp;but&nbsp;the&nbsp;<a href="#Key">Key</a>&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;has<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;``version_id``&nbsp;attribute,&nbsp;that&nbsp;value&nbsp;will&nbsp;be&nbsp;used&nbsp;when<br>
+&nbsp;&nbsp;&nbsp;&nbsp;retrieving&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>.&nbsp;&nbsp;You&nbsp;can&nbsp;set&nbsp;the&nbsp;<a href="#Key">Key</a>&nbsp;<a href="__builtin__.html#object">object</a>'s<br>
+&nbsp;&nbsp;&nbsp;&nbsp;``version_id``&nbsp;attribute&nbsp;to&nbsp;None&nbsp;to&nbsp;always&nbsp;grab&nbsp;the&nbsp;latest<br>
+&nbsp;&nbsp;&nbsp;&nbsp;version&nbsp;from&nbsp;a&nbsp;version-enabled&nbsp;bucket.</tt></dd></dl>
+
+<dl><dt><a name="Key-get_file"><strong>get_file</strong></a>(self, fp, headers<font color="#909090">=None</font>, cb<font color="#909090">=None</font>, num_cb<font color="#909090">=10</font>, torrent<font color="#909090">=False</font>, version_id<font color="#909090">=None</font>, override_num_retries<font color="#909090">=None</font>, response_headers<font color="#909090">=None</font>)</dt><dd><tt>Retrieves&nbsp;a&nbsp;file&nbsp;from&nbsp;an&nbsp;S3&nbsp;<a href="#Key">Key</a><br>
+&nbsp;<br>
+:type&nbsp;fp:&nbsp;file<br>
+:param&nbsp;fp:&nbsp;File&nbsp;pointer&nbsp;to&nbsp;put&nbsp;the&nbsp;data&nbsp;into<br>
+&nbsp;<br>
+:type&nbsp;headers:&nbsp;string<br>
+:param:&nbsp;headers&nbsp;to&nbsp;send&nbsp;when&nbsp;retrieving&nbsp;the&nbsp;files<br>
+&nbsp;<br>
+:type&nbsp;cb:&nbsp;function<br>
+:param&nbsp;cb:&nbsp;a&nbsp;callback&nbsp;function&nbsp;that&nbsp;will&nbsp;be&nbsp;called&nbsp;to&nbsp;report<br>
+&nbsp;&nbsp;&nbsp;&nbsp;progress&nbsp;on&nbsp;the&nbsp;upload.&nbsp;&nbsp;The&nbsp;callback&nbsp;should&nbsp;accept&nbsp;two<br>
+&nbsp;&nbsp;&nbsp;&nbsp;integer&nbsp;parameters,&nbsp;the&nbsp;first&nbsp;representing&nbsp;the&nbsp;number&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bytes&nbsp;that&nbsp;have&nbsp;been&nbsp;successfully&nbsp;transmitted&nbsp;to&nbsp;S3&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;second&nbsp;representing&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;to&nbsp;be&nbsp;transmitted<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="__builtin__.html#object">object</a>.<br>
+&nbsp;<br>
+:type&nbsp;cb:&nbsp;int<br>
+:param&nbsp;num_cb:&nbsp;(optional)&nbsp;If&nbsp;a&nbsp;callback&nbsp;is&nbsp;specified&nbsp;with&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cb&nbsp;parameter&nbsp;this&nbsp;parameter&nbsp;determines&nbsp;the&nbsp;granularity&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;callback&nbsp;by&nbsp;defining&nbsp;the&nbsp;maximum&nbsp;number&nbsp;of&nbsp;times&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;callback&nbsp;will&nbsp;be&nbsp;called&nbsp;during&nbsp;the&nbsp;file&nbsp;transfer.<br>
+&nbsp;<br>
+:type&nbsp;torrent:&nbsp;bool<br>
+:param&nbsp;torrent:&nbsp;Flag&nbsp;for&nbsp;whether&nbsp;to&nbsp;get&nbsp;a&nbsp;torrent&nbsp;for&nbsp;the&nbsp;file<br>
+&nbsp;<br>
+:type&nbsp;override_num_retries:&nbsp;int<br>
+:param&nbsp;override_num_retries:&nbsp;If&nbsp;not&nbsp;None&nbsp;will&nbsp;override&nbsp;configured<br>
+&nbsp;&nbsp;&nbsp;&nbsp;num_retries&nbsp;parameter&nbsp;for&nbsp;underlying&nbsp;GET.<br>
+&nbsp;<br>
+:type&nbsp;response_headers:&nbsp;dict<br>
+:param&nbsp;response_headers:&nbsp;A&nbsp;dictionary&nbsp;containing&nbsp;HTTP<br>
+&nbsp;&nbsp;&nbsp;&nbsp;headers/values&nbsp;that&nbsp;will&nbsp;override&nbsp;any&nbsp;headers&nbsp;associated<br>
+&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;the&nbsp;stored&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;in&nbsp;the&nbsp;response.&nbsp;&nbsp;See<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://goo.gl/EWOPb">http://goo.gl/EWOPb</a>&nbsp;for&nbsp;details.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+:type&nbsp;version_id:&nbsp;str<br>
+:param&nbsp;version_id:&nbsp;The&nbsp;ID&nbsp;of&nbsp;a&nbsp;particular&nbsp;version&nbsp;of&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;this&nbsp;parameter&nbsp;is&nbsp;not&nbsp;supplied&nbsp;but&nbsp;the&nbsp;<a href="#Key">Key</a>&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;has<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;``version_id``&nbsp;attribute,&nbsp;that&nbsp;value&nbsp;will&nbsp;be&nbsp;used&nbsp;when<br>
+&nbsp;&nbsp;&nbsp;&nbsp;retrieving&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>.&nbsp;&nbsp;You&nbsp;can&nbsp;set&nbsp;the&nbsp;<a href="#Key">Key</a>&nbsp;<a href="__builtin__.html#object">object</a>'s<br>
+&nbsp;&nbsp;&nbsp;&nbsp;``version_id``&nbsp;attribute&nbsp;to&nbsp;None&nbsp;to&nbsp;always&nbsp;grab&nbsp;the&nbsp;latest<br>
+&nbsp;&nbsp;&nbsp;&nbsp;version&nbsp;from&nbsp;a&nbsp;version-enabled&nbsp;bucket.</tt></dd></dl>
+
+<dl><dt><a name="Key-get_md5_from_hexdigest"><strong>get_md5_from_hexdigest</strong></a>(self, md5_hexdigest)</dt><dd><tt>A&nbsp;utility&nbsp;function&nbsp;to&nbsp;create&nbsp;the&nbsp;2-tuple&nbsp;(md5hexdigest,&nbsp;base64md5)<br>
+from&nbsp;just&nbsp;having&nbsp;a&nbsp;precalculated&nbsp;md5_hexdigest.</tt></dd></dl>
+
+<dl><dt><a name="Key-get_metadata"><strong>get_metadata</strong></a>(self, name)</dt></dl>
+
+<dl><dt><a name="Key-get_redirect"><strong>get_redirect</strong></a>(self)</dt><dd><tt>Return&nbsp;the&nbsp;redirect&nbsp;location&nbsp;configured&nbsp;for&nbsp;this&nbsp;key.<br>
+&nbsp;<br>
+If&nbsp;no&nbsp;redirect&nbsp;is&nbsp;configured&nbsp;(via&nbsp;set_redirect),&nbsp;then&nbsp;None<br>
+will&nbsp;be&nbsp;returned.</tt></dd></dl>
+
+<dl><dt><a name="Key-get_torrent_file"><strong>get_torrent_file</strong></a>(self, fp, headers<font color="#909090">=None</font>, cb<font color="#909090">=None</font>, num_cb<font color="#909090">=10</font>)</dt><dd><tt>Get&nbsp;a&nbsp;torrent&nbsp;file&nbsp;(see&nbsp;to&nbsp;get_file)<br>
+&nbsp;<br>
+:type&nbsp;fp:&nbsp;file<br>
+:param&nbsp;fp:&nbsp;The&nbsp;file&nbsp;pointer&nbsp;of&nbsp;where&nbsp;to&nbsp;put&nbsp;the&nbsp;torrent<br>
+&nbsp;<br>
+:type&nbsp;headers:&nbsp;dict<br>
+:param&nbsp;headers:&nbsp;Headers&nbsp;to&nbsp;be&nbsp;passed<br>
+&nbsp;<br>
+:type&nbsp;cb:&nbsp;function<br>
+:param&nbsp;cb:&nbsp;a&nbsp;callback&nbsp;function&nbsp;that&nbsp;will&nbsp;be&nbsp;called&nbsp;to&nbsp;report<br>
+&nbsp;&nbsp;&nbsp;&nbsp;progress&nbsp;on&nbsp;the&nbsp;upload.&nbsp;&nbsp;The&nbsp;callback&nbsp;should&nbsp;accept&nbsp;two<br>
+&nbsp;&nbsp;&nbsp;&nbsp;integer&nbsp;parameters,&nbsp;the&nbsp;first&nbsp;representing&nbsp;the&nbsp;number&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bytes&nbsp;that&nbsp;have&nbsp;been&nbsp;successfully&nbsp;transmitted&nbsp;to&nbsp;S3&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;second&nbsp;representing&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;to&nbsp;be&nbsp;transmitted<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="__builtin__.html#object">object</a>.<br>
+&nbsp;<br>
+:type&nbsp;cb:&nbsp;int<br>
+:param&nbsp;num_cb:&nbsp;(optional)&nbsp;If&nbsp;a&nbsp;callback&nbsp;is&nbsp;specified&nbsp;with&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cb&nbsp;parameter&nbsp;this&nbsp;parameter&nbsp;determines&nbsp;the&nbsp;granularity&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;callback&nbsp;by&nbsp;defining&nbsp;the&nbsp;maximum&nbsp;number&nbsp;of&nbsp;times&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;callback&nbsp;will&nbsp;be&nbsp;called&nbsp;during&nbsp;the&nbsp;file&nbsp;transfer.</tt></dd></dl>
+
+<dl><dt><a name="Key-get_xml_acl"><strong>get_xml_acl</strong></a>(self, headers<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="Key-handle_addl_headers"><strong>handle_addl_headers</strong></a>(self, headers)</dt><dd><tt>Used&nbsp;by&nbsp;<a href="#Key">Key</a>&nbsp;subclasses&nbsp;to&nbsp;do&nbsp;additional,&nbsp;provider-specific<br>
+processing&nbsp;of&nbsp;response&nbsp;headers.&nbsp;No-op&nbsp;for&nbsp;this&nbsp;base&nbsp;class.</tt></dd></dl>
+
+<dl><dt><a name="Key-handle_encryption_headers"><strong>handle_encryption_headers</strong></a>(self, resp)</dt></dl>
+
+<dl><dt><a name="Key-handle_restore_headers"><strong>handle_restore_headers</strong></a>(self, response)</dt></dl>
+
+<dl><dt><a name="Key-handle_version_headers"><strong>handle_version_headers</strong></a>(self, resp, force<font color="#909090">=False</font>)</dt></dl>
+
+<dl><dt><a name="Key-make_public"><strong>make_public</strong></a>(self, headers<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="Key-next"><strong>next</strong></a>(self)</dt><dd><tt>By&nbsp;providing&nbsp;a&nbsp;next&nbsp;method,&nbsp;the&nbsp;key&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;supports&nbsp;use&nbsp;as&nbsp;an&nbsp;iterator.<br>
+For&nbsp;example,&nbsp;you&nbsp;can&nbsp;now&nbsp;say:<br>
+&nbsp;<br>
+for&nbsp;bytes&nbsp;in&nbsp;key:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;write&nbsp;bytes&nbsp;to&nbsp;a&nbsp;file&nbsp;or&nbsp;whatever<br>
+&nbsp;<br>
+All&nbsp;of&nbsp;the&nbsp;HTTP&nbsp;connection&nbsp;stuff&nbsp;is&nbsp;handled&nbsp;for&nbsp;you.</tt></dd></dl>
+
+<dl><dt><a name="Key-open"><strong>open</strong></a>(self, mode<font color="#909090">='r'</font>, headers<font color="#909090">=None</font>, query_args<font color="#909090">=None</font>, override_num_retries<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="Key-open_read"><strong>open_read</strong></a>(self, headers<font color="#909090">=None</font>, query_args<font color="#909090">=''</font>, override_num_retries<font color="#909090">=None</font>, response_headers<font color="#909090">=None</font>)</dt><dd><tt>Open&nbsp;this&nbsp;key&nbsp;for&nbsp;reading<br>
+&nbsp;<br>
+:type&nbsp;headers:&nbsp;dict<br>
+:param&nbsp;headers:&nbsp;Headers&nbsp;to&nbsp;pass&nbsp;in&nbsp;the&nbsp;web&nbsp;request<br>
+&nbsp;<br>
+:type&nbsp;query_args:&nbsp;string<br>
+:param&nbsp;query_args:&nbsp;Arguments&nbsp;to&nbsp;pass&nbsp;in&nbsp;the&nbsp;query&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(ie,&nbsp;'torrent')<br>
+&nbsp;<br>
+:type&nbsp;override_num_retries:&nbsp;int<br>
+:param&nbsp;override_num_retries:&nbsp;If&nbsp;not&nbsp;None&nbsp;will&nbsp;override&nbsp;configured<br>
+&nbsp;&nbsp;&nbsp;&nbsp;num_retries&nbsp;parameter&nbsp;for&nbsp;underlying&nbsp;GET.<br>
+&nbsp;<br>
+:type&nbsp;response_headers:&nbsp;dict<br>
+:param&nbsp;response_headers:&nbsp;A&nbsp;dictionary&nbsp;containing&nbsp;HTTP<br>
+&nbsp;&nbsp;&nbsp;&nbsp;headers/values&nbsp;that&nbsp;will&nbsp;override&nbsp;any&nbsp;headers&nbsp;associated<br>
+&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;the&nbsp;stored&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;in&nbsp;the&nbsp;response.&nbsp;&nbsp;See<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://goo.gl/EWOPb">http://goo.gl/EWOPb</a>&nbsp;for&nbsp;details.</tt></dd></dl>
+
+<dl><dt><a name="Key-open_write"><strong>open_write</strong></a>(self, headers<font color="#909090">=None</font>, override_num_retries<font color="#909090">=None</font>)</dt><dd><tt>Open&nbsp;this&nbsp;key&nbsp;for&nbsp;writing.<br>
+Not&nbsp;yet&nbsp;implemented<br>
+&nbsp;<br>
+:type&nbsp;headers:&nbsp;dict<br>
+:param&nbsp;headers:&nbsp;Headers&nbsp;to&nbsp;pass&nbsp;in&nbsp;the&nbsp;write&nbsp;request<br>
+&nbsp;<br>
+:type&nbsp;override_num_retries:&nbsp;int<br>
+:param&nbsp;override_num_retries:&nbsp;If&nbsp;not&nbsp;None&nbsp;will&nbsp;override&nbsp;configured<br>
+&nbsp;&nbsp;&nbsp;&nbsp;num_retries&nbsp;parameter&nbsp;for&nbsp;underlying&nbsp;PUT.</tt></dd></dl>
+
+<dl><dt><a name="Key-read"><strong>read</strong></a>(self, size<font color="#909090">=0</font>)</dt></dl>
+
+<dl><dt><a name="Key-restore"><strong>restore</strong></a>(self, days, headers<font color="#909090">=None</font>)</dt><dd><tt>Restore&nbsp;an&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;from&nbsp;an&nbsp;archive.<br>
+&nbsp;<br>
+:type&nbsp;days:&nbsp;int<br>
+:param&nbsp;days:&nbsp;The&nbsp;lifetime&nbsp;of&nbsp;the&nbsp;restored&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;(must<br>
+&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;at&nbsp;least&nbsp;1&nbsp;day).&nbsp;&nbsp;If&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;is&nbsp;already&nbsp;restored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;then&nbsp;this&nbsp;parameter&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;readjust&nbsp;the&nbsp;lifetime<br>
+&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;the&nbsp;restored&nbsp;<a href="__builtin__.html#object">object</a>.&nbsp;&nbsp;In&nbsp;this&nbsp;case,&nbsp;the&nbsp;days<br>
+&nbsp;&nbsp;&nbsp;&nbsp;param&nbsp;is&nbsp;with&nbsp;respect&nbsp;to&nbsp;the&nbsp;initial&nbsp;time&nbsp;of&nbsp;the&nbsp;request.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;has&nbsp;not&nbsp;been&nbsp;restored,&nbsp;this&nbsp;param&nbsp;is&nbsp;with<br>
+&nbsp;&nbsp;&nbsp;&nbsp;respect&nbsp;to&nbsp;the&nbsp;completion&nbsp;time&nbsp;of&nbsp;the&nbsp;request.</tt></dd></dl>
+
+<dl><dt><a name="Key-send_file"><strong>send_file</strong></a>(self, fp, headers<font color="#909090">=None</font>, cb<font color="#909090">=None</font>, num_cb<font color="#909090">=10</font>, query_args<font color="#909090">=None</font>, chunked_transfer<font color="#909090">=False</font>, size<font color="#909090">=None</font>)</dt><dd><tt>Upload&nbsp;a&nbsp;file&nbsp;to&nbsp;a&nbsp;key&nbsp;into&nbsp;a&nbsp;bucket&nbsp;on&nbsp;S3.<br>
+&nbsp;<br>
+:type&nbsp;fp:&nbsp;file<br>
+:param&nbsp;fp:&nbsp;The&nbsp;file&nbsp;pointer&nbsp;to&nbsp;upload.&nbsp;The&nbsp;file&nbsp;pointer&nbsp;must<br>
+&nbsp;&nbsp;&nbsp;&nbsp;point&nbsp;point&nbsp;at&nbsp;the&nbsp;offset&nbsp;from&nbsp;which&nbsp;you&nbsp;wish&nbsp;to&nbsp;upload.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ie.&nbsp;if&nbsp;uploading&nbsp;the&nbsp;full&nbsp;file,&nbsp;it&nbsp;should&nbsp;point&nbsp;at&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;start&nbsp;of&nbsp;the&nbsp;file.&nbsp;Normally&nbsp;when&nbsp;a&nbsp;file&nbsp;is&nbsp;opened&nbsp;for<br>
+&nbsp;&nbsp;&nbsp;&nbsp;reading,&nbsp;the&nbsp;fp&nbsp;will&nbsp;point&nbsp;at&nbsp;the&nbsp;first&nbsp;byte.&nbsp;&nbsp;See&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bytes&nbsp;parameter&nbsp;below&nbsp;for&nbsp;more&nbsp;info.<br>
+&nbsp;<br>
+:type&nbsp;headers:&nbsp;dict<br>
+:param&nbsp;headers:&nbsp;The&nbsp;headers&nbsp;to&nbsp;pass&nbsp;along&nbsp;with&nbsp;the&nbsp;PUT&nbsp;request<br>
+&nbsp;<br>
+:type&nbsp;num_cb:&nbsp;int<br>
+:param&nbsp;num_cb:&nbsp;(optional)&nbsp;If&nbsp;a&nbsp;callback&nbsp;is&nbsp;specified&nbsp;with&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cb&nbsp;parameter&nbsp;this&nbsp;parameter&nbsp;determines&nbsp;the&nbsp;granularity&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;callback&nbsp;by&nbsp;defining&nbsp;the&nbsp;maximum&nbsp;number&nbsp;of&nbsp;times&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;callback&nbsp;will&nbsp;be&nbsp;called&nbsp;during&nbsp;the&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;transfer.&nbsp;Providing&nbsp;a&nbsp;negative&nbsp;integer&nbsp;will&nbsp;cause&nbsp;your<br>
+&nbsp;&nbsp;&nbsp;&nbsp;callback&nbsp;to&nbsp;be&nbsp;called&nbsp;with&nbsp;each&nbsp;buffer&nbsp;read.<br>
+&nbsp;<br>
+:type&nbsp;query_args:&nbsp;string<br>
+:param&nbsp;query_args:&nbsp;(optional)&nbsp;Arguments&nbsp;to&nbsp;pass&nbsp;in&nbsp;the&nbsp;query&nbsp;string.<br>
+&nbsp;<br>
+:type&nbsp;chunked_transfer:&nbsp;boolean<br>
+:param&nbsp;chunked_transfer:&nbsp;(optional)&nbsp;If&nbsp;true,&nbsp;we&nbsp;use&nbsp;chunked<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Transfer-Encoding.<br>
+&nbsp;<br>
+:type&nbsp;size:&nbsp;int<br>
+:param&nbsp;size:&nbsp;(optional)&nbsp;The&nbsp;Maximum&nbsp;number&nbsp;of&nbsp;bytes&nbsp;to&nbsp;read<br>
+&nbsp;&nbsp;&nbsp;&nbsp;from&nbsp;the&nbsp;file&nbsp;pointer&nbsp;(fp).&nbsp;This&nbsp;is&nbsp;useful&nbsp;when&nbsp;uploading<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;file&nbsp;in&nbsp;multiple&nbsp;parts&nbsp;where&nbsp;you&nbsp;are&nbsp;splitting&nbsp;the&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;up&nbsp;into&nbsp;different&nbsp;ranges&nbsp;to&nbsp;be&nbsp;uploaded.&nbsp;If&nbsp;not&nbsp;specified,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;default&nbsp;behaviour&nbsp;is&nbsp;to&nbsp;read&nbsp;all&nbsp;bytes&nbsp;from&nbsp;the&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;pointer.&nbsp;Less&nbsp;bytes&nbsp;may&nbsp;be&nbsp;available.</tt></dd></dl>
+
+<dl><dt><a name="Key-set_acl"><strong>set_acl</strong></a>(self, acl_str, headers<font color="#909090">=None</font>)</dt><dd><tt>#&nbsp;convenience&nbsp;methods&nbsp;for&nbsp;setting/getting&nbsp;ACL</tt></dd></dl>
+
+<dl><dt><a name="Key-set_canned_acl"><strong>set_canned_acl</strong></a>(self, acl_str, headers<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="Key-set_contents_from_file"><strong>set_contents_from_file</strong></a>(self, fp, headers<font color="#909090">=None</font>, replace<font color="#909090">=True</font>, cb<font color="#909090">=None</font>, num_cb<font color="#909090">=10</font>, policy<font color="#909090">=None</font>, md5<font color="#909090">=None</font>, reduced_redundancy<font color="#909090">=False</font>, query_args<font color="#909090">=None</font>, encrypt_key<font color="#909090">=False</font>, size<font color="#909090">=None</font>, rewind<font color="#909090">=False</font>)</dt><dd><tt>Store&nbsp;an&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;in&nbsp;S3&nbsp;using&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;<a href="#Key">Key</a>&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;as&nbsp;the<br>
+key&nbsp;in&nbsp;S3&nbsp;and&nbsp;the&nbsp;contents&nbsp;of&nbsp;the&nbsp;file&nbsp;pointed&nbsp;to&nbsp;by&nbsp;'fp'&nbsp;as&nbsp;the<br>
+contents.&nbsp;The&nbsp;data&nbsp;is&nbsp;read&nbsp;from&nbsp;'fp'&nbsp;from&nbsp;its&nbsp;current&nbsp;position&nbsp;until<br>
+'size'&nbsp;bytes&nbsp;have&nbsp;been&nbsp;read&nbsp;or&nbsp;EOF.<br>
+&nbsp;<br>
+:type&nbsp;fp:&nbsp;file<br>
+:param&nbsp;fp:&nbsp;the&nbsp;file&nbsp;whose&nbsp;contents&nbsp;to&nbsp;upload<br>
+&nbsp;<br>
+:type&nbsp;headers:&nbsp;dict<br>
+:param&nbsp;headers:&nbsp;Additional&nbsp;HTTP&nbsp;headers&nbsp;that&nbsp;will&nbsp;be&nbsp;sent&nbsp;with<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;PUT&nbsp;request.<br>
+&nbsp;<br>
+:type&nbsp;replace:&nbsp;bool<br>
+:param&nbsp;replace:&nbsp;If&nbsp;this&nbsp;parameter&nbsp;is&nbsp;False,&nbsp;the&nbsp;method&nbsp;will<br>
+&nbsp;&nbsp;&nbsp;&nbsp;first&nbsp;check&nbsp;to&nbsp;see&nbsp;if&nbsp;an&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;exists&nbsp;in&nbsp;the&nbsp;bucket&nbsp;with<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;same&nbsp;key.&nbsp;&nbsp;If&nbsp;it&nbsp;does,&nbsp;it&nbsp;won't&nbsp;overwrite&nbsp;it.&nbsp;&nbsp;The<br>
+&nbsp;&nbsp;&nbsp;&nbsp;default&nbsp;value&nbsp;is&nbsp;True&nbsp;which&nbsp;will&nbsp;overwrite&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>.<br>
+&nbsp;<br>
+:type&nbsp;cb:&nbsp;function<br>
+:param&nbsp;cb:&nbsp;a&nbsp;callback&nbsp;function&nbsp;that&nbsp;will&nbsp;be&nbsp;called&nbsp;to&nbsp;report<br>
+&nbsp;&nbsp;&nbsp;&nbsp;progress&nbsp;on&nbsp;the&nbsp;upload.&nbsp;&nbsp;The&nbsp;callback&nbsp;should&nbsp;accept&nbsp;two<br>
+&nbsp;&nbsp;&nbsp;&nbsp;integer&nbsp;parameters,&nbsp;the&nbsp;first&nbsp;representing&nbsp;the&nbsp;number&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bytes&nbsp;that&nbsp;have&nbsp;been&nbsp;successfully&nbsp;transmitted&nbsp;to&nbsp;S3&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;second&nbsp;representing&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;to&nbsp;be&nbsp;transmitted<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="__builtin__.html#object">object</a>.<br>
+&nbsp;<br>
+:type&nbsp;num_cb:&nbsp;int<br>
+:param&nbsp;num_cb:&nbsp;(optional)&nbsp;If&nbsp;a&nbsp;callback&nbsp;is&nbsp;specified&nbsp;with&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cb&nbsp;parameter&nbsp;this&nbsp;parameter&nbsp;determines&nbsp;the&nbsp;granularity&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;callback&nbsp;by&nbsp;defining&nbsp;the&nbsp;maximum&nbsp;number&nbsp;of&nbsp;times&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;callback&nbsp;will&nbsp;be&nbsp;called&nbsp;during&nbsp;the&nbsp;file&nbsp;transfer.<br>
+&nbsp;<br>
+:type&nbsp;policy:&nbsp;:class:`boto.s3.acl.CannedACLStrings`<br>
+:param&nbsp;policy:&nbsp;A&nbsp;canned&nbsp;ACL&nbsp;policy&nbsp;that&nbsp;will&nbsp;be&nbsp;applied&nbsp;to&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;new&nbsp;key&nbsp;in&nbsp;S3.<br>
+&nbsp;<br>
+:type&nbsp;md5:&nbsp;A&nbsp;tuple&nbsp;containing&nbsp;the&nbsp;hexdigest&nbsp;version&nbsp;of&nbsp;the&nbsp;MD5<br>
+&nbsp;&nbsp;&nbsp;&nbsp;checksum&nbsp;of&nbsp;the&nbsp;file&nbsp;as&nbsp;the&nbsp;first&nbsp;element&nbsp;and&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Base64-encoded&nbsp;version&nbsp;of&nbsp;the&nbsp;plain&nbsp;checksum&nbsp;as&nbsp;the&nbsp;second<br>
+&nbsp;&nbsp;&nbsp;&nbsp;element.&nbsp;&nbsp;This&nbsp;is&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;compute_md5&nbsp;method.<br>
+:param&nbsp;md5:&nbsp;If&nbsp;you&nbsp;need&nbsp;to&nbsp;compute&nbsp;the&nbsp;MD5&nbsp;for&nbsp;any&nbsp;reason<br>
+&nbsp;&nbsp;&nbsp;&nbsp;prior&nbsp;to&nbsp;upload,&nbsp;it's&nbsp;silly&nbsp;to&nbsp;have&nbsp;to&nbsp;do&nbsp;it&nbsp;twice&nbsp;so&nbsp;this<br>
+&nbsp;&nbsp;&nbsp;&nbsp;param,&nbsp;if&nbsp;present,&nbsp;will&nbsp;be&nbsp;used&nbsp;as&nbsp;the&nbsp;MD5&nbsp;values&nbsp;of&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;file.&nbsp;&nbsp;Otherwise,&nbsp;the&nbsp;checksum&nbsp;will&nbsp;be&nbsp;computed.<br>
+&nbsp;<br>
+:type&nbsp;reduced_redundancy:&nbsp;bool<br>
+:param&nbsp;reduced_redundancy:&nbsp;If&nbsp;True,&nbsp;this&nbsp;will&nbsp;set&nbsp;the&nbsp;storage<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;of&nbsp;the&nbsp;new&nbsp;<a href="#Key">Key</a>&nbsp;to&nbsp;be&nbsp;REDUCED_REDUNDANCY.&nbsp;The&nbsp;Reduced<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Redundancy&nbsp;Storage&nbsp;(RRS)&nbsp;feature&nbsp;of&nbsp;S3,&nbsp;provides&nbsp;lower<br>
+&nbsp;&nbsp;&nbsp;&nbsp;redundancy&nbsp;at&nbsp;lower&nbsp;storage&nbsp;cost.<br>
+&nbsp;<br>
+:type&nbsp;encrypt_key:&nbsp;bool<br>
+:param&nbsp;encrypt_key:&nbsp;If&nbsp;True,&nbsp;the&nbsp;new&nbsp;copy&nbsp;of&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;will<br>
+&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;encrypted&nbsp;on&nbsp;the&nbsp;server-side&nbsp;by&nbsp;S3&nbsp;and&nbsp;will&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;an&nbsp;encrypted&nbsp;form&nbsp;while&nbsp;at&nbsp;rest&nbsp;in&nbsp;S3.<br>
+&nbsp;<br>
+:type&nbsp;size:&nbsp;int<br>
+:param&nbsp;size:&nbsp;(optional)&nbsp;The&nbsp;Maximum&nbsp;number&nbsp;of&nbsp;bytes&nbsp;to&nbsp;read<br>
+&nbsp;&nbsp;&nbsp;&nbsp;from&nbsp;the&nbsp;file&nbsp;pointer&nbsp;(fp).&nbsp;This&nbsp;is&nbsp;useful&nbsp;when&nbsp;uploading<br>
+&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;file&nbsp;in&nbsp;multiple&nbsp;parts&nbsp;where&nbsp;you&nbsp;are&nbsp;splitting&nbsp;the&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;up&nbsp;into&nbsp;different&nbsp;ranges&nbsp;to&nbsp;be&nbsp;uploaded.&nbsp;If&nbsp;not&nbsp;specified,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;default&nbsp;behaviour&nbsp;is&nbsp;to&nbsp;read&nbsp;all&nbsp;bytes&nbsp;from&nbsp;the&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;pointer.&nbsp;Less&nbsp;bytes&nbsp;may&nbsp;be&nbsp;available.<br>
+&nbsp;<br>
+:type&nbsp;rewind:&nbsp;bool<br>
+:param&nbsp;rewind:&nbsp;(optional)&nbsp;If&nbsp;True,&nbsp;the&nbsp;file&nbsp;pointer&nbsp;(fp)&nbsp;will<br>
+&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;rewound&nbsp;to&nbsp;the&nbsp;start&nbsp;before&nbsp;any&nbsp;bytes&nbsp;are&nbsp;read&nbsp;from<br>
+&nbsp;&nbsp;&nbsp;&nbsp;it.&nbsp;The&nbsp;default&nbsp;behaviour&nbsp;is&nbsp;False&nbsp;which&nbsp;reads&nbsp;from&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;current&nbsp;position&nbsp;of&nbsp;the&nbsp;file&nbsp;pointer&nbsp;(fp).<br>
+&nbsp;<br>
+:rtype:&nbsp;int<br>
+:return:&nbsp;The&nbsp;number&nbsp;of&nbsp;bytes&nbsp;written&nbsp;to&nbsp;the&nbsp;key.</tt></dd></dl>
+
+<dl><dt><a name="Key-set_contents_from_filename"><strong>set_contents_from_filename</strong></a>(self, filename, headers<font color="#909090">=None</font>, replace<font color="#909090">=True</font>, cb<font color="#909090">=None</font>, num_cb<font color="#909090">=10</font>, policy<font color="#909090">=None</font>, md5<font color="#909090">=None</font>, reduced_redundancy<font color="#909090">=False</font>, encrypt_key<font color="#909090">=False</font>)</dt><dd><tt>Store&nbsp;an&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;in&nbsp;S3&nbsp;using&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;<a href="#Key">Key</a>&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;as&nbsp;the<br>
+key&nbsp;in&nbsp;S3&nbsp;and&nbsp;the&nbsp;contents&nbsp;of&nbsp;the&nbsp;file&nbsp;named&nbsp;by&nbsp;'filename'.<br>
+See&nbsp;set_contents_from_file&nbsp;method&nbsp;for&nbsp;details&nbsp;about&nbsp;the<br>
+parameters.<br>
+&nbsp;<br>
+:type&nbsp;filename:&nbsp;string<br>
+:param&nbsp;filename:&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;file&nbsp;that&nbsp;you&nbsp;want&nbsp;to&nbsp;put&nbsp;onto&nbsp;S3<br>
+&nbsp;<br>
+:type&nbsp;headers:&nbsp;dict<br>
+:param&nbsp;headers:&nbsp;Additional&nbsp;headers&nbsp;to&nbsp;pass&nbsp;along&nbsp;with&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;request&nbsp;to&nbsp;AWS.<br>
+&nbsp;<br>
+:type&nbsp;replace:&nbsp;bool<br>
+:param&nbsp;replace:&nbsp;If&nbsp;True,&nbsp;replaces&nbsp;the&nbsp;contents&nbsp;of&nbsp;the&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;it&nbsp;already&nbsp;exists.<br>
+&nbsp;<br>
+:type&nbsp;cb:&nbsp;function<br>
+:param&nbsp;cb:&nbsp;a&nbsp;callback&nbsp;function&nbsp;that&nbsp;will&nbsp;be&nbsp;called&nbsp;to&nbsp;report<br>
+&nbsp;&nbsp;&nbsp;&nbsp;progress&nbsp;on&nbsp;the&nbsp;upload.&nbsp;&nbsp;The&nbsp;callback&nbsp;should&nbsp;accept&nbsp;two<br>
+&nbsp;&nbsp;&nbsp;&nbsp;integer&nbsp;parameters,&nbsp;the&nbsp;first&nbsp;representing&nbsp;the&nbsp;number&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bytes&nbsp;that&nbsp;have&nbsp;been&nbsp;successfully&nbsp;transmitted&nbsp;to&nbsp;S3&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;second&nbsp;representing&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;to&nbsp;be&nbsp;transmitted<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="__builtin__.html#object">object</a>.<br>
+&nbsp;<br>
+:type&nbsp;cb:&nbsp;int<br>
+:param&nbsp;num_cb:&nbsp;(optional)&nbsp;If&nbsp;a&nbsp;callback&nbsp;is&nbsp;specified&nbsp;with&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cb&nbsp;parameter&nbsp;this&nbsp;parameter&nbsp;determines&nbsp;the&nbsp;granularity&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;callback&nbsp;by&nbsp;defining&nbsp;the&nbsp;maximum&nbsp;number&nbsp;of&nbsp;times&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;callback&nbsp;will&nbsp;be&nbsp;called&nbsp;during&nbsp;the&nbsp;file&nbsp;transfer.<br>
+&nbsp;<br>
+:type&nbsp;policy:&nbsp;:class:`boto.s3.acl.CannedACLStrings`<br>
+:param&nbsp;policy:&nbsp;A&nbsp;canned&nbsp;ACL&nbsp;policy&nbsp;that&nbsp;will&nbsp;be&nbsp;applied&nbsp;to&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;new&nbsp;key&nbsp;in&nbsp;S3.<br>
+&nbsp;<br>
+:type&nbsp;md5:&nbsp;A&nbsp;tuple&nbsp;containing&nbsp;the&nbsp;hexdigest&nbsp;version&nbsp;of&nbsp;the&nbsp;MD5<br>
+&nbsp;&nbsp;&nbsp;&nbsp;checksum&nbsp;of&nbsp;the&nbsp;file&nbsp;as&nbsp;the&nbsp;first&nbsp;element&nbsp;and&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Base64-encoded&nbsp;version&nbsp;of&nbsp;the&nbsp;plain&nbsp;checksum&nbsp;as&nbsp;the&nbsp;second<br>
+&nbsp;&nbsp;&nbsp;&nbsp;element.&nbsp;&nbsp;This&nbsp;is&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;compute_md5&nbsp;method.<br>
+:param&nbsp;md5:&nbsp;If&nbsp;you&nbsp;need&nbsp;to&nbsp;compute&nbsp;the&nbsp;MD5&nbsp;for&nbsp;any&nbsp;reason<br>
+&nbsp;&nbsp;&nbsp;&nbsp;prior&nbsp;to&nbsp;upload,&nbsp;it's&nbsp;silly&nbsp;to&nbsp;have&nbsp;to&nbsp;do&nbsp;it&nbsp;twice&nbsp;so&nbsp;this<br>
+&nbsp;&nbsp;&nbsp;&nbsp;param,&nbsp;if&nbsp;present,&nbsp;will&nbsp;be&nbsp;used&nbsp;as&nbsp;the&nbsp;MD5&nbsp;values&nbsp;of&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;file.&nbsp;&nbsp;Otherwise,&nbsp;the&nbsp;checksum&nbsp;will&nbsp;be&nbsp;computed.<br>
+&nbsp;<br>
+:type&nbsp;reduced_redundancy:&nbsp;bool<br>
+:param&nbsp;reduced_redundancy:&nbsp;If&nbsp;True,&nbsp;this&nbsp;will&nbsp;set&nbsp;the&nbsp;storage<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;of&nbsp;the&nbsp;new&nbsp;<a href="#Key">Key</a>&nbsp;to&nbsp;be&nbsp;REDUCED_REDUNDANCY.&nbsp;The&nbsp;Reduced<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Redundancy&nbsp;Storage&nbsp;(RRS)&nbsp;feature&nbsp;of&nbsp;S3,&nbsp;provides&nbsp;lower<br>
+&nbsp;&nbsp;&nbsp;&nbsp;redundancy&nbsp;at&nbsp;lower&nbsp;storage&nbsp;cost.&nbsp;&nbsp;:type&nbsp;encrypt_key:&nbsp;bool<br>
+&nbsp;&nbsp;&nbsp;&nbsp;:param&nbsp;encrypt_key:&nbsp;If&nbsp;True,&nbsp;the&nbsp;new&nbsp;copy&nbsp;of&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;will&nbsp;be&nbsp;encrypted&nbsp;on&nbsp;the&nbsp;server-side&nbsp;by&nbsp;S3&nbsp;and&nbsp;will&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stored&nbsp;in&nbsp;an&nbsp;encrypted&nbsp;form&nbsp;while&nbsp;at&nbsp;rest&nbsp;in&nbsp;S3.<br>
+&nbsp;<br>
+:rtype:&nbsp;int<br>
+:return:&nbsp;The&nbsp;number&nbsp;of&nbsp;bytes&nbsp;written&nbsp;to&nbsp;the&nbsp;key.</tt></dd></dl>
+
+<dl><dt><a name="Key-set_contents_from_stream"><strong>set_contents_from_stream</strong></a>(self, fp, headers<font color="#909090">=None</font>, replace<font color="#909090">=True</font>, cb<font color="#909090">=None</font>, num_cb<font color="#909090">=10</font>, policy<font color="#909090">=None</font>, reduced_redundancy<font color="#909090">=False</font>, query_args<font color="#909090">=None</font>, size<font color="#909090">=None</font>)</dt><dd><tt>Store&nbsp;an&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;using&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;<a href="#Key">Key</a>&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;as&nbsp;the&nbsp;key&nbsp;in<br>
+cloud&nbsp;and&nbsp;the&nbsp;contents&nbsp;of&nbsp;the&nbsp;data&nbsp;stream&nbsp;pointed&nbsp;to&nbsp;by&nbsp;'fp'&nbsp;as<br>
+the&nbsp;contents.<br>
+&nbsp;<br>
+The&nbsp;stream&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;is&nbsp;not&nbsp;seekable&nbsp;and&nbsp;total&nbsp;size&nbsp;is&nbsp;not&nbsp;known.<br>
+This&nbsp;has&nbsp;the&nbsp;implication&nbsp;that&nbsp;we&nbsp;can't&nbsp;specify&nbsp;the<br>
+Content-Size&nbsp;and&nbsp;Content-MD5&nbsp;in&nbsp;the&nbsp;header.&nbsp;So&nbsp;for&nbsp;huge<br>
+uploads,&nbsp;the&nbsp;delay&nbsp;in&nbsp;calculating&nbsp;MD5&nbsp;is&nbsp;avoided&nbsp;but&nbsp;with&nbsp;a<br>
+penalty&nbsp;of&nbsp;inability&nbsp;to&nbsp;verify&nbsp;the&nbsp;integrity&nbsp;of&nbsp;the&nbsp;uploaded<br>
+data.<br>
+&nbsp;<br>
+:type&nbsp;fp:&nbsp;file<br>
+:param&nbsp;fp:&nbsp;the&nbsp;file&nbsp;whose&nbsp;contents&nbsp;are&nbsp;to&nbsp;be&nbsp;uploaded<br>
+&nbsp;<br>
+:type&nbsp;headers:&nbsp;dict<br>
+:param&nbsp;headers:&nbsp;additional&nbsp;HTTP&nbsp;headers&nbsp;to&nbsp;be&nbsp;sent&nbsp;with&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;PUT&nbsp;request.<br>
+&nbsp;<br>
+:type&nbsp;replace:&nbsp;bool<br>
+:param&nbsp;replace:&nbsp;If&nbsp;this&nbsp;parameter&nbsp;is&nbsp;False,&nbsp;the&nbsp;method&nbsp;will&nbsp;first&nbsp;check<br>
+&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;see&nbsp;if&nbsp;an&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;exists&nbsp;in&nbsp;the&nbsp;bucket&nbsp;with&nbsp;the&nbsp;same&nbsp;key.&nbsp;If&nbsp;it<br>
+&nbsp;&nbsp;&nbsp;&nbsp;does,&nbsp;it&nbsp;won't&nbsp;overwrite&nbsp;it.&nbsp;The&nbsp;default&nbsp;value&nbsp;is&nbsp;True&nbsp;which&nbsp;will<br>
+&nbsp;&nbsp;&nbsp;&nbsp;overwrite&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>.<br>
+&nbsp;<br>
+:type&nbsp;cb:&nbsp;function<br>
+:param&nbsp;cb:&nbsp;a&nbsp;callback&nbsp;function&nbsp;that&nbsp;will&nbsp;be&nbsp;called&nbsp;to&nbsp;report<br>
+&nbsp;&nbsp;&nbsp;&nbsp;progress&nbsp;on&nbsp;the&nbsp;upload.&nbsp;The&nbsp;callback&nbsp;should&nbsp;accept&nbsp;two&nbsp;integer<br>
+&nbsp;&nbsp;&nbsp;&nbsp;parameters,&nbsp;the&nbsp;first&nbsp;representing&nbsp;the&nbsp;number&nbsp;of&nbsp;bytes&nbsp;that&nbsp;have<br>
+&nbsp;&nbsp;&nbsp;&nbsp;been&nbsp;successfully&nbsp;transmitted&nbsp;to&nbsp;GS&nbsp;and&nbsp;the&nbsp;second&nbsp;representing&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;total&nbsp;number&nbsp;of&nbsp;bytes&nbsp;that&nbsp;need&nbsp;to&nbsp;be&nbsp;transmitted.<br>
+&nbsp;<br>
+:type&nbsp;num_cb:&nbsp;int<br>
+:param&nbsp;num_cb:&nbsp;(optional)&nbsp;If&nbsp;a&nbsp;callback&nbsp;is&nbsp;specified&nbsp;with&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cb&nbsp;parameter,&nbsp;this&nbsp;parameter&nbsp;determines&nbsp;the&nbsp;granularity&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;callback&nbsp;by&nbsp;defining&nbsp;the&nbsp;maximum&nbsp;number&nbsp;of&nbsp;times&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;callback&nbsp;will&nbsp;be&nbsp;called&nbsp;during&nbsp;the&nbsp;file&nbsp;transfer.<br>
+&nbsp;<br>
+:type&nbsp;policy:&nbsp;:class:`boto.gs.acl.CannedACLStrings`<br>
+:param&nbsp;policy:&nbsp;A&nbsp;canned&nbsp;ACL&nbsp;policy&nbsp;that&nbsp;will&nbsp;be&nbsp;applied&nbsp;to&nbsp;the&nbsp;new&nbsp;key<br>
+&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;GS.<br>
+&nbsp;<br>
+:type&nbsp;reduced_redundancy:&nbsp;bool<br>
+:param&nbsp;reduced_redundancy:&nbsp;If&nbsp;True,&nbsp;this&nbsp;will&nbsp;set&nbsp;the&nbsp;storage<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;of&nbsp;the&nbsp;new&nbsp;<a href="#Key">Key</a>&nbsp;to&nbsp;be&nbsp;REDUCED_REDUNDANCY.&nbsp;The&nbsp;Reduced<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Redundancy&nbsp;Storage&nbsp;(RRS)&nbsp;feature&nbsp;of&nbsp;S3,&nbsp;provides&nbsp;lower<br>
+&nbsp;&nbsp;&nbsp;&nbsp;redundancy&nbsp;at&nbsp;lower&nbsp;storage&nbsp;cost.<br>
+&nbsp;<br>
+:type&nbsp;size:&nbsp;int<br>
+:param&nbsp;size:&nbsp;(optional)&nbsp;The&nbsp;Maximum&nbsp;number&nbsp;of&nbsp;bytes&nbsp;to&nbsp;read&nbsp;from<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;file&nbsp;pointer&nbsp;(fp).&nbsp;This&nbsp;is&nbsp;useful&nbsp;when&nbsp;uploading&nbsp;a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;file&nbsp;in&nbsp;multiple&nbsp;parts&nbsp;where&nbsp;you&nbsp;are&nbsp;splitting&nbsp;the&nbsp;file&nbsp;up<br>
+&nbsp;&nbsp;&nbsp;&nbsp;into&nbsp;different&nbsp;ranges&nbsp;to&nbsp;be&nbsp;uploaded.&nbsp;If&nbsp;not&nbsp;specified,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;default&nbsp;behaviour&nbsp;is&nbsp;to&nbsp;read&nbsp;all&nbsp;bytes&nbsp;from&nbsp;the&nbsp;file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;pointer.&nbsp;Less&nbsp;bytes&nbsp;may&nbsp;be&nbsp;available.</tt></dd></dl>
+
+<dl><dt><a name="Key-set_contents_from_string"><strong>set_contents_from_string</strong></a>(self, string_data, headers<font color="#909090">=None</font>, replace<font color="#909090">=True</font>, cb<font color="#909090">=None</font>, num_cb<font color="#909090">=10</font>, policy<font color="#909090">=None</font>, md5<font color="#909090">=None</font>, reduced_redundancy<font color="#909090">=False</font>, encrypt_key<font color="#909090">=False</font>)</dt><dd><tt>Store&nbsp;an&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;in&nbsp;S3&nbsp;using&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;<a href="#Key">Key</a>&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;as&nbsp;the<br>
+key&nbsp;in&nbsp;S3&nbsp;and&nbsp;the&nbsp;string&nbsp;'s'&nbsp;as&nbsp;the&nbsp;contents.<br>
+See&nbsp;set_contents_from_file&nbsp;method&nbsp;for&nbsp;details&nbsp;about&nbsp;the<br>
+parameters.<br>
+&nbsp;<br>
+:type&nbsp;headers:&nbsp;dict<br>
+:param&nbsp;headers:&nbsp;Additional&nbsp;headers&nbsp;to&nbsp;pass&nbsp;along&nbsp;with&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;request&nbsp;to&nbsp;AWS.<br>
+&nbsp;<br>
+:type&nbsp;replace:&nbsp;bool<br>
+:param&nbsp;replace:&nbsp;If&nbsp;True,&nbsp;replaces&nbsp;the&nbsp;contents&nbsp;of&nbsp;the&nbsp;file&nbsp;if<br>
+&nbsp;&nbsp;&nbsp;&nbsp;it&nbsp;already&nbsp;exists.<br>
+&nbsp;<br>
+:type&nbsp;cb:&nbsp;function<br>
+:param&nbsp;cb:&nbsp;a&nbsp;callback&nbsp;function&nbsp;that&nbsp;will&nbsp;be&nbsp;called&nbsp;to&nbsp;report<br>
+&nbsp;&nbsp;&nbsp;&nbsp;progress&nbsp;on&nbsp;the&nbsp;upload.&nbsp;&nbsp;The&nbsp;callback&nbsp;should&nbsp;accept&nbsp;two<br>
+&nbsp;&nbsp;&nbsp;&nbsp;integer&nbsp;parameters,&nbsp;the&nbsp;first&nbsp;representing&nbsp;the&nbsp;number&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bytes&nbsp;that&nbsp;have&nbsp;been&nbsp;successfully&nbsp;transmitted&nbsp;to&nbsp;S3&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;second&nbsp;representing&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;to&nbsp;be&nbsp;transmitted<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="__builtin__.html#object">object</a>.<br>
+&nbsp;<br>
+:type&nbsp;cb:&nbsp;int<br>
+:param&nbsp;num_cb:&nbsp;(optional)&nbsp;If&nbsp;a&nbsp;callback&nbsp;is&nbsp;specified&nbsp;with&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cb&nbsp;parameter&nbsp;this&nbsp;parameter&nbsp;determines&nbsp;the&nbsp;granularity&nbsp;of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;callback&nbsp;by&nbsp;defining&nbsp;the&nbsp;maximum&nbsp;number&nbsp;of&nbsp;times&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;callback&nbsp;will&nbsp;be&nbsp;called&nbsp;during&nbsp;the&nbsp;file&nbsp;transfer.<br>
+&nbsp;<br>
+:type&nbsp;policy:&nbsp;:class:`boto.s3.acl.CannedACLStrings`<br>
+:param&nbsp;policy:&nbsp;A&nbsp;canned&nbsp;ACL&nbsp;policy&nbsp;that&nbsp;will&nbsp;be&nbsp;applied&nbsp;to&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;new&nbsp;key&nbsp;in&nbsp;S3.<br>
+&nbsp;<br>
+:type&nbsp;md5:&nbsp;A&nbsp;tuple&nbsp;containing&nbsp;the&nbsp;hexdigest&nbsp;version&nbsp;of&nbsp;the&nbsp;MD5<br>
+&nbsp;&nbsp;&nbsp;&nbsp;checksum&nbsp;of&nbsp;the&nbsp;file&nbsp;as&nbsp;the&nbsp;first&nbsp;element&nbsp;and&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Base64-encoded&nbsp;version&nbsp;of&nbsp;the&nbsp;plain&nbsp;checksum&nbsp;as&nbsp;the&nbsp;second<br>
+&nbsp;&nbsp;&nbsp;&nbsp;element.&nbsp;&nbsp;This&nbsp;is&nbsp;the&nbsp;same&nbsp;format&nbsp;returned&nbsp;by&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;compute_md5&nbsp;method.<br>
+:param&nbsp;md5:&nbsp;If&nbsp;you&nbsp;need&nbsp;to&nbsp;compute&nbsp;the&nbsp;MD5&nbsp;for&nbsp;any&nbsp;reason<br>
+&nbsp;&nbsp;&nbsp;&nbsp;prior&nbsp;to&nbsp;upload,&nbsp;it's&nbsp;silly&nbsp;to&nbsp;have&nbsp;to&nbsp;do&nbsp;it&nbsp;twice&nbsp;so&nbsp;this<br>
+&nbsp;&nbsp;&nbsp;&nbsp;param,&nbsp;if&nbsp;present,&nbsp;will&nbsp;be&nbsp;used&nbsp;as&nbsp;the&nbsp;MD5&nbsp;values&nbsp;of&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;file.&nbsp;&nbsp;Otherwise,&nbsp;the&nbsp;checksum&nbsp;will&nbsp;be&nbsp;computed.<br>
+&nbsp;<br>
+:type&nbsp;reduced_redundancy:&nbsp;bool<br>
+:param&nbsp;reduced_redundancy:&nbsp;If&nbsp;True,&nbsp;this&nbsp;will&nbsp;set&nbsp;the&nbsp;storage<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;of&nbsp;the&nbsp;new&nbsp;<a href="#Key">Key</a>&nbsp;to&nbsp;be&nbsp;REDUCED_REDUNDANCY.&nbsp;The&nbsp;Reduced<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Redundancy&nbsp;Storage&nbsp;(RRS)&nbsp;feature&nbsp;of&nbsp;S3,&nbsp;provides&nbsp;lower<br>
+&nbsp;&nbsp;&nbsp;&nbsp;redundancy&nbsp;at&nbsp;lower&nbsp;storage&nbsp;cost.<br>
+&nbsp;<br>
+:type&nbsp;encrypt_key:&nbsp;bool<br>
+:param&nbsp;encrypt_key:&nbsp;If&nbsp;True,&nbsp;the&nbsp;new&nbsp;copy&nbsp;of&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;will<br>
+&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;encrypted&nbsp;on&nbsp;the&nbsp;server-side&nbsp;by&nbsp;S3&nbsp;and&nbsp;will&nbsp;be&nbsp;stored<br>
+&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;an&nbsp;encrypted&nbsp;form&nbsp;while&nbsp;at&nbsp;rest&nbsp;in&nbsp;S3.</tt></dd></dl>
+
+<dl><dt><a name="Key-set_metadata"><strong>set_metadata</strong></a>(self, name, value)</dt></dl>
+
+<dl><dt><a name="Key-set_redirect"><strong>set_redirect</strong></a>(self, redirect_location, headers<font color="#909090">=None</font>)</dt><dd><tt>Configure&nbsp;this&nbsp;key&nbsp;to&nbsp;redirect&nbsp;to&nbsp;another&nbsp;location.<br>
+&nbsp;<br>
+When&nbsp;the&nbsp;bucket&nbsp;associated&nbsp;with&nbsp;this&nbsp;key&nbsp;is&nbsp;accessed&nbsp;from&nbsp;the&nbsp;website<br>
+endpoint,&nbsp;a&nbsp;301&nbsp;redirect&nbsp;will&nbsp;be&nbsp;issued&nbsp;to&nbsp;the&nbsp;specified<br>
+`redirect_location`.<br>
+&nbsp;<br>
+:type&nbsp;redirect_location:&nbsp;string<br>
+:param&nbsp;redirect_location:&nbsp;The&nbsp;location&nbsp;to&nbsp;redirect.</tt></dd></dl>
+
+<dl><dt><a name="Key-set_remote_metadata"><strong>set_remote_metadata</strong></a>(self, metadata_plus, metadata_minus, preserve_acl, headers<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="Key-set_xml_acl"><strong>set_xml_acl</strong></a>(self, acl_str, headers<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="Key-should_retry"><strong>should_retry</strong></a>(self, response, chunked_transfer<font color="#909090">=False</font>)</dt></dl>
+
+<dl><dt><a name="Key-startElement"><strong>startElement</strong></a>(self, name, attrs, connection)</dt></dl>
+
+<dl><dt><a name="Key-update_metadata"><strong>update_metadata</strong></a>(self, d)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="boto.s3.key.html#Key">boto.s3.key.Key</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>base64md5</strong></dt>
+</dl>
+<dl><dt><strong>key</strong></dt>
+</dl>
+<dl><dt><strong>md5</strong></dt>
+</dl>
+<dl><dt><strong>provider</strong></dt>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="boto.s3.key.html#Key">boto.s3.key.Key</a>:<br>
+<dl><dt><strong>BufferSize</strong> = 8192</dl>
+
+<dl><dt><strong>DefaultContentType</strong> = 'application/octet-stream'</dl>
+
+<dl><dt><strong>RestoreBody</strong> = '&lt;?xml version="1.0" encoding="UTF-8"?&gt;<font color="#c040c0">\n</font>      &lt;Re...&gt;<font color="#c040c0">\n</font>        &lt;Days&gt;%s&lt;/Days&gt;<font color="#c040c0">\n</font>      &lt;/RestoreRequest&gt;'</dl>
+
+<dl><dt><strong>base_user_settable_fields</strong> = set(['cache-control', 'content-disposition', 'content-encoding', 'content-language', 'content-md5', 'content-type'])</dl>
+
+<dl><dt><strong>closed</strong> = False</dl>
+
+<dl><dt><strong>f</strong> = 'content-type'</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="S3Connection">class <strong>S3Connection</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Represents&nbsp;a&nbsp;S3&nbsp;connection<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="S3Connection-__init__"><strong>__init__</strong></a>(self, access_key_id, secret_access_key, bucket_name<font color="#909090">='protokollen'</font>)</dt></dl>
+
+<dl><dt><a name="S3Connection-fileExistsInBucket"><strong>fileExistsInBucket</strong></a>(self, fullfilename)</dt></dl>
+
+<dl><dt><a name="S3Connection-getBucketListLength"><strong>getBucketListLength</strong></a>(self, pathFragment)</dt></dl>
+
+<dl><dt><a name="S3Connection-getNextFile"><strong>getNextFile</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="S3Connection-putFile"><strong>putFile</strong></a>(self, localFilename, s3name)</dt></dl>
+
+<dl><dt><a name="S3Connection-putFileFromString"><strong>putFileFromString</strong></a>(self, string, s3name)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

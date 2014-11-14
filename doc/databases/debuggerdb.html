@@ -1,0 +1,70 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module debuggerdb</title>
+<meta charset="utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>debuggerdb</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/leo/Frilansjobb/protokollen/protokollen/modules/databases/debuggerdb.py">/home/leo/Frilansjobb/protokollen/protokollen/modules/databases/debuggerdb.py</a></font></td></tr></table>
+    <p><tt>This&nbsp;file&nbsp;contains&nbsp;a&nbsp;fake&nbsp;DB&nbsp;class,&nbsp;for&nbsp;debugging&nbsp;purposes</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="modules.databases.database.html#Database">modules.databases.database.Database</a>(<a href="__builtin__.html#object">__builtin__.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="debuggerdb.html#DebuggerDB">DebuggerDB</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="DebuggerDB">class <strong>DebuggerDB</strong></a>(<a href="modules.databases.database.html#Database">modules.databases.database.Database</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>This&nbsp;class&nbsp;acts&nbsp;like&nbsp;a&nbsp;<a href="modules.databases.database.html#Database">Database</a>&nbsp;object,<br>
+but&nbsp;dumps&nbsp;stuff&nbsp;to&nbsp;the&nbsp;screen,&nbsp;rather&nbsp;than&nbsp;storing&nbsp;them.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="debuggerdb.html#DebuggerDB">DebuggerDB</a></dd>
+<dd><a href="modules.databases.database.html#Database">modules.databases.database.Database</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="DebuggerDB-__init__"><strong>__init__</strong></a>(self, server, table)</dt></dl>
+
+<dl><dt><a name="DebuggerDB-get"><strong>get</strong></a>(self, key, attr)</dt></dl>
+
+<dl><dt><a name="DebuggerDB-put"><strong>put</strong></a>(self, key, attr, value)</dt><dd><tt>Will&nbsp;return&nbsp;True&nbsp;if&nbsp;a&nbsp;value&nbsp;was&nbsp;written,&nbsp;or&nbsp;False</tt></dd></dl>
+
+<dl><dt><a name="DebuggerDB-put_dict"><strong>put_dict</strong></a>(self, key, attr, dict_)</dt><dd><tt>Will&nbsp;return&nbsp;True&nbsp;if&nbsp;a&nbsp;value&nbsp;was&nbsp;written,&nbsp;or&nbsp;False</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="modules.databases.database.html#Database">modules.databases.database.Database</a>:<br>
+<dl><dt><a name="DebuggerDB-create_key"><strong>create_key</strong></a>(self, parts<font color="#909090">=None</font>)</dt><dd><tt>We&nbsp;might&nbsp;want&nbsp;keys&nbsp;to&nbsp;correspond&nbsp;somehow&nbsp;to&nbsp;filenames&nbsp;and&nbsp;paths.<br>
+For&nbsp;instance,&nbsp;if&nbsp;we&nbsp;create&nbsp;keys&nbsp;like&nbsp;`path-file`,&nbsp;they&nbsp;will&nbsp;be<br>
+consistent&nbsp;with&nbsp;ElasticSearch's&nbsp;`amazon-s3-river`&nbsp;plugin,&nbsp;see<br>
+https://github.com/lbroudoux/es-amazon-s3-river/blob/master/src/main/java/com/github/lbroudoux/elasticsearch/river/s3/river/S3River.java#LC508</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="modules.databases.database.html#Database">modules.databases.database.Database</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

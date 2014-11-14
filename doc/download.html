@@ -1,0 +1,287 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module download</title>
+<meta charset="utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>download</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/leo/Frilansjobb/protokollen/protokollen/modules/download.py">/home/leo/Frilansjobb/protokollen/protokollen/modules/download.py</a></font></td></tr></table>
+    <p><tt>#coding=utf-8</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="logging.html">logging</a><br>
+</td><td width="25%" valign=top><a href="os.html">os</a><br>
+</td><td width="25%" valign=top><a href="shutil.html">shutil</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="download.html#File">File</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="download.html#DropboxFile">DropboxFile</a>
+</font></dt><dt><font face="helvetica, arial"><a href="download.html#FileFromS3">FileFromS3</a>
+</font></dt><dt><font face="helvetica, arial"><a href="download.html#FileFromWeb">FileFromWeb</a>
+</font></dt><dt><font face="helvetica, arial"><a href="download.html#LocalFile">LocalFile</a>
+</font></dt></dl>
+</dd>
+</dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="download.html#FileType">FileType</a>
+</font></dt></dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="DropboxFile">class <strong>DropboxFile</strong></a>(<a href="download.html#File">File</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="download.html#DropboxFile">DropboxFile</a></dd>
+<dd><a href="download.html#File">File</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="DropboxFile-__init__"><strong>__init__</strong></a>(self, source, localFile)</dt></dl>
+
+<hr>
+Methods inherited from <a href="download.html#File">File</a>:<br>
+<dl><dt><a name="DropboxFile-delete"><strong>delete</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="DropboxFile-exists"><strong>exists</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="DropboxFile-extractor"><strong>extractor</strong></a>(self, **kwargs)</dt><dd><tt>Returns&nbsp;an&nbsp;extractor&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;suitable&nbsp;for&nbsp;analyzing&nbsp;this&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="DropboxFile-getFileExt"><strong>getFileExt</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="DropboxFile-getFileType"><strong>getFileType</strong></a>(self)</dt><dd><tt>This&nbsp;default&nbsp;method&nbsp;only&nbsp;uses&nbsp;the&nbsp;extension&nbsp;of&nbsp;the&nbsp;file,&nbsp;not<br>
+self.<strong>mimeType</strong>&nbsp;(which&nbsp;only&nbsp;gets&nbsp;set&nbsp;by&nbsp;the&nbsp;subclass<br>
+<a href="#FileFromWeb">FileFromWeb</a>,&nbsp;which&nbsp;uses&nbsp;an&nbsp;alternate&nbsp;implementation&nbsp;of&nbsp;this&nbsp;method)</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="download.html#File">File</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="download.html#File">File</a>:<br>
+<dl><dt><strong>success</strong> = False</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="File">class <strong>File</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Represents&nbsp;a&nbsp;file&nbsp;downloaded&nbsp;from&nbsp;somewhere.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="File-__init__"><strong>__init__</strong></a>(self, source, localFile)</dt></dl>
+
+<dl><dt><a name="File-delete"><strong>delete</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="File-exists"><strong>exists</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="File-extractor"><strong>extractor</strong></a>(self, **kwargs)</dt><dd><tt>Returns&nbsp;an&nbsp;extractor&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;suitable&nbsp;for&nbsp;analyzing&nbsp;this&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="File-getFileExt"><strong>getFileExt</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="File-getFileType"><strong>getFileType</strong></a>(self)</dt><dd><tt>This&nbsp;default&nbsp;method&nbsp;only&nbsp;uses&nbsp;the&nbsp;extension&nbsp;of&nbsp;the&nbsp;file,&nbsp;not<br>
+self.<strong>mimeType</strong>&nbsp;(which&nbsp;only&nbsp;gets&nbsp;set&nbsp;by&nbsp;the&nbsp;subclass<br>
+<a href="#FileFromWeb">FileFromWeb</a>,&nbsp;which&nbsp;uses&nbsp;an&nbsp;alternate&nbsp;implementation&nbsp;of&nbsp;this&nbsp;method)</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>success</strong> = False</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="FileFromS3">class <strong>FileFromS3</strong></a>(<a href="download.html#File">File</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Represents&nbsp;a&nbsp;file&nbsp;downloaded&nbsp;from&nbsp;Amazon&nbsp;S3.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="download.html#FileFromS3">FileFromS3</a></dd>
+<dd><a href="download.html#File">File</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="FileFromS3-__init__"><strong>__init__</strong></a>(self, key, localFile)</dt></dl>
+
+<hr>
+Methods inherited from <a href="download.html#File">File</a>:<br>
+<dl><dt><a name="FileFromS3-delete"><strong>delete</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="FileFromS3-exists"><strong>exists</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="FileFromS3-extractor"><strong>extractor</strong></a>(self, **kwargs)</dt><dd><tt>Returns&nbsp;an&nbsp;extractor&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;suitable&nbsp;for&nbsp;analyzing&nbsp;this&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="FileFromS3-getFileExt"><strong>getFileExt</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="FileFromS3-getFileType"><strong>getFileType</strong></a>(self)</dt><dd><tt>This&nbsp;default&nbsp;method&nbsp;only&nbsp;uses&nbsp;the&nbsp;extension&nbsp;of&nbsp;the&nbsp;file,&nbsp;not<br>
+self.<strong>mimeType</strong>&nbsp;(which&nbsp;only&nbsp;gets&nbsp;set&nbsp;by&nbsp;the&nbsp;subclass<br>
+<a href="#FileFromWeb">FileFromWeb</a>,&nbsp;which&nbsp;uses&nbsp;an&nbsp;alternate&nbsp;implementation&nbsp;of&nbsp;this&nbsp;method)</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="download.html#File">File</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="download.html#File">File</a>:<br>
+<dl><dt><strong>success</strong> = False</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="FileFromWeb">class <strong>FileFromWeb</strong></a>(<a href="download.html#File">File</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Represents&nbsp;a&nbsp;file&nbsp;downloaded&nbsp;from&nbsp;the&nbsp;web.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="download.html#FileFromWeb">FileFromWeb</a></dd>
+<dd><a href="download.html#File">File</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="FileFromWeb-__init__"><strong>__init__</strong></a>(self, url, localFile, userAgent<font color="#909090">='Mozilla/5.0 (compatible)'</font>)</dt></dl>
+
+<dl><dt><a name="FileFromWeb-getFileType"><strong>getFileType</strong></a>(self)</dt><dd><tt>Return&nbsp;filetype&nbsp;based&nbsp;on&nbsp;mimeType</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="download.html#File">File</a>:<br>
+<dl><dt><a name="FileFromWeb-delete"><strong>delete</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="FileFromWeb-exists"><strong>exists</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="FileFromWeb-extractor"><strong>extractor</strong></a>(self, **kwargs)</dt><dd><tt>Returns&nbsp;an&nbsp;extractor&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;suitable&nbsp;for&nbsp;analyzing&nbsp;this&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="FileFromWeb-getFileExt"><strong>getFileExt</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="download.html#File">File</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="download.html#File">File</a>:<br>
+<dl><dt><strong>success</strong> = False</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="FileType">class <strong>FileType</strong></a></font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Data and other attributes defined here:<br>
+<dl><dt><strong>DOC</strong> = 2</dl>
+
+<dl><dt><strong>DOCX</strong> = 3</dl>
+
+<dl><dt><strong>HTML</strong> = 7</dl>
+
+<dl><dt><strong>ODT</strong> = 4</dl>
+
+<dl><dt><strong>PDF</strong> = 1</dl>
+
+<dl><dt><strong>RTF</strong> = 5</dl>
+
+<dl><dt><strong>TXT</strong> = 6</dl>
+
+<dl><dt><strong>UNKNOWN</strong> = 0</dl>
+
+<dl><dt><strong>ext_to_type_dict</strong> = {'doc': 2, 'docm': 3, 'docx': 3, 'dot': 2, 'dotm': 3, 'dotx': 3, 'fodt': 4, 'htm': 7, 'html': 7, 'odt': 4, ...}</dl>
+
+<dl><dt><strong>mime_to_type_dict</strong> = {'application/msword': 2, 'application/pdf': 1, 'application/rtf': 5, 'application/vnd.oasis.opendocument.text': 4, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 3, 'application/x-pdf': 1, 'application/x-rtf': 5, 'application/xhtml+xml': 7, 'text/html': 7, 'text/plain': 6, ...}</dl>
+
+<dl><dt><strong>type_to_ext_dict</strong> = {0: None, 1: 'pdf', 2: 'doc', 3: 'docx', 4: 'odt', 5: 'rtf', 6: 'txt', 7: 'html'}</dl>
+
+<dl><dt><strong>type_to_extractor_dict</strong> = {1: &lt;class 'modules.extractors.pdf.PdfExtractor'&gt;, 2: &lt;class 'modules.extractors.doc.DocExtractor'&gt;, 3: &lt;class 'modules.extractors.ooxml.DocxExtractor'&gt;, 5: &lt;class 'modules.extractors.rtf.RtfExtractor'&gt;, 7: &lt;class 'modules.extractors.html.HtmlExtractor'&gt;}</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="LocalFile">class <strong>LocalFile</strong></a>(<a href="download.html#File">File</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="download.html#LocalFile">LocalFile</a></dd>
+<dd><a href="download.html#File">File</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="LocalFile-__init__"><strong>__init__</strong></a>(self, source, localFile)</dt></dl>
+
+<hr>
+Methods inherited from <a href="download.html#File">File</a>:<br>
+<dl><dt><a name="LocalFile-delete"><strong>delete</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="LocalFile-exists"><strong>exists</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="LocalFile-extractor"><strong>extractor</strong></a>(self, **kwargs)</dt><dd><tt>Returns&nbsp;an&nbsp;extractor&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;suitable&nbsp;for&nbsp;analyzing&nbsp;this&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="LocalFile-getFileExt"><strong>getFileExt</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="LocalFile-getFileType"><strong>getFileType</strong></a>(self)</dt><dd><tt>This&nbsp;default&nbsp;method&nbsp;only&nbsp;uses&nbsp;the&nbsp;extension&nbsp;of&nbsp;the&nbsp;file,&nbsp;not<br>
+self.<strong>mimeType</strong>&nbsp;(which&nbsp;only&nbsp;gets&nbsp;set&nbsp;by&nbsp;the&nbsp;subclass<br>
+<a href="#FileFromWeb">FileFromWeb</a>,&nbsp;which&nbsp;uses&nbsp;an&nbsp;alternate&nbsp;implementation&nbsp;of&nbsp;this&nbsp;method)</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="download.html#File">File</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="download.html#File">File</a>:<br>
+<dl><dt><strong>success</strong> = False</dl>
+
+</td></tr></table></td></tr></table>
+</body></html>

@@ -1,0 +1,287 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module datasheet</title>
+<meta charset="utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>datasheet</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/leo/Frilansjobb/protokollen/protokollen/modules/datasheet.py">/home/leo/Frilansjobb/protokollen/protokollen/modules/datasheet.py</a></font></td></tr></table>
+    <p><tt>#coding=utf-8</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="logging.html">logging</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#dict">__builtin__.dict</a>(<a href="__builtin__.html#object">__builtin__.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="datasheet.html#Row">Row</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="datasheet.html#DataSet">DataSet</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="datasheet.html#CSVFile">CSVFile</a>
+</font></dt><dt><font face="helvetica, arial"><a href="datasheet.html#GoogleSheet">GoogleSheet</a>
+</font></dt></dl>
+</dd>
+</dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="CSVFile">class <strong>CSVFile</strong></a>(<a href="datasheet.html#DataSet">DataSet</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Represents&nbsp;data&nbsp;from&nbsp;a&nbsp;CSV&nbsp;file.&nbsp;Data&nbsp;is&nbsp;loaded&nbsp;on&nbsp;init.<br>
+First&nbsp;row&nbsp;is&nbsp;assumed&nbsp;to&nbsp;contain&nbsp;headers<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="datasheet.html#CSVFile">CSVFile</a></dd>
+<dd><a href="datasheet.html#DataSet">DataSet</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="CSVFile-__init__"><strong>__init__</strong></a>(self, filename, delimiter<font color="#909090">=','</font>, quotechar<font color="#909090">='"'</font>)</dt></dl>
+
+<hr>
+Methods inherited from <a href="datasheet.html#DataSet">DataSet</a>:<br>
+<dl><dt><a name="CSVFile-filter"><strong>filter</strong></a>(self, require<font color="#909090">=None</font>, disallow<font color="#909090">=None</font>)</dt><dd><tt>Filter&nbsp;out&nbsp;rows,&nbsp;depending&nbsp;on&nbsp;requires&nbsp;and/or&nbsp;disallowed&nbsp;keys.<br>
+`require`&nbsp;and&nbsp;`disallow`&nbsp;are&nbsp;lists&nbsp;of&nbsp;keys.</tt></dd></dl>
+
+<dl><dt><a name="CSVFile-get_enumerated_headers"><strong>get_enumerated_headers</strong></a>(self, name, start_from<font color="#909090">=1</font>)</dt><dd><tt>Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;headers&nbsp;(keys)&nbsp;on&nbsp;the&nbsp;form<br>
+[name1,&nbsp;name2,&nbsp;name3]</tt></dd></dl>
+
+<dl><dt><a name="CSVFile-get_length"><strong>get_length</strong></a>(self)</dt><dd><tt>Total&nbsp;number&nbsp;of&nbsp;rows&nbsp;in&nbsp;<a href="#DataSet">DataSet</a></tt></dd></dl>
+
+<dl><dt><a name="CSVFile-get_next"><strong>get_next</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;rows,&nbsp;one&nbsp;at&nbsp;a&nbsp;time:<br>
+&nbsp;<br>
+for&nbsp;row&nbsp;in&nbsp;my_data.getNext():<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;row</tt></dd></dl>
+
+<dl><dt><a name="CSVFile-shuffle"><strong>shuffle</strong></a>(self)</dt><dd><tt>Randomly&nbsp;(kind&nbsp;of)&nbsp;reorder&nbsp;the&nbsp;rows</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="datasheet.html#DataSet">DataSet</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="DataSet">class <strong>DataSet</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Represents&nbsp;a&nbsp;tabular&nbsp;data&nbsp;set,&nbsp;from&nbsp;a&nbsp;CSV&nbsp;file&nbsp;or&nbsp;similar.<br>
+Inputed&nbsp;data&nbsp;is&nbsp;supposed&nbsp;to&nbsp;be&nbsp;a&nbsp;list&nbsp;of&nbsp;dictionaries&nbsp;or&nbsp;<a href="#Row">Row</a>&nbsp;objects:<br>
+[{A:&nbsp;a1,&nbsp;B:&nbsp;b1},&nbsp;{A:&nbsp;a2,&nbsp;B:&nbsp;b2},&nbsp;...]<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="DataSet-__init__"><strong>__init__</strong></a>(self, data)</dt></dl>
+
+<dl><dt><a name="DataSet-filter"><strong>filter</strong></a>(self, require<font color="#909090">=None</font>, disallow<font color="#909090">=None</font>)</dt><dd><tt>Filter&nbsp;out&nbsp;rows,&nbsp;depending&nbsp;on&nbsp;requires&nbsp;and/or&nbsp;disallowed&nbsp;keys.<br>
+`require`&nbsp;and&nbsp;`disallow`&nbsp;are&nbsp;lists&nbsp;of&nbsp;keys.</tt></dd></dl>
+
+<dl><dt><a name="DataSet-get_enumerated_headers"><strong>get_enumerated_headers</strong></a>(self, name, start_from<font color="#909090">=1</font>)</dt><dd><tt>Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;headers&nbsp;(keys)&nbsp;on&nbsp;the&nbsp;form<br>
+[name1,&nbsp;name2,&nbsp;name3]</tt></dd></dl>
+
+<dl><dt><a name="DataSet-get_length"><strong>get_length</strong></a>(self)</dt><dd><tt>Total&nbsp;number&nbsp;of&nbsp;rows&nbsp;in&nbsp;<a href="#DataSet">DataSet</a></tt></dd></dl>
+
+<dl><dt><a name="DataSet-get_next"><strong>get_next</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;rows,&nbsp;one&nbsp;at&nbsp;a&nbsp;time:<br>
+&nbsp;<br>
+for&nbsp;row&nbsp;in&nbsp;my_data.getNext():<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;row</tt></dd></dl>
+
+<dl><dt><a name="DataSet-shuffle"><strong>shuffle</strong></a>(self)</dt><dd><tt>Randomly&nbsp;(kind&nbsp;of)&nbsp;reorder&nbsp;the&nbsp;rows</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="GoogleSheet">class <strong>GoogleSheet</strong></a>(<a href="datasheet.html#DataSet">DataSet</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Represents&nbsp;data&nbsp;from&nbsp;a&nbsp;Google&nbsp;Spreadsheet.&nbsp;Data&nbsp;is&nbsp;loaded&nbsp;on&nbsp;init.<br>
+First&nbsp;row&nbsp;is&nbsp;assumed&nbsp;to&nbsp;contain&nbsp;headers.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="datasheet.html#GoogleSheet">GoogleSheet</a></dd>
+<dd><a href="datasheet.html#DataSet">DataSet</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="GoogleSheet-__init__"><strong>__init__</strong></a>(self, googleSheetKey, client_email, p12file<font color="#909090">='google_api.p12'</font>, sheet<font color="#909090">=1</font>)</dt></dl>
+
+<dl><dt><a name="GoogleSheet-is_number"><strong>is_number</strong></a>(self, string)</dt><dd><tt>Check&nbsp;if&nbsp;input&nbsp;is&nbsp;a&nbsp;number</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="datasheet.html#DataSet">DataSet</a>:<br>
+<dl><dt><a name="GoogleSheet-filter"><strong>filter</strong></a>(self, require<font color="#909090">=None</font>, disallow<font color="#909090">=None</font>)</dt><dd><tt>Filter&nbsp;out&nbsp;rows,&nbsp;depending&nbsp;on&nbsp;requires&nbsp;and/or&nbsp;disallowed&nbsp;keys.<br>
+`require`&nbsp;and&nbsp;`disallow`&nbsp;are&nbsp;lists&nbsp;of&nbsp;keys.</tt></dd></dl>
+
+<dl><dt><a name="GoogleSheet-get_enumerated_headers"><strong>get_enumerated_headers</strong></a>(self, name, start_from<font color="#909090">=1</font>)</dt><dd><tt>Returns&nbsp;a&nbsp;list&nbsp;of&nbsp;headers&nbsp;(keys)&nbsp;on&nbsp;the&nbsp;form<br>
+[name1,&nbsp;name2,&nbsp;name3]</tt></dd></dl>
+
+<dl><dt><a name="GoogleSheet-get_length"><strong>get_length</strong></a>(self)</dt><dd><tt>Total&nbsp;number&nbsp;of&nbsp;rows&nbsp;in&nbsp;<a href="#DataSet">DataSet</a></tt></dd></dl>
+
+<dl><dt><a name="GoogleSheet-get_next"><strong>get_next</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;rows,&nbsp;one&nbsp;at&nbsp;a&nbsp;time:<br>
+&nbsp;<br>
+for&nbsp;row&nbsp;in&nbsp;my_data.getNext():<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;row</tt></dd></dl>
+
+<dl><dt><a name="GoogleSheet-shuffle"><strong>shuffle</strong></a>(self)</dt><dd><tt>Randomly&nbsp;(kind&nbsp;of)&nbsp;reorder&nbsp;the&nbsp;rows</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="datasheet.html#DataSet">DataSet</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Row">class <strong>Row</strong></a>(<a href="__builtin__.html#dict">__builtin__.dict</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Represents&nbsp;a&nbsp;row&nbsp;in&nbsp;a&nbsp;datasheet<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="datasheet.html#Row">Row</a></dd>
+<dd><a href="__builtin__.html#dict">__builtin__.dict</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="Row-__init__"><strong>__init__</strong></a>(self, *arg, **kw)</dt></dl>
+
+<dl><dt><a name="Row-enumerated_columns"><strong>enumerated_columns</strong></a>(self, enumerated_header)</dt><dd><tt>Return&nbsp;a&nbsp;list&nbsp;of&nbsp;column&nbsp;values&nbsp;corresponding&nbsp;to&nbsp;an&nbsp;enumerated&nbsp;header.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="__builtin__.html#dict">__builtin__.dict</a>:<br>
+<dl><dt><a name="Row-__cmp__"><strong>__cmp__</strong></a>(...)</dt><dd><tt>x.<a href="#Row-__cmp__">__cmp__</a>(y)&nbsp;&lt;==&gt;&nbsp;cmp(x,y)</tt></dd></dl>
+
+<dl><dt><a name="Row-__contains__"><strong>__contains__</strong></a>(...)</dt><dd><tt>D.<a href="#Row-__contains__">__contains__</a>(k)&nbsp;-&gt;&nbsp;True&nbsp;if&nbsp;D&nbsp;has&nbsp;a&nbsp;key&nbsp;k,&nbsp;else&nbsp;False</tt></dd></dl>
+
+<dl><dt><a name="Row-__delitem__"><strong>__delitem__</strong></a>(...)</dt><dd><tt>x.<a href="#Row-__delitem__">__delitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;del&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="Row-__eq__"><strong>__eq__</strong></a>(...)</dt><dd><tt>x.<a href="#Row-__eq__">__eq__</a>(y)&nbsp;&lt;==&gt;&nbsp;x==y</tt></dd></dl>
+
+<dl><dt><a name="Row-__ge__"><strong>__ge__</strong></a>(...)</dt><dd><tt>x.<a href="#Row-__ge__">__ge__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&gt;=y</tt></dd></dl>
+
+<dl><dt><a name="Row-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#Row-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="Row-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#Row-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="Row-__gt__"><strong>__gt__</strong></a>(...)</dt><dd><tt>x.<a href="#Row-__gt__">__gt__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&gt;y</tt></dd></dl>
+
+<dl><dt><a name="Row-__iter__"><strong>__iter__</strong></a>(...)</dt><dd><tt>x.<a href="#Row-__iter__">__iter__</a>()&nbsp;&lt;==&gt;&nbsp;iter(x)</tt></dd></dl>
+
+<dl><dt><a name="Row-__le__"><strong>__le__</strong></a>(...)</dt><dd><tt>x.<a href="#Row-__le__">__le__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&lt;=y</tt></dd></dl>
+
+<dl><dt><a name="Row-__len__"><strong>__len__</strong></a>(...)</dt><dd><tt>x.<a href="#Row-__len__">__len__</a>()&nbsp;&lt;==&gt;&nbsp;len(x)</tt></dd></dl>
+
+<dl><dt><a name="Row-__lt__"><strong>__lt__</strong></a>(...)</dt><dd><tt>x.<a href="#Row-__lt__">__lt__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&lt;y</tt></dd></dl>
+
+<dl><dt><a name="Row-__ne__"><strong>__ne__</strong></a>(...)</dt><dd><tt>x.<a href="#Row-__ne__">__ne__</a>(y)&nbsp;&lt;==&gt;&nbsp;x!=y</tt></dd></dl>
+
+<dl><dt><a name="Row-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#Row-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
+
+<dl><dt><a name="Row-__setitem__"><strong>__setitem__</strong></a>(...)</dt><dd><tt>x.<a href="#Row-__setitem__">__setitem__</a>(i,&nbsp;y)&nbsp;&lt;==&gt;&nbsp;x[i]=y</tt></dd></dl>
+
+<dl><dt><a name="Row-__sizeof__"><strong>__sizeof__</strong></a>(...)</dt><dd><tt>D.<a href="#Row-__sizeof__">__sizeof__</a>()&nbsp;-&gt;&nbsp;size&nbsp;of&nbsp;D&nbsp;in&nbsp;memory,&nbsp;in&nbsp;bytes</tt></dd></dl>
+
+<dl><dt><a name="Row-clear"><strong>clear</strong></a>(...)</dt><dd><tt>D.<a href="#Row-clear">clear</a>()&nbsp;-&gt;&nbsp;None.&nbsp;&nbsp;Remove&nbsp;all&nbsp;items&nbsp;from&nbsp;D.</tt></dd></dl>
+
+<dl><dt><a name="Row-copy"><strong>copy</strong></a>(...)</dt><dd><tt>D.<a href="#Row-copy">copy</a>()&nbsp;-&gt;&nbsp;a&nbsp;shallow&nbsp;copy&nbsp;of&nbsp;D</tt></dd></dl>
+
+<dl><dt><a name="Row-fromkeys"><strong>fromkeys</strong></a>(...)</dt><dd><tt><a href="__builtin__.html#dict">dict</a>.<a href="#Row-fromkeys">fromkeys</a>(S[,v])&nbsp;-&gt;&nbsp;New&nbsp;<a href="__builtin__.html#dict">dict</a>&nbsp;with&nbsp;keys&nbsp;from&nbsp;S&nbsp;and&nbsp;values&nbsp;equal&nbsp;to&nbsp;v.<br>
+v&nbsp;defaults&nbsp;to&nbsp;None.</tt></dd></dl>
+
+<dl><dt><a name="Row-get"><strong>get</strong></a>(...)</dt><dd><tt>D.<a href="#Row-get">get</a>(k[,d])&nbsp;-&gt;&nbsp;D[k]&nbsp;if&nbsp;k&nbsp;in&nbsp;D,&nbsp;else&nbsp;d.&nbsp;&nbsp;d&nbsp;defaults&nbsp;to&nbsp;None.</tt></dd></dl>
+
+<dl><dt><a name="Row-has_key"><strong>has_key</strong></a>(...)</dt><dd><tt>D.<a href="#Row-has_key">has_key</a>(k)&nbsp;-&gt;&nbsp;True&nbsp;if&nbsp;D&nbsp;has&nbsp;a&nbsp;key&nbsp;k,&nbsp;else&nbsp;False</tt></dd></dl>
+
+<dl><dt><a name="Row-items"><strong>items</strong></a>(...)</dt><dd><tt>D.<a href="#Row-items">items</a>()&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;D's&nbsp;(key,&nbsp;value)&nbsp;pairs,&nbsp;as&nbsp;2-tuples</tt></dd></dl>
+
+<dl><dt><a name="Row-iteritems"><strong>iteritems</strong></a>(...)</dt><dd><tt>D.<a href="#Row-iteritems">iteritems</a>()&nbsp;-&gt;&nbsp;an&nbsp;iterator&nbsp;over&nbsp;the&nbsp;(key,&nbsp;value)&nbsp;items&nbsp;of&nbsp;D</tt></dd></dl>
+
+<dl><dt><a name="Row-iterkeys"><strong>iterkeys</strong></a>(...)</dt><dd><tt>D.<a href="#Row-iterkeys">iterkeys</a>()&nbsp;-&gt;&nbsp;an&nbsp;iterator&nbsp;over&nbsp;the&nbsp;keys&nbsp;of&nbsp;D</tt></dd></dl>
+
+<dl><dt><a name="Row-itervalues"><strong>itervalues</strong></a>(...)</dt><dd><tt>D.<a href="#Row-itervalues">itervalues</a>()&nbsp;-&gt;&nbsp;an&nbsp;iterator&nbsp;over&nbsp;the&nbsp;values&nbsp;of&nbsp;D</tt></dd></dl>
+
+<dl><dt><a name="Row-keys"><strong>keys</strong></a>(...)</dt><dd><tt>D.<a href="#Row-keys">keys</a>()&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;D's&nbsp;keys</tt></dd></dl>
+
+<dl><dt><a name="Row-pop"><strong>pop</strong></a>(...)</dt><dd><tt>D.<a href="#Row-pop">pop</a>(k[,d])&nbsp;-&gt;&nbsp;v,&nbsp;remove&nbsp;specified&nbsp;key&nbsp;and&nbsp;return&nbsp;the&nbsp;corresponding&nbsp;value.<br>
+If&nbsp;key&nbsp;is&nbsp;not&nbsp;found,&nbsp;d&nbsp;is&nbsp;returned&nbsp;if&nbsp;given,&nbsp;otherwise&nbsp;KeyError&nbsp;is&nbsp;raised</tt></dd></dl>
+
+<dl><dt><a name="Row-popitem"><strong>popitem</strong></a>(...)</dt><dd><tt>D.<a href="#Row-popitem">popitem</a>()&nbsp;-&gt;&nbsp;(k,&nbsp;v),&nbsp;remove&nbsp;and&nbsp;return&nbsp;some&nbsp;(key,&nbsp;value)&nbsp;pair&nbsp;as&nbsp;a<br>
+2-tuple;&nbsp;but&nbsp;raise&nbsp;KeyError&nbsp;if&nbsp;D&nbsp;is&nbsp;empty.</tt></dd></dl>
+
+<dl><dt><a name="Row-setdefault"><strong>setdefault</strong></a>(...)</dt><dd><tt>D.<a href="#Row-setdefault">setdefault</a>(k[,d])&nbsp;-&gt;&nbsp;D.<a href="#Row-get">get</a>(k,d),&nbsp;also&nbsp;set&nbsp;D[k]=d&nbsp;if&nbsp;k&nbsp;not&nbsp;in&nbsp;D</tt></dd></dl>
+
+<dl><dt><a name="Row-update"><strong>update</strong></a>(...)</dt><dd><tt>D.<a href="#Row-update">update</a>([E,&nbsp;]**F)&nbsp;-&gt;&nbsp;None.&nbsp;&nbsp;Update&nbsp;D&nbsp;from&nbsp;<a href="__builtin__.html#dict">dict</a>/iterable&nbsp;E&nbsp;and&nbsp;F.<br>
+If&nbsp;E&nbsp;present&nbsp;and&nbsp;has&nbsp;a&nbsp;.<a href="#Row-keys">keys</a>()&nbsp;method,&nbsp;does:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;k&nbsp;in&nbsp;E:&nbsp;D[k]&nbsp;=&nbsp;E[k]<br>
+If&nbsp;E&nbsp;present&nbsp;and&nbsp;lacks&nbsp;.<a href="#Row-keys">keys</a>()&nbsp;method,&nbsp;does:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;(k,&nbsp;v)&nbsp;in&nbsp;E:&nbsp;D[k]&nbsp;=&nbsp;v<br>
+In&nbsp;either&nbsp;case,&nbsp;this&nbsp;is&nbsp;followed&nbsp;by:&nbsp;for&nbsp;k&nbsp;in&nbsp;F:&nbsp;D[k]&nbsp;=&nbsp;F[k]</tt></dd></dl>
+
+<dl><dt><a name="Row-values"><strong>values</strong></a>(...)</dt><dd><tt>D.<a href="#Row-values">values</a>()&nbsp;-&gt;&nbsp;list&nbsp;of&nbsp;D's&nbsp;values</tt></dd></dl>
+
+<dl><dt><a name="Row-viewitems"><strong>viewitems</strong></a>(...)</dt><dd><tt>D.<a href="#Row-viewitems">viewitems</a>()&nbsp;-&gt;&nbsp;a&nbsp;set-like&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;providing&nbsp;a&nbsp;view&nbsp;on&nbsp;D's&nbsp;items</tt></dd></dl>
+
+<dl><dt><a name="Row-viewkeys"><strong>viewkeys</strong></a>(...)</dt><dd><tt>D.<a href="#Row-viewkeys">viewkeys</a>()&nbsp;-&gt;&nbsp;a&nbsp;set-like&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;providing&nbsp;a&nbsp;view&nbsp;on&nbsp;D's&nbsp;keys</tt></dd></dl>
+
+<dl><dt><a name="Row-viewvalues"><strong>viewvalues</strong></a>(...)</dt><dd><tt>D.<a href="#Row-viewvalues">viewvalues</a>()&nbsp;-&gt;&nbsp;an&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;providing&nbsp;a&nbsp;view&nbsp;on&nbsp;D's&nbsp;values</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="__builtin__.html#dict">__builtin__.dict</a>:<br>
+<dl><dt><strong>__hash__</strong> = None</dl>
+
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object&gt;<dd><tt>T.<a href="#Row-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+
+</td></tr></table></td></tr></table>
+</body></html>
