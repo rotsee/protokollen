@@ -109,12 +109,12 @@ class File(object):
     def getFileExt(self):
         return FileType.type_to_ext_dict.get(self.getFileType(), None)
 
-    def extractor(self, **kwargs):
+    def extractor(self):
         """Returns an extractor object suitable for analyzing this file
         """
         Extractor = FileType.type_to_extractor_dict.get(self.getFileType(),
                                                         None)
-        extractor = Extractor(self.localFile, **kwargs)
+        extractor = Extractor(self.localFile)
         return extractor
 
 

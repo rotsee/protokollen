@@ -1,5 +1,4 @@
 #coding=utf-8
-
 """ Utility functions to be used in several modules.
 """
 import re
@@ -13,6 +12,92 @@ datePatterns = [
    “Myndigheternas skrivregler” recommends using 2005-04-14 or 15.4.2005
    in document headers.
 """
+
+python_encodings = ["ascii",
+                    "cp037",
+                    "cp437",
+                    "cp500",
+                    "cp775",
+                    "cp850",
+                    "cp852",
+                    "cp855",
+                    "cp856",
+                    "cp857",
+                    "cp858",
+                    "cp860",
+                    "cp861",
+                    "cp862",
+                    "cp863",
+                    "cp864",
+                    "cp865",
+                    "cp1026",
+                    "cp1250",
+                    "cp1252",
+                    "cp1257",
+                    "latin_1",
+                    "iso8859_2",
+                    "iso8859_3",
+                    "iso8859_4",
+                    "iso8859_5",
+                    "iso8859_6",
+                    "iso8859_7",
+                    "iso8859_8",
+                    "iso8859_9",
+                    "iso8859_10",
+                    "iso8859_13",
+                    "iso8859_14",
+                    "iso8859_15",
+                    "iso8859_16",
+                    "mac_iceland",
+                    "mac_latin2",
+                    "mac_roman"]
+"""Subset of standard encodings supported by Python, that sometimes occurs
+   in Swedish documents. For use with encoding guessing algorithms, etc.
+
+   Basically any encoding that contains å,ä and ö seem to have been used by
+   someone, at some point.
+"""
+
+
+def make_unicode(str_):
+    """This method will try to convert any string to a unicode object,
+       using whatever encoding works. This is a last resort, when we
+       have no ideas about encodings.
+
+       This method is used when storing metadata, that can be heavily
+       messed-up as files are abused by ill-behaved software
+    """
+    print str_
+    print type(str_)
+
+    output = u""
+
+    if str_ is None:
+        return output
+
+    try:
+        output = unicode(str_, 'utf-8')
+    except TypeError:
+        #Already unicode
+        output = str_
+    except UnicodeDecodeError:
+        # At this point we have no idea of knowing what encoding
+        # this might be. Let try a few
+        for encoding in python_encodings:
+            try:
+                print "trying",
+                print encoding
+                output = str_.decode(encoding, "ignore")
+                break
+            except UnicodeDecodeError:
+                print "INNER IDE"
+                continue
+    #replace useless 0000-char
+    print output
+    print type(output)
+    output = output.replace(u"\u0000", u"")
+    print output
+    return output
 
 
 def is_number(s):
