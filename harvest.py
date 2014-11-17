@@ -14,7 +14,7 @@ from os import path
 from hashlib import md5
 from collections import deque
 from copy import deepcopy
-from json import dumps
+import json
 
 from modules.interface import Interface
 from modules.download import FileFromWeb
@@ -184,25 +184,28 @@ def run_harvest(data_set, browser, uploader, ui, db):
                     dbkey = db.create_key([municipality,
                                           filename + "." + file_ext])
                     ui.debug("Adding file origin to DB as %s.origin " % dbkey)
-                    result = db.put(dbkey, "origin", url)
+                    result = db.put(dbkey, u"origin", url)
                     ui.debug(result)
                     ui.debug("Adding municipality to DB as %s.municipality " % dbkey)
-                    result = db.put(dbkey, "municipality", municipality)
+                    result = db.put(dbkey, u"municipality", municipality)
                     ui.debug(result)
                     ui.debug("Adding harvesting data to DB as %s.harvesting_rules " % dbkey)
                     result = db.put(dbkey, "harvesting_rules", row)
                     ui.debug(result)
                     if "year" in row and is_number(row["year"]):
                         ui.debug("Adding year to DB as %s.year " % dbkey)
-                        db.put(dbkey, "year", row["year"])
+                        db.put(dbkey, u"year", row["year"])
                     try:
                         ui.debug("Extracting metadata")
-                        # Sent in all datasheet values, in case needed
-                        # HtmlExtractor uses them
-                        extractor = download_file.extractor(row)
+                        extractor = download_file.extractor()
+                        # HtmlExtractor will want to know where in the page to
+                        # look for content. Send `html` column, if any
+                        if "html" in row:
+                            extractor.content_xpath = row["html"]
                         meta = extractor.get_metadata()
                         ui.debug("Adding metadata to DB as %s.metadata " % dbkey)
-                        db.put(dbkey, "metadata", dumps(meta.data))
+                        json_obj = json.dumps(meta.data, ensure_ascii=False)
+                        db.put(dbkey, u"metadata", json_obj)
                     except Exception as e:
                         ui.error("Could not get metadata from %s. %s" % (dbkey, e))
 
