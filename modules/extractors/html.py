@@ -40,10 +40,14 @@ class HtmlExtractor(ExtractorBase):
     def __init__(self, path, **kwargs):
         self.path = path
         self.content_xpath = kwargs.get('html', '//body')
-        print self.content_xpath
+        self.content_soup = None
+        self.content_html = None
+        self.soup = None
+
+    def _load_content(self):
         with open(self.path, "rb") as file_:
             html = file_.read()
-            html = html.decode('utf-8')
+            html = html.decode('utf-8', 'ignore')
             html = self._get_content_portion(html)
             self.content_html = html
             self.content_soup = BeautifulSoup(html)
@@ -63,6 +67,9 @@ class HtmlExtractor(ExtractorBase):
         """Return a best guess for the header (if any) of this page,
            or None if no headers were found.
         """
+        if self.content_soup is None:
+            self._load_content
+
         header_tags = []
         for tag in self.content_soup.descendants:
             #Break on bread text
@@ -103,12 +110,17 @@ class HtmlExtractor(ExtractorBase):
         except AttributeError:  # not cached
             pass
 
+        if self.content_html is None:
+            self._load_content
         self._text_cache = html2text(self.content_html)
         return self._text_cache
 
     def get_metadata(self):
         """Returns a metadata.Metadata object
         """
+        if self.soup is None:
+            self._load_content
+
         metadata = Metadata()
         metadata.add({"title": self.soup.title.string})
         for meta_tag in self.soup.find_all('meta'):

@@ -19,36 +19,22 @@ python_encodings = ["ascii",
                     "cp500",
                     "cp775",
                     "cp850",
-                    "cp852",
-                    "cp855",
-                    "cp856",
                     "cp857",
                     "cp858",
-                    "cp860",
                     "cp861",
-                    "cp862",
                     "cp863",
-                    "cp864",
                     "cp865",
                     "cp1026",
                     "cp1250",
                     "cp1252",
                     "cp1257",
                     "latin_1",
-                    "iso8859_2",
-                    "iso8859_3",
+                    "iso8859_1",
                     "iso8859_4",
-                    "iso8859_5",
-                    "iso8859_6",
-                    "iso8859_7",
-                    "iso8859_8",
                     "iso8859_9",
-                    "iso8859_10",
                     "iso8859_13",
                     "iso8859_14",
                     "iso8859_15",
-                    "iso8859_16",
-                    "mac_iceland",
                     "mac_latin2",
                     "mac_roman"]
 """Subset of standard encodings supported by Python, that sometimes occurs
@@ -67,14 +53,9 @@ def make_unicode(str_):
        This method is used when storing metadata, that can be heavily
        messed-up as files are abused by ill-behaved software
     """
-    print str_
-    print type(str_)
-
     output = u""
-
     if str_ is None:
         return output
-
     try:
         output = unicode(str_, 'utf-8')
     except TypeError:
@@ -85,18 +66,12 @@ def make_unicode(str_):
         # this might be. Let try a few
         for encoding in python_encodings:
             try:
-                print "trying",
-                print encoding
                 output = str_.decode(encoding, "ignore")
                 break
             except UnicodeDecodeError:
-                print "INNER IDE"
                 continue
     #replace useless 0000-char
-    print output
-    print type(output)
     output = output.replace(u"\u0000", u"")
-    print output
     return output
 
 

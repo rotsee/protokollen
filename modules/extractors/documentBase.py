@@ -66,7 +66,7 @@ class ExtractorBase(object):
        mandatory methods for sub classes.
     """
 
-    def __init__(self, path, **kwargs):
+    def __init__(self, path):
         self.path = path
         self.text = None
 
