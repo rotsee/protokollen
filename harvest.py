@@ -190,7 +190,7 @@ def run_harvest(data_set, browser, uploader, ui, db):
                     result = db.put(dbkey, u"municipality", municipality)
                     ui.debug(result)
                     ui.debug("Adding harvesting data to DB as %s.harvesting_rules " % dbkey)
-                    result = db.put(dbkey, "harvesting_rules", row)
+                    result = db.put(dbkey, u"harvesting_rules", row)
                     ui.debug(result)
                     if "year" in row and is_number(row["year"]):
                         ui.debug("Adding year to DB as %s.year " % dbkey)
@@ -204,8 +204,9 @@ def run_harvest(data_set, browser, uploader, ui, db):
                             extractor.content_xpath = row["html"]
                         meta = extractor.get_metadata()
                         ui.debug("Adding metadata to DB as %s.metadata " % dbkey)
-                        json_obj = json.dumps(meta.data, ensure_ascii=False)
-                        db.put(dbkey, u"metadata", json_obj)
+                        result = db.put(dbkey, u"metadata", meta.data, meta.data)
+#                        result = db.put(dbkey, u"metadata", meta.data, json.loads(json_obj))
+                        ui.debug(result)
                     except Exception as e:
                         ui.error("Could not get metadata from %s. %s" % (dbkey, e))
 
