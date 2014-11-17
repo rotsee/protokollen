@@ -80,7 +80,6 @@ class HtmlExtractor(ExtractorBase):
             #Break after <h_>-tag
             if tag.name in ['h1', 'h2', 'h3', 'h4', 'h5']:
                 break
-        print header_tags
         return "\n".join(header_tags)
 
     def get_date(self):
