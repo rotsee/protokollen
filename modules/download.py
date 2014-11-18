@@ -110,7 +110,7 @@ class File(object):
         return FileType.ext_to_type_dict.get(self.localFile.split(".")[-1],
                                              None)
 
-    def getFileExt(self):
+    def get_file_extension(self):
         return FileType.type_to_ext_dict.get(self.get_file_type(), None)
 
     def extractor(self):

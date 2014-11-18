@@ -7,6 +7,7 @@ from abc import ABCMeta, abstractmethod
 
 from download import FileFromS3, LocalFile, DropboxFile
 
+
 class Storage:
     """Abstract class for file storage.
     Subclasses are used for putting files on remote
@@ -50,7 +51,11 @@ class Storage:
         pass
 
     @abstractmethod
-    def fileExists(self, fullfilename):
+    def prefix_exists(self, fullfilename):
+        """Prefix is a path and/or part of a filename.
+           It is typically used to check for a file, before
+           the extension is known.
+        """
         pass
 
     @abstractmethod
@@ -129,7 +134,10 @@ class S3Storage(Storage):
     def getFile(self, key, localFilename):
         return FileFromS3(key, localFilename)
 
-    def fileExists(self, fullfilename):
+    def prefix_exists(self, fullfilename):
+        """Check if a file with this prefix exists (path and/or part
+           of filename) in our bucket
+        """
         return self.connection.fileExistsInBucket(fullfilename)
 
     def putFile(self, localFilename, s3name):
@@ -186,6 +194,9 @@ class LocalUploader(Storage):
 
     def fileExists(self, fullfilename):
         return os.path.exists(self.path + self.sep + fullfilename)
+
+    def prefix_exists(self, prefix):
+        raise NotImplementedError
 
     def putFile(self, localFilename, remoteFilename):
         path = self.path + os.sep + remoteFilename
@@ -282,6 +293,9 @@ class DropboxUploader(Storage):
         key.dbclient = self.connection
         key.rootpath = self.path
         return DropboxFile(key, localFilename)
+
+    def prefix_exists(self, prefix):
+        raise NotImplementedError
 
     def fileExists(self, fullfilename):
         try:
