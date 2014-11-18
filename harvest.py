@@ -45,7 +45,8 @@ def click_through_dlclicks(browser,
                                             # `browser` will be prepended
                                             click_through_dlclicks,
                                             new_dlclicks_deque,
-                                            callback=callback
+                                            callback=callback,
+                                            **kwargs
                                             )
     else:
         callback(browser, **kwargs)
@@ -149,7 +150,7 @@ def do_download(browser, ui, uploader, row, db):
     # Return early if a file with this name (no extension yet) exists
     if uploader.prefix_exists(prefix):
         ui.debug("%s already exists in storage" % url)
-        continue  # File already stored
+        return
 
     filetype = download_file.get_file_type()
     file_ext = download_file.get_file_extension()
