@@ -14,10 +14,9 @@ from os import path
 from hashlib import md5
 from collections import deque
 from copy import deepcopy
-import json
 
 from modules.interface import Interface
-from modules.download import FileFromWeb
+from modules.download import FileFromWeb, File
 from modules.surfer import Surfer
 from modules.datasheet import CSVFile, GoogleSheet
 from modules.utils import is_number
@@ -142,8 +141,17 @@ def run_harvest(data_set, browser, uploader, ui, db):
         url_list = []
 
         def _append_to_list(browser):
-            ui.debug("Adding URL %s" % browser.selenium_driver.current_url)
-            url_list.append(browser.selenium_driver.current_url)
+            if browser.selenium_driver.current_url != "about:blank":
+                ui.debug("Adding URL %s" % browser.selenium_driver.current_url)
+                obj = {"type": "URL",
+                       "url": browser.selenium_driver.current_url}
+                url_list.append(obj)
+            else:
+                obj = {"type": "FILE",
+                       "url": browser.get_last_download()}
+                url_list.append(obj)
+                ui.info("The browser downloaded the file %s" % obj["url"])
+
         click_through_dlclicks(browser,
                                deque(filter(None, dlclicks)),
                                callback=_append_to_list)
@@ -151,8 +159,16 @@ def run_harvest(data_set, browser, uploader, ui, db):
         if len(url_list) == 0:
             ui.warning("No URLs found for %s " % municipality)
 
-        for url in url_list:
-            filename = md5(url).hexdigest()
+        for url_obj in url_list:
+            url = url_obj["url"]
+            if url_obj["type"] == "URL":
+                filename = md5(url).hexdigest()
+            else:
+                # Create name from filename *and' municipality,
+                # as there is a slight risk of duplicate names.
+                # Don't use path, that can be temporary.
+                short_name = path.split(url)[-1]
+                filename = md5(municipality + short_name).hexdigest()
             remote_naked_filename = uploader.buildRemoteName(filename,
                                                              path=municipality)
             """Full path, but without extension.
@@ -163,57 +179,70 @@ def run_harvest(data_set, browser, uploader, ui, db):
                 ui.debug("%s already exists in storage" % url)
                 continue  # File already stored
 
-            if ui.executionMode < Interface.SUPERDRY_MODE:
-                ui.debug("Downloading file at %s" % url)
+            ui.debug("Downloading file at %s" % url)
+            if url_obj["type"] == "URL":
                 local_filename = path.join("temp", filename)
+            else:
+                local_filename = url
+            if url_obj["type"] == "URL":
                 download_file = FileFromWeb(url,
                                             local_filename,
                                             settings.user_agent)
-                filetype = download_file.getFileType()
-                if filetype in settings.allowedFiletypes and\
-                   ui.executionMode < Interface.DRY_MODE:
-                    # Upload file
-                    file_ext = download_file.getFileExt()
-                    uploader.putFile(local_filename,
-                                     uploader.buildRemoteName(filename,
-                                                              ext=file_ext,
-                                                              path=municipality)
-                                     )
-                    # Store file info in DB
-                    # Use path + filename as db key
-                    dbkey = db.create_key([municipality,
-                                          filename + "." + file_ext])
-                    ui.debug("Adding file origin to DB as %s.origin " % dbkey)
-                    result = db.put(dbkey, u"origin", url)
-                    ui.debug(result)
-                    ui.debug("Adding municipality to DB as %s.municipality " % dbkey)
-                    result = db.put(dbkey, u"municipality", municipality)
-                    ui.debug(result)
-                    ui.debug("Adding harvesting data to DB as %s.harvesting_rules " % dbkey)
-                    result = db.put(dbkey, u"harvesting_rules", row)
-                    ui.debug(result)
-                    if "year" in row and is_number(row["year"]):
-                        ui.debug("Adding year to DB as %s.year " % dbkey)
-                        db.put(dbkey, u"year", row["year"])
-                    try:
-                        ui.debug("Extracting metadata")
-                        extractor = download_file.extractor()
-                        # HtmlExtractor will want to know where in the page to
-                        # look for content. Send `html` column, if any
-                        if "html" in row:
-                            extractor.content_xpath = row["html"]
-                        meta = extractor.get_metadata()
-                        ui.debug("Adding metadata to DB as %s.metadata " % dbkey)
-                        result = db.put(dbkey, u"metadata", meta.data, meta.data)
-#                        result = db.put(dbkey, u"metadata", meta.data, json.loads(json_obj))
-                        ui.debug(result)
-                    except Exception as e:
-                        ui.error("Could not get metadata from %s. %s" % (dbkey, e))
-
+            else:
+                download_file = File(url)
+            filetype = download_file.get_file_type()
+            if filetype in settings.allowedFiletypes and\
+               ui.executionMode < Interface.DRY_MODE:
+                # Upload file
+                file_ext = download_file.getFileExt()
+                uploader.putFile(local_filename,
+                                 uploader.buildRemoteName(filename,
+                                                          ext=file_ext,
+                                                          path=municipality)
+                                 )
+                # Store file info in DB
+                # Use path + filename as db key
+                dbkey = db.create_key([municipality,
+                                      filename + "." + file_ext])
+                ui.debug("Adding file origin to DB as %s.origin " % dbkey)
+                if url_obj["type"] == "URL":
+                    origin = url
                 else:
-                    ui.warning("%s is not an allowed mime type"
-                               % download_file.mimeType)
+                    # if we didn't get the file from an URL, we don't know
+                    # the origin. Use the starting URL
+                    origin = row["url"]
+                result = db.put(dbkey, u"origin", origin)
+                ui.debug(result)
+                ui.debug("Adding municipality to DB as %s.municipality " % dbkey)
+                result = db.put(dbkey, u"municipality", municipality)
+                ui.debug(result)
+                ui.debug("Adding harvesting data to DB as %s.harvesting_rules " % dbkey)
+                result = db.put(dbkey, u"harvesting_rules", row)
+                ui.debug(result)
+                if "year" in row and is_number(row["year"]):
+                    ui.debug("Adding year to DB as %s.year " % dbkey)
+                    db.put(dbkey, u"year", row["year"])
+                try:
+                    ui.debug("Extracting metadata")
+                    extractor = download_file.extractor()
+                    # HtmlExtractor will want to know where in the page to
+                    # look for content. Send `html` column, if any
+                    if "html" in row:
+                        extractor.content_xpath = row["html"]
+                    meta = extractor.get_metadata()
+                    ui.debug("Adding metadata to DB as %s.metadata " % dbkey)
+                    result = db.put(dbkey, u"metadata", meta.data, meta.data)
+#                        result = db.put(dbkey, u"metadata", meta.data, json.loads(json_obj))
+                    ui.debug(result)
+                except Exception as e:
+                    ui.error("Could not get metadata from %s. %s" % (dbkey, e))
+            else:
+                ui.warning("%s is not an allowed mime type or download failed"
+                           % download_file.mimeType)
+            try:
                 download_file.delete()
+            except:
+                pass
 
 if __name__ == '__main__':
     main()

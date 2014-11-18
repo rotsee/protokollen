@@ -107,9 +107,14 @@ released under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2
 
 and an XMP [metadata parser](http://blog.matt-swain.com/post/25650072381/a-lightweight-xmp-parser-for-extracting-pdf-metadata-in) by Matt Swain, released under the MIT license,
 
-and the Chrome [Undisposition plugin](https://chrome.google.com/webstore/detail/undisposition/hjfncfijclafkkfifjelofbeclipplfi), copyright (c) 2012-2013, ciel, released under both the [BSD License](https://code.google.com/p/ctouch/source/browse/COPYING.md), and [Creative Commons CC0](http://creativecommons.org/publicdomain/zero/1.0/),
+and the Chrome [Undisposition plugin](https://chrome.google.com/webstore/detail/undisposition/hjfncfijclafkkfifjelofbeclipplfi), copyright © 2012-2013, ciel, released under both the [BSD License](https://code.google.com/p/ctouch/source/browse/COPYING.md), and [Creative Commons CC0](http://creativecommons.org/publicdomain/zero/1.0/),
 
-and the Firefox [InlineDisposition extension](https://addons.mozilla.org/en-US/firefox/addon/inlinedisposition/), copyright [Kai Liu](http://code.kliu.org/), and released under [BSD License](http://opensource.org/licenses/bsd-license.php).
+and the Firefox [InlineDisposition extension](https://addons.mozilla.org/en-US/firefox/addon/webodf/), copyright © 2011, [Kai Liu](http://code.kliu.org/), and released under [BSD License](http://opensource.org/licenses/bsd-license.php),
+
+and the Firefox [Open in Browser extension](https://addons.mozilla.org/En-us/firefox/addon/open-in-browser/), copyright © 2011, [Sylvain Pasche](https://github.com/spasche/openinbrowser), and released under [Mozilla Public License, 1.1](https://www.mozilla.org/MPL/1.1/),
+
+and the Firefox [WebODF extension](https://addons.mozilla.org/en-US/firefox/addon/inlinedisposition/), copyright © 2014, [KO GmbH](https://github.com/kogmbh/WebODF), and released under [GNU General Public License, version 3.0](http://www.gnu.org/licenses/gpl-3.0.html).
+
 
 Everything else is copyright © 2014 [Protokollen Contributors](https://github.com/rotsee/protokollen/graphs/contributors), released under the MIT License (MIT).
 

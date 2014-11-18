@@ -5,10 +5,16 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.events import EventFiringWebDriver,\
                                             AbstractEventListener
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver import ActionChains
 from selenium.common.exceptions import InvalidSelectorException
 from xvfbwrapper import Xvfb
 from time import sleep
 import urlparse
+from shutil import rmtree
+from os import listdir
+from os import sep as os_sep
+from os.path import getctime
+from tempfile import mkdtemp
 
 
 class CustomListener(AbstractEventListener):
@@ -30,6 +36,7 @@ class Surfer:
            http://chromedriver.storage.googleapis.com/index.html
         """
         self.extra_delay = delay  # extra time to wait after each operation (s)
+        self.temp_dir = mkdtemp()
 
         self.vdisplay = Xvfb()
         self.vdisplay.start()
@@ -37,13 +44,18 @@ class Surfer:
             profile = FirefoxProfile()
             # Open links in same window
             profile.set_preference("browser.link.open_newwindow", 1)
-            # Download to temp dir. Not actually used.
-            profile.set_preference("browser.download.dir", "temp")
+            # Download to temp dir, for files we can't open inline
+            profile.set_preference("browser.download.dir", self.temp_dir)
             profile.set_preference("browser.download.folderList", 2)
             profile.set_preference("browser.download.manager.showWhenStarting", "False")
-            # Add extension for overriding Content-Disposition headers
-            profile.add_extension(extension='bin/inlinedisposition-1.0.2.4-sm+fx.xpi')
-            profile.set_preference("extensions.InlineDisposition.currentVersion", "1.0.2.4")  # Avoid startup screen
+            profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/vnd.ms-word, application/rtf")
+
+            # Add extension for overriding Content-Disposition headers, etc
+            extensions_dir = os_sep.join(['bin', 'firefox-plugins-enabled'])
+            for filename in listdir(extensions_dir):
+                fullfilename = os_sep.join([extensions_dir, filename])
+                profile.add_extension(extension=fullfilename)
+
             driver = Firefox(profile)
         elif browser == "chrome":
             # Add extension for overriding Content-Disposition headers
@@ -61,6 +73,11 @@ class Surfer:
             + " " \
             + self.selenium_driver.capabilities['version']
         """Browser name and version, e.g. 'Firefox 33.0' """
+
+    def get_last_download(self):
+        files = sorted([
+            f for f in listdir(self.temp_dir)])
+        return self.temp_dir + os_sep + files[-1]
 
     def _get_nearest_ancestor(self, element, tagname):
         ancestor = ''
@@ -90,8 +107,30 @@ class Surfer:
         sleep(self.extra_delay)
         windows = self.selenium_driver.window_handles
         self.selenium_driver.switch_to_window(windows[-1])
+
+#        import ldtp
+#        print ldtp.getwindowlist()
+
+#        from robot import Robot
+#        from robot.event import KeyEvent
+#        from robot.api import robot
+
+#        robot = Robot()
+#        robot.key_press(KeyEvent.VK_DOWN)
+#        robot.key_release(KeyEvent.VK_DOWN)
+#        robot.key_press(KeyEvent.VK_ENTER)
+#        robot.key_release(KeyEvent.VK_ENTER)
+#        self.selenium_driver.switch_to.alert
+#        actions = ActionChains(self.selenium_driver)
+#        actions.send_keys(Keys.DOWN)
+#        actions.send_keys(Keys.RETURN)
+#        actions.perform()
+#        import time
+#        time.sleep(3)
+
         res = callback_(self, *args, **kwargs)
-        self.selenium_driver.close()
+        if len(windows) > 1:
+            self.selenium_driver.close()
         windows = self.selenium_driver.window_handles
         self.selenium_driver.switch_to_window(windows[-1])
         return res
@@ -157,6 +196,7 @@ class Surfer:
     def kill(self):
         self.selenium_driver.close()
         self.vdisplay.stop()
+        rmtree(self.temp_dir)
 
 
 class Url:

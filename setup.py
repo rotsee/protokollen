@@ -23,7 +23,8 @@ try:
         'beautifulsoup4',
         'html5lib',
         'html2text',
-        'rtf2xml'
+        'rtf2xml',
+        'httplib2 == 0.7.7'  # Known to work. Some 0.9.x versions have problems with p12 certs
     ]
 
     try:

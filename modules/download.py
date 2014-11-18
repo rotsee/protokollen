@@ -80,9 +80,10 @@ class File(object):
     """
     success = False
 
-    def __init__(self, source, localFile):
+    def __init__(self, localFile):
             self.localFile = localFile
             self.mimeType = None
+            self._determineMime()
 
     def _determineMime(self):
         import magic
@@ -98,21 +99,24 @@ class File(object):
     def delete(self):
         os.unlink(self.localFile)
 
-    def getFileType(self):
-        """ This default method only uses the extension of the file, not
-            self.mimeType (which only gets set by the subclass
-            FileFromWeb, which uses an alternate implementation of this method)
+    def get_file_type(self):
+        """Return filetype based on mimeType
+        """
+        return FileType.mime_to_type_dict.get(self.mimeType, None)
+
+    def get_file_type_from_name(self):
+        """ This method only uses the extension of the file
         """
         return FileType.ext_to_type_dict.get(self.localFile.split(".")[-1],
                                              None)
 
     def getFileExt(self):
-        return FileType.type_to_ext_dict.get(self.getFileType(), None)
+        return FileType.type_to_ext_dict.get(self.get_file_type(), None)
 
     def extractor(self):
         """Returns an extractor object suitable for analyzing this file
         """
-        Extractor = FileType.type_to_extractor_dict.get(self.getFileType(),
+        Extractor = FileType.type_to_extractor_dict.get(self.get_file_type_from_name(),
                                                         None)
         extractor = Extractor(self.localFile)
         return extractor
@@ -169,11 +173,6 @@ class FileFromWeb(File):
                 self._determineMime()
             else:
                 logging.warning("Failed to download file from %s" % url)
-
-    def getFileType(self):
-        """Return filetype based on mimeType
-        """
-        return FileType.mime_to_type_dict.get(self.mimeType, None)
 
 
 class FileFromS3(File):
