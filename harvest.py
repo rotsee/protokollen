@@ -26,6 +26,7 @@ from modules.databases.debuggerdb import DebuggerDB
 def click_through_dlclicks(browser,
                            dlclicks_deque,
                            callback=None,
+                           *args,
                            **kwargs):
     """Move through a deque of xpath expressions (left to right),
        each xpath describing a click necessary to find and download a document.
@@ -46,6 +47,7 @@ def click_through_dlclicks(browser,
                                             click_through_dlclicks,
                                             new_dlclicks_deque,
                                             callback=callback,
+                                            *args,
                                             **kwargs
                                             )
     else:
@@ -118,16 +120,8 @@ def main():
 def do_download(browser, ui, uploader, row, db):
     """Get the file, put it in the storage, and add a db entry for it
     """
-    if browser.selenium_driver.current_url != "about:blank":
-        # Did we open the document inline? Get the file from
-        # the current URL
-        ui.debug("Adding URL %s" % browser.selenium_driver.current_url)
-        url = browser.selenium_driver.current_url
-        filename = md5(url).hexdigest()
-        local_filename = path.join("temp", filename)
-        download_file = FileFromWeb(url, local_filename, settings.user_agent)
-        origin = url
-    else:
+    ui.debug("Starting download at %s" % browser.selenium_driver.current_url)
+    if browser.selenium_driver.current_url == "about:blank":
         # No document here? Get it from the downloaded files.
         url = browser.get_last_download()
         ui.info("The browser downloaded the file %s" % url)
@@ -141,6 +135,15 @@ def do_download(browser, ui, uploader, row, db):
         # if we didn't get the file from an URL, we don't know
         # the origin. Use the starting URL
         origin = row["url"]
+    else:
+        # Did we open the document inline? Get the file from
+        # the current URL
+        ui.debug("Adding URL %s" % browser.selenium_driver.current_url)
+        url = browser.selenium_driver.current_url
+        filename = md5(url).hexdigest()
+        local_filename = path.join("temp", filename)
+        download_file = FileFromWeb(url, local_filename, settings.user_agent)
+        origin = url
 
     prefix = uploader.buildRemoteName(filename, path=row["source"])
     """Path and filename, but without extension.
@@ -239,7 +242,7 @@ def run_harvest(data_set, browser, uploader, ui, db):
                 ui.warning("Could not do preclick in %s (xPath: %s) %s" %
                            (row["source"], preclick, e))
 
-        ui.debug("Getting URL list from %s" % row["dlclick1"])
+        ui.debug("Getting URL list from %s and on" % row["dlclick1"])
         click_through_dlclicks(browser,
                                deque(filter(None, dlclicks)),
                                callback=do_download,

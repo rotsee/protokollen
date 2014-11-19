@@ -20,7 +20,7 @@ args = [
         "help": "Enter a file name, if your data is in a local CSV file."
     }, {
         "short": "-o", "long": "--overwrite",
-        "type": bool,
+        "action": "store_true",
         "default": False,
         "dest": "overwrite",
         "help": "Should existing files and database entries be overwritten?"

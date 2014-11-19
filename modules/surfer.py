@@ -48,7 +48,7 @@ class Surfer:
             profile.set_preference("browser.download.dir", self.temp_dir)
             profile.set_preference("browser.download.folderList", 2)
             profile.set_preference("browser.download.manager.showWhenStarting", "False")
-            profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/vnd.ms-word, application/rtf")
+            profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/vnd.ms-word, application/rtf, application/octet-stream")
 
             # Add extension for overriding Content-Disposition headers, etc
             extensions_dir = os_sep.join(['bin', 'firefox-plugins-enabled'])
@@ -77,11 +77,14 @@ class Surfer:
     def get_last_download(self):
         files = sorted([
             f for f in listdir(self.temp_dir)])
-        return self.temp_dir + os_sep + files[-1]
+        if len(files) > 0:
+            return self.temp_dir + os_sep + files[-1]
+        else:
+            return None
 
     def _get_nearest_ancestor(self, element, tagname):
-        ancestor = ''
-        while ancestor.tag_name != tagname and ancestor is not None:
+        ancestor = element.find_element_by_xpath("..")
+        while ancestor is not None and ancestor.tag_name != tagname:
             try:
                 ancestor = element.find_element_by_xpath("..")
             except InvalidSelectorException:
@@ -107,27 +110,6 @@ class Surfer:
         sleep(self.extra_delay)
         windows = self.selenium_driver.window_handles
         self.selenium_driver.switch_to_window(windows[-1])
-
-#        import ldtp
-#        print ldtp.getwindowlist()
-
-#        from robot import Robot
-#        from robot.event import KeyEvent
-#        from robot.api import robot
-
-#        robot = Robot()
-#        robot.key_press(KeyEvent.VK_DOWN)
-#        robot.key_release(KeyEvent.VK_DOWN)
-#        robot.key_press(KeyEvent.VK_ENTER)
-#        robot.key_release(KeyEvent.VK_ENTER)
-#        self.selenium_driver.switch_to.alert
-#        actions = ActionChains(self.selenium_driver)
-#        actions.send_keys(Keys.DOWN)
-#        actions.send_keys(Keys.RETURN)
-#        actions.perform()
-#        import time
-#        time.sleep(3)
-
         res = callback_(self, *args, **kwargs)
         if len(windows) > 1:
             self.selenium_driver.close()
@@ -149,13 +131,13 @@ class Surfer:
 
            Currently assumes there is an id on the select element.
         """
-        elementList = self.selenium_driver.find_elements_by_xpath(xPath)
-        if not elementList:
+        element_list = self.selenium_driver.find_elements_by_xpath(xPath)
+        if not element_list:
             raise("No elements found for xPath `%s`" % xPath)
         else:
-            for element in elementList:
+            for element in element_list:
                 element.click()
-                if element.tag_name == "option":
+                if "tag_name" in dir(element) and element.tag_name == "option":
                     parent = self._get_nearest_ancestor(element, "select")
                     if parent is not None:
                         # Should be selected already, when clicking,
