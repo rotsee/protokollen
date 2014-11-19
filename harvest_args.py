@@ -18,5 +18,11 @@ args = [
         "short": "-f", "long": "--file",
         "dest": "filename",
         "help": "Enter a file name, if your data is in a local CSV file."
+    }, {
+        "short": "-o", "long": "--overwrite",
+        "type": bool,
+        "default": False,
+        "dest": "overwrite",
+        "help": "Should existing files and database entries be overwritten?"
     }
 ]

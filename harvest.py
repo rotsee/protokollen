@@ -148,7 +148,7 @@ def do_download(browser, ui, uploader, row, db):
     """
 
     # Return early if a file with this name (no extension yet) exists
-    if uploader.prefix_exists(prefix):
+    if uploader.prefix_exists(prefix) and ui.args.overwrite is not True:
         ui.debug("%s already exists in storage" % url)
         return
 
@@ -194,7 +194,7 @@ def do_download(browser, ui, uploader, row, db):
                 extractor.content_xpath = row["html"]
             meta = extractor.get_metadata()
             ui.debug("Adding metadata to DB as %s.metadata " % dbkey)
-            result = db.put(dbkey, u"metadata", meta.data, meta.data)
+            result = db.put(dbkey, u"metadata", meta.data, overwrite=ui.args.overwrite)
             ui.debug(result)
         except Exception as e:
             ui.error("Could not get metadata from %s. %s" % (dbkey, e))
