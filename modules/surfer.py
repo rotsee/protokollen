@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.events import EventFiringWebDriver,\
                                             AbstractEventListener
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver import ActionChains
+#from selenium.webdriver import ActionChains
 from selenium.common.exceptions import InvalidSelectorException
 from xvfbwrapper import Xvfb
 from time import sleep
@@ -13,7 +13,7 @@ import urlparse
 from shutil import rmtree
 from os import listdir
 from os import sep as os_sep
-from os.path import getctime
+#from os.path import getctime
 from tempfile import mkdtemp
 
 
