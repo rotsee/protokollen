@@ -106,7 +106,7 @@ def main():
 
     ui.info("Setting up virtual browser")
     try:
-        browser = Surfer()
+        browser = Surfer(delay=3)
         ui.debug("Browsing the web with %s" % browser.browser_version)
         run_harvest(data_set, browser, uploader, ui, db)
     except Exception as e:
@@ -129,7 +129,7 @@ def do_download(browser, ui, uploader, row, db):
         # as there is a slight risk of duplicate names.
         # Don't use path, that can be temporary.
         short_name = path.split(url)[-1]
-        filename = md5(row["source"] + short_name).hexdigest()
+        filename = md5(row["source"].decode("utf-8") + short_name).hexdigest()
         local_filename = url
         download_file = File(url)
         # if we didn't get the file from an URL, we don't know
@@ -197,6 +197,7 @@ def do_download(browser, ui, uploader, row, db):
                 extractor.content_xpath = row["html"]
             meta = extractor.get_metadata()
             ui.debug("Adding metadata to DB as %s.metadata " % dbkey)
+            ui.debug(meta.data)
             result = db.put(dbkey, u"metadata", meta.data, overwrite=ui.args.overwrite)
             ui.debug(result)
         except Exception as e:

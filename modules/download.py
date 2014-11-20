@@ -116,7 +116,7 @@ class File(object):
     def extractor(self):
         """Returns an extractor object suitable for analyzing this file
         """
-        Extractor = FileType.type_to_extractor_dict.get(self.get_file_type_from_name(),
+        Extractor = FileType.type_to_extractor_dict.get(self.get_file_type(),
                                                         None)
         extractor = Extractor(self.localFile)
         return extractor
