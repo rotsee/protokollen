@@ -7,7 +7,6 @@
    Run `./harvest.py --help` for options.
 """
 
-import login
 import settings
 
 from os import path
@@ -129,6 +128,10 @@ def do_download(browser, ui, uploader, row, db):
         # as there is a slight risk of duplicate names.
         # Don't use path, that can be temporary.
         short_name = path.split(url)[-1]
+        print short_name
+        print row["source"]
+        print row["source"].encode("utf-8")
+        print row["source"].decode("utf-8")
         filename = md5(row["source"].decode("utf-8") + short_name).hexdigest()
         local_filename = url
         download_file = File(url)
