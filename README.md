@@ -3,6 +3,8 @@ ProtoCollection
 
 ProtoCollection (Swedish: [ProtoKollen](README.sv.md)) is a web service that harvests and analyzes meeting minutes from the 290 Swedish municipal boards (“kommunstyrelse”). The project is funded by Vinnova.
 
+The quickly get started, see the [quick start guide](#quick)
+
 
 Prerequisites
 =============
@@ -46,6 +48,32 @@ Installation
  * If using a Google Docs sheet: Copy your Google API p12 file to `google_api.p12` (or specify another path in `login.py`)
 
 
+<a name="quick">Quick start</a>
+===========
+To quickly get started with the harvesting:
+
+Ubuntu, Debian
+--------------
+
+Make sure all dependencies are installed
+
+    sudo apt-get update && sudo apt-get install git python xvfb firefox libmagic-dev
+
+Clone the repository
+
+    git clone https://github.com/rotsee/protokollen.git
+
+Setup the repository
+
+    cd protokollen
+    sudo python ./setup.py develop
+    cp login.template.py login.py
+
+Start harvesting
+
+    python harvest.py -f data/xpath_sample_data.csv -l 2
+
+
 Using ProtoCollection
 =====================
 
@@ -55,7 +83,7 @@ The harvesting script `harvest.py` takes a table with URLs and xPath expressions
 
 Run `python harvest.py --help` for more info on how to feed data into the script, or `pydoc ./harvest.py` (or `pdoc ./harvest.py`) for API help.
 
-[Here is an example csv file](https://github.com/rotsee/protokollen/blob/master/data/xpath_sample_dalarna_and_gavleborg.csv) with xPaths from Dalarna and Gävleborg. The table should contain the following columns:
+[Here is an example csv file](https://github.com/rotsee/protokollen/blob/master/data/xpath_sample_data.csv) with xPaths from Dalarna and Gävleborg. The table should contain the following columns:
 
 * `source`: Used to categorize documents. In our case names of municipalities.
 * `baseurl`: The starting point for the harvest.
