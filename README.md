@@ -44,8 +44,8 @@ Installation
 
  * Clone this repository
  * From the protokollen directory, run `python setup.py develop`
- * Copy `login.template.py` to `login.py`, and all relevant credentials there
- * If using a Google Docs sheet: Copy your Google API p12 file to `google_api.p12` (or specify another path in `login.py`)
+ * Copy `settings.template.py` to `settings.py`, and all relevant credentials there
+ * If using a Google Docs sheet: Copy your Google API p12 file to `google_api.p12` (or specify another path in `settings.py`)
 
 
 <a name="quick">Quick start</a>
