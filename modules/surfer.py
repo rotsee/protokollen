@@ -48,7 +48,7 @@ class Surfer:
             profile.set_preference("browser.download.dir", self.temp_dir)
             profile.set_preference("browser.download.folderList", 2)
             profile.set_preference("browser.download.manager.showWhenStarting", "False")
-            profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/vnd.ms-word, application/rtf, application/octet-stream")
+            profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/msword, application/vnd.ms-word, application/rtf, application/octet-stream")
 
             # Add extension for overriding Content-Disposition headers, etc
             extensions_dir = os_sep.join(['bin', 'firefox-plugins-enabled'])
