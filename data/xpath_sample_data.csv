@@ -1,0 +1,4 @@
+source,url,preclick1,preclick2,preclick3,dlclick1,dlclick2
+Avesta kommun,http://www.avesta.se/Kommunen--Politiken/Offentlighetsprincipen/Protokoll/Kommunstyrelsen/,,,,"//a[contains(.,""2013-"")]",
+Borlänge kommun,http://www.borlange.se/Templates/BlgFileListing.aspx?id=11082,//td/a[text()=2015],,,//td/span/a,
+Bollnäs kommun,http://int.bollnas.se/Protokoll/Protokollbibl.nsf/webben?OpenPage&Start=1&Count=300&Expand=6.1,,,,"//a[contains(.,'2014-')]",//a
