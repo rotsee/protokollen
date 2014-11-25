@@ -72,27 +72,27 @@ def main():
     if ui.args.filename is not None:
         ui.info("Harvesting from CSV file `%s`" % ui.args.filename)
         data_set = CSVFile(ui.args.filename)
-    elif login.google_spreadsheet_key is not None:
+    elif settings.google_spreadsheet_key is not None:
         ui.info("Harvesting from Google Spreadsheet`%s`" %
-                login.google_spreadsheet_key)
+                settings.google_spreadsheet_key)
         data_set = GoogleSheet(
-            login.google_spreadsheet_key,
-            login.google_client_email,
-            login.google_p12_file)
+            settings.google_spreadsheet_key,
+            settings.google_client_email,
+            settings.google_p12_file)
     else:
         ui.error("No local file given, and no Google Spreadsheet key found.")
         ui.exit()
 
     ui.info("Setting up db connection for storing data on downloaded files.")
     try:
-        db = settings.Database(login.db_server,
-                               login.db_harvest_table,
+        db = settings.Database(settings.db_server,
+                               settings.db_harvest_table,
                                "info",
-                               port=login.db_port
+                               port=settings.db_port
                                )
     except (TypeError, NameError, AttributeError):
         ui.info("No database setup found, using DebuggerDB")
-        db = DebuggerDB(None, login.db_harvest_table or "TABLE")
+        db = DebuggerDB(None, settings.db_harvest_table or "TABLE")
 
     Interface.SUPERDRY_MODE = 2  # add an extra level of dryness
     if ui.args.superdryrun:
@@ -100,8 +100,8 @@ def main():
         ui.executionMode = Interface.SUPERDRY_MODE
 
     ui.info("Connecting to file storage")
-    uploader = settings.Storage(login.access_key_id, login.secret_access_key,
-                                login.access_token, login.bucket_name)
+    uploader = settings.Storage(settings.access_key_id, settings.secret_access_key,
+                                settings.access_token, settings.bucket_name)
 
     ui.info("Setting up virtual browser")
     try:
