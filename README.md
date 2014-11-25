@@ -52,8 +52,8 @@ Installation
 ===========
 To quickly get started with the harvesting:
 
-Ubuntu, Debian
---------------
+Ubuntu, Debian, Linux Mint, others
+----------------------------------
 
 Make sure all dependencies are installed
 
@@ -67,7 +67,7 @@ Setup the repository
 
     cd protokollen
     sudo python ./setup.py develop
-    cp login.template.py login.py
+    cp settings.template.py settings.py
 
 Start harvesting
 
