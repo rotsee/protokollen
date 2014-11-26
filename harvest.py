@@ -134,7 +134,10 @@ def do_download(browser, ui, uploader, row, db):
         short_name = path.split(url)[-1]
 #        print short_name
 #        print make_unicode(short_name)
-        filename = md5(row["source"] + short_name).hexdigest()
+        try:
+            filename = md5(row["source"] + short_name).hexdigest()
+        except UnicodeDecodeError:
+            filename = md5(row["source"] + make_unicode(short_name)).hexdigest()
         local_filename = url
         download_file = File(url)
         # if we didn't get the file from an URL, we don't know
