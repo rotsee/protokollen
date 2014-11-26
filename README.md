@@ -19,7 +19,7 @@ For harvester.py
  * Xvfb (tested with version 1.15.1)
  * [Service-account credentials](https://developers.google.com/console/help/new/#serviceaccounts) from the [Google developers console](https://console.developers.google.com/), if you wish to use Google Spreadsheets as the source for your harvesting. Not needed if you use a local CSV file.
  * python-magic (installed by setup.py) and libmagic (needs to be installed separately)
- * Optionally a database, to keep track of downloaded files. Elastic Search is supported (tested with version 1.0.1)
+ * Optionally a database, to keep track of downloaded files. Elastic Search is supported (tested with version 1.0.1 and 1.2.4)
 
  The ChromeDriver executable for your OS must be inside the bin directory for Chrome to work.
  Get it from http://chromedriver.storage.googleapis.com/index.html
