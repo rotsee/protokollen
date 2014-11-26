@@ -18,7 +18,7 @@ from modules.interface import Interface
 from modules.download import FileFromWeb, File
 from modules.surfer import Surfer
 from modules.datasheet import CSVFile, GoogleSheet
-from modules.utils import is_number
+from modules.utils import is_number, make_unicode
 from modules.databases.debuggerdb import DebuggerDB
 
 
@@ -105,7 +105,7 @@ def main():
 
     ui.info("Setting up virtual browser")
     try:
-        browser = Surfer(delay=3)
+        browser = Surfer(browser=settings.browser, delay=1)
         ui.debug("Browsing the web with %s" % browser.browser_version)
         run_harvest(data_set, browser, uploader, ui, db)
     except Exception as e:
@@ -123,16 +123,18 @@ def do_download(browser, ui, uploader, row, db):
     if browser.selenium_driver.current_url == "about:blank":
         # No document here? Get it from the downloaded files.
         url = browser.get_last_download()
-        ui.info("The browser downloaded the file %s" % url)
+        if url is None:
+            ui.warning("No file open, and nothing downloaded in row %s" % row)
+            return None
+        else:
+            ui.info("The browser downloaded the file %s" % url)
         # Create name from filename *and* municipality,
         # as there is a slight risk of duplicate names.
         # Don't use path, that can be temporary.
         short_name = path.split(url)[-1]
-        print short_name
-        print row["source"]
-        print row["source"].encode("utf-8")
-        print row["source"].decode("utf-8")
-        filename = md5(row["source"].decode("utf-8") + short_name).hexdigest()
+#        print short_name
+#        print make_unicode(short_name)
+        filename = md5(row["source"] + short_name).hexdigest()
         local_filename = url
         download_file = File(url)
         # if we didn't get the file from an URL, we don't know

@@ -14,6 +14,17 @@ allowedFiletypes = [FileType.PDF,
 user_agent = "Protokollen (http://protokollen.net)"
 """How do we identify ourselves?"""
 
+browser = "firefox"
+"""
+ Selenium browser to surf the web with.
+
+ To use Chrome instead, try:
+     browser = "chrome"
+ and add the chromedriver executable to the bin directory. Get if from
+ http://chromedriver.storage.googleapis.com/index.html
+
+"""
+
 Storage = storage.LocalUploader
 """
  You need to set the storage parameters in login.py to use an external storage
