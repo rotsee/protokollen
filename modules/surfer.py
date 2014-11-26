@@ -5,8 +5,8 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.events import EventFiringWebDriver,\
                                             AbstractEventListener
 from selenium.webdriver.common.keys import Keys
-#from selenium.webdriver import ActionChains
-from selenium.common.exceptions import InvalidSelectorException
+from selenium.webdriver import ActionChains
+from selenium.common.exceptions import InvalidSelectorException, ElementNotVisibleException
 from xvfbwrapper import Xvfb
 from time import sleep
 import urlparse
@@ -59,7 +59,7 @@ class Surfer:
             driver = Firefox(profile)
         elif browser == "chrome":
             # Add extension for overriding Content-Disposition headers
-            options = webdriver.ChromeOptions()
+            options = ChromeOptions()
             options.add_extension('bin/undisposition.crx')
             driver = Chrome(executable_path='bin/chromedriver', chrome_options=options)
         else:
@@ -136,7 +136,18 @@ class Surfer:
             raise("No elements found for xPath `%s`" % xPath)
         else:
             for element in element_list:
-                element.click()
+                try:
+                    element.click()
+                except ElementNotVisibleException:
+                    # Element not visible. This is not necessarily an error.
+                    # but the user might want to consider using a more
+                    # specific xPath expression.
+                    continue
+#                actions = ActionChains(self.selenium_driver)
+#                actions.move_to_element(element)
+#                actions.click(element)
+#                actions.send_keys_to_element(element, Keys.ENTER)
+#                actions.perform()
                 if "tag_name" in dir(element) and element.tag_name == "option":
                     parent = self._get_nearest_ancestor(element, "select")
                     if parent is not None:
