@@ -104,7 +104,10 @@ class Surfer:
 
            Returns the result of `callback`
         """
-        element.send_keys(Keys.SHIFT + Keys.ENTER)
+        try:
+            element.send_keys(Keys.SHIFT + Keys.ENTER)
+        except ElementNotVisibleException:
+            raise
         self.selenium_driver.implicitly_wait(self.extra_delay)
         #FIXME implicitly_wait doesnät work on FF?
         sleep(self.extra_delay)

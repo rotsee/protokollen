@@ -39,16 +39,23 @@ def click_through_dlclicks(browser,
         element_list = browser.get_element_list(dlclick)
         for element in element_list:
             new_dlclicks_deque = deepcopy(dlclicks_deque)
-            browser.with_open_in_new_window(element,
-                                            # Callback function,
-                                            # followed by its parameters
-                                            # `browser` will be prepended
-                                            click_through_dlclicks,
-                                            new_dlclicks_deque,
-                                            callback=callback,
-                                            *args,
-                                            **kwargs
-                                            )
+            try:
+                browser.with_open_in_new_window(element,
+                                                # Callback function,
+                                                # followed by its parameters
+                                                # `browser` will be prepended
+                                                click_through_dlclicks,
+                                                new_dlclicks_deque,
+                                                callback=callback,
+                                                *args,
+                                                **kwargs
+                                                )
+            except Exception:
+                print("Element not clickable. This is not necessarily an\n\
+                       error but you might want to consider using a more\n\
+                       specific xPath expression.")
+                continue
+
     else:
         callback(browser, **kwargs)
 
