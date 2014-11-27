@@ -51,7 +51,7 @@ def main():
         ui.info("No database setup found, using DebuggerDB")
         db = DebuggerDB(None, settings.db_extactor_table or "TABLE")
 
-    for key in source_files_connection.getNextFile():
+    for key in source_files_connection.get_next_file():
         # first of all, check if the processed file already exists in
         # remote storage (no need to do expensive PDF processing if it
         # is.
@@ -60,7 +60,7 @@ def main():
                 key.basename,
                 ext="txt",
                 path=key.path_fragments)
-            if (destination_files_connection.fileExists(remote_filename) and
+            if (destination_files_connection.prefix_exists(remote_filename) and
                     not ui.args.overwrite):
                 continue  # File is already in remote storage
 
@@ -76,7 +76,7 @@ def main():
 
         dbkey = db.create_key([key.path, key.filename])
 
-        extractor = downloaded_file.extractor
+        extractor = downloaded_file.extractor()
         ui.info("Extracting text with %s from %s" %
                 (extractor.__class__.__name__, downloaded_file.localFile))
 

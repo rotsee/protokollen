@@ -181,6 +181,7 @@ class FileFromS3(File):
     def __init__(self, key, localFile):
         self.localFile = localFile
         key.get_contents_to_filename(localFile)
+        self._determineMime()
 
 
 if __name__ == "__main__":
