@@ -186,8 +186,16 @@ class Surfer:
         return url_list  # list of Url objects
 
     def get_element_list(self, xPath):
-        element_list = self.selenium_driver.find_elements_by_xpath(xPath)
-        return element_list
+        try:
+            return self.selenium_driver.find_elements_by_xpath(xPath)
+        except InvalidSelectorException:
+            pass
+        # maybe our xPath points at an attribute?
+        try:
+            return self.selenium_driver.find_elements_by_xpath(xPath + "/..")
+        except InvalidSelectorException:
+            pass
+        return None
 
     def kill(self):
         self.selenium_driver.close()
