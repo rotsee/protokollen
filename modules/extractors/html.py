@@ -45,8 +45,11 @@ class HtmlExtractor(ExtractorBase):
         self.soup = None
 
     def _load_content(self):
+        print "LADDAR...",
+        print self.path
         with open(self.path, "rb") as file_:
             self.soup = BeautifulSoup(file_)
+
         with open(self.path, "rb") as file_:
             html = file_.read()
             html = html.decode('utf-8', 'ignore')
@@ -118,7 +121,7 @@ class HtmlExtractor(ExtractorBase):
         """Returns a metadata.Metadata object
         """
         if self.soup is None:
-            self._load_content
+            self._load_content()
 
         metadata = Metadata()
         try:
