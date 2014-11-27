@@ -84,7 +84,7 @@ def main():
 
         for page in extractor.get_next_page():
             page_date = page.get_date() or extractor.get_date()
-            db.put(dbkey, "meeting-date", page_date)
+            db.put(dbkey, "meeting_date", page_date)
             page_header = page.get_header() or extractor.get_header()
             db.put(dbkey, "header", page_date)
             page_header = page_header.upper()
@@ -93,7 +93,7 @@ def main():
                page_header.find("SAMMANTRÄDE"):
                 if page_header.find("KOMMUNSTYRELSE"):
                     page_type = 1
-            db.put(dbkey, "document-type", page_type)
+            db.put(dbkey, "document_type", page_type)
 
         downloaded_file.delete()
 
