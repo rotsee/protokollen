@@ -91,7 +91,8 @@ def main():
             page_type = 0
             if page_header.find("PROTOKOLL") or\
                page_header.find("SAMMANTRÄDE"):
-                if page_header.find("KOMMUNSTYRELSE"):
+                if page_header.find("KOMMUNSTYRELSE") or\
+                   page_header.find("REGIONSTYRELSE"):
                     page_type = 1
             db.put(dbkey, "document_type", page_type)
 
