@@ -46,13 +46,13 @@ class HtmlExtractor(ExtractorBase):
 
     def _load_content(self):
         with open(self.path, "rb") as file_:
+            self.soup = BeautifulSoup(file_)
+        with open(self.path, "rb") as file_:
             html = file_.read()
             html = html.decode('utf-8', 'ignore')
             html = self._get_content_portion(html)
             self.content_html = html
             self.content_soup = BeautifulSoup(html)
-        with open(self.path, "rb") as file_:
-            self.soup = BeautifulSoup(file_)
 
     def get_next_page(self):
         """Return the whole document in one page (we have no such
@@ -121,7 +121,10 @@ class HtmlExtractor(ExtractorBase):
             self._load_content
 
         metadata = Metadata()
-        metadata.add({"title": self.soup.title.string})
+        try:
+            metadata.add({"title": self.soup.title.string})
+        except Exception:
+            pass
         for meta_tag in self.soup.find_all('meta'):
             key = meta_tag.get('name', None) or meta_tag.get('property', None)
             metadata.add({key: meta_tag.get('content')},
