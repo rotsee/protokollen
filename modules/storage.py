@@ -63,7 +63,7 @@ class Storage:
         pass
 
     @abstractmethod
-    def getNextFile(self):
+    def get_next_file(self):
         """Iterates through the file store and returns the next available file,
            in the form of a Key object that identifies the file and
            storage-dependent metadata.
@@ -125,12 +125,12 @@ class S3Storage(Storage):
         return self.connection.getBucketListLength(pathFragment)
 
     # this'll return a Key or Key-like object with .filename, .name
-    def getNextFile(self):
-        for k in self.connection.getNextFile():
+    def get_next_file(self):
+        for k in self.connection.get_next_file():
             yield k
 
     # this'll retrieve the file identified by key (returned from
-    # getNextFile) and return a download.File object with .localFile
+    # get_next_file) and return a download.File object with .localFile
     def getFile(self, key, localFilename):
         return FileFromS3(key, localFilename)
 
@@ -205,7 +205,7 @@ class LocalUploader(Storage):
             os.makedirs(d)
         shutil.copy2(localFilename, path)
 
-    def getNextFile(self):
+    def get_next_file(self):
         for root, dirs, files in os.walk(self.path):
             for f in files:
                 fullpath = root + os.sep + f
@@ -275,7 +275,7 @@ class DropboxUploader(Storage):
     def getFileListLength(self, pathFragment):
         raise NotImplementedError
 
-    def getNextFile(self):
+    def get_next_file(self):
         paths = [self.path]
         while paths:
             path = paths.pop()
