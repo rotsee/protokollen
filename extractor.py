@@ -6,7 +6,6 @@
    Run `./extractor.py --help` for options.
 """
 
-import login
 import settings
 
 from os import path
@@ -30,27 +29,27 @@ def main():
                    commandLineArgs=command_line_args)
 
     ui.info("Connecting to storage")
-    source_files_connection = settings.Storage(login.access_key_id,
-                                               login.secret_access_key,
-                                               login.access_token,
-                                               login.bucket_name)
-    destination_files_connection = settings.Storage(login.access_key_id,
-                                                    login.secret_access_key,
-                                                    login.access_token,
-                                                    login.text_bucket_name)
+    source_files_connection = settings.Storage(settings.access_key_id,
+                                               settings.secret_access_key,
+                                               settings.access_token,
+                                               settings.bucket_name)
+    destination_files_connection = settings.Storage(settings.access_key_id,
+                                                    settings.secret_access_key,
+                                                    settings.access_token,
+                                                    settings.text_bucket_name)
 
     # Setup database for indexing uploaded files,
     # and storing metadata
     ui.info("Connecting to database")
     try:
-        db = settings.Database(login.db_server,
-                               login.db_extactor_table,
+        db = settings.Database(settings.db_server,
+                               settings.db_extactor_table,
                                "info",
-                               port=login.db_port
+                               port=settings.db_port
                                )
     except (TypeError, NameError, AttributeError) as e:
         ui.info("No database setup found, using DebuggerDB")
-        db = DebuggerDB(None, login.db_extactor_table or "TABLE")
+        db = DebuggerDB(None, settings.db_extactor_table or "TABLE")
 
     for key in source_files_connection.getNextFile():
         # first of all, check if the processed file already exists in
