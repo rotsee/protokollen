@@ -77,3 +77,34 @@ Database = None
  Google API credentials, if you want to use Google Docs
  to define harvesting rules.
 """
+
+document_rules = [
+    ("kommunstyrelseprotokoll",
+        ("and", [
+            ("or", [
+                ("header_contains", "protokoll"),
+                ("header_contains", "sammanträde")
+            ]),
+            ("or", [
+                ("header_contains", "kommunstyrelse"),
+                ("header_contains", "regionstyrelse")  # Gotland
+            ]),
+            ("not",
+                ("header_contains", "arbetsutskott")
+             )
+        ])
+     )
+]
+"""
+ What defines a document? Extractor will look for these words in page headers,
+ to determine which pages from a file belong to the same document,
+ in case one file contains many documents. Strings are case insensitive.
+
+ Set this no None, or remove, if each file should be considered
+ one document.
+
+ Syntax
+ ------
+ A list of tuples (name, rules), where `rules` are nested lists and tuples:
+ "and": [], "or": [], "not": (), "header_contains": ""
+"""
