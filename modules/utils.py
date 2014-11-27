@@ -121,12 +121,10 @@ def get_date_from_text(text):
 
             # Count occurences of each date and get the most common one
             c = Counter(dates).most_common(1)[0]
-            n = c[1]
             # Parse the date
             date = dateParser.parse(c[0], fuzzy=True)
         else:
             # Case: no matcing dates found
             date = None
-            n = 0
 
-        return {"date": date, "n": n}
+        return date

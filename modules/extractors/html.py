@@ -45,8 +45,6 @@ class HtmlExtractor(ExtractorBase):
         self.soup = None
 
     def _load_content(self):
-        print "LADDAR...",
-        print self.path
         with open(self.path, "rb") as file_:
             self.soup = BeautifulSoup(file_)
 
@@ -84,11 +82,6 @@ class HtmlExtractor(ExtractorBase):
             if tag.name in ['h1', 'h2', 'h3', 'h4', 'h5']:
                 break
         return "\n".join(header_tags)
-
-    def get_date(self):
-        """Handled at document level (HtmlExtractor)
-        """
-        return None
 
     def _get_content_portion(self, html):
         """Use an xPath expression, `self.html`, to carve out

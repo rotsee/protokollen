@@ -1,7 +1,11 @@
 #!/usr/bin/env python2
 #coding=utf-8
-"""This is where we extract plain text and meta data from documents,
+"""This is where we extract plain text and meta data from files,
    and upload it to a storage and/or a database.
+   File content will be split up in documents, if multiple
+   document types are detected within one file (e.g. agenda,
+   minutes and attachments) .
+
    The actual extraction is done by format-specific modules.
    Run `./extractor.py --help` for options.
 """
@@ -12,6 +16,30 @@ from os import path
 
 from modules.interface import Interface
 from modules.databases.debuggerdb import DebuggerDB
+
+
+def parse_rules(tuple_, header):
+    """
+     Parse document rules. See settings.py for syntax
+    """
+    rule_key = tuple_[0].upper()
+    rule_val = tuple_[1]
+    header = header.upper()
+    if rule_key == "AND":
+        hit = True
+        for rule in rule_val:
+            hit = hit and parse_rules(rule, header)
+        return hit
+    elif rule_key == "OR":
+        hit = False
+        for rule in rule_val:
+            hit = hit or parse_rules(rule, header)
+        return hit
+    elif rule_key == "NOT":
+        hit = not parse_rules(rule_val, header)
+        return hit
+    elif rule_key == "HEADER_CONTAINS":
+        return header.find(rule_val.upper()) > -1
 
 
 def main():
@@ -86,14 +114,12 @@ def main():
             page_date = page.get_date() or extractor.get_date()
             db.put(dbkey, "meeting_date", page_date)
             page_header = page.get_header() or extractor.get_header()
-            db.put(dbkey, "header", page_date)
-            page_header = page_header.upper()
-            page_type = 0
-            if page_header.find("PROTOKOLL") or\
-               page_header.find("SAMMANTRÄDE"):
-                if page_header.find("KOMMUNSTYRELSE") or\
-                   page_header.find("REGIONSTYRELSE"):
-                    page_type = 1
+            db.put(dbkey, "header", page_header)
+
+            page_type = None
+            for document_type in settings.document_rules:
+                if parse_rules(document_type[1], page_header.text):
+                    page_type = document_type[0]
             db.put(dbkey, "document_type", page_type)
 
         downloaded_file.delete()
