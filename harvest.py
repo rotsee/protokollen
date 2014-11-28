@@ -18,7 +18,7 @@ from modules.interface import Interface
 from modules.download import FileFromWeb, File
 from modules.surfer import Surfer
 from modules.datasheet import CSVFile, GoogleSheet
-from modules.utils import is_number, make_unicode
+from modules.utils import make_unicode
 from modules.databases.debuggerdb import DebuggerDB
 
 
@@ -107,8 +107,10 @@ def main():
         ui.executionMode = Interface.SUPERDRY_MODE
 
     ui.info("Connecting to file storage")
-    uploader = settings.Storage(settings.access_key_id, settings.secret_access_key,
-                                settings.access_token, settings.bucket_name)
+    uploader = settings.Storage(settings.access_key_id,
+                                settings.secret_access_key,
+                                settings.access_token,
+                                settings.bucket_name)
 
     ui.info("Setting up virtual browser")
     try:
@@ -187,22 +189,10 @@ def do_download(browser, ui, uploader, row, db):
         dbkey = db.create_key([row["source"], filename + "." + file_ext])
         """ Database key is created from municipality and filename"""
 
-        ui.debug("Adding file origin to DB as %s.origin " % dbkey)
-        result = db.put(dbkey, u"origin", origin)
-        ui.debug(result)
-
-        ui.debug("Adding municipality to DB as %s.municipality " % dbkey)
-        result = db.put(dbkey, u"municipality", row["source"])
-        ui.debug(result)
-
-        ui.debug("Adding harvesting data to DB as %s.harvesting_rules " % dbkey)
-        result = db.put(dbkey, u"harvesting_rules", row)
-        ui.debug(result)
-
-        if "year" in row and is_number(row["year"]):
-            ui.debug("Adding year to DB as %s.year " % dbkey)
-            db.put(dbkey, u"year", row["year"])
-
+        db.put(dbkey, u"origin", origin)
+        # Should rather be the more generic “source”
+        db.put(dbkey, u"municipality", row["source"])
+        db.put(dbkey, u"harvesting_rules", row, overwrite=ui.args.overwrite)
         try:
             ui.debug("Extracting metadata")
             extractor = download_file.extractor()
@@ -211,16 +201,15 @@ def do_download(browser, ui, uploader, row, db):
             if "html" in row:
                 extractor.content_xpath = row["html"]
             meta = extractor.get_metadata()
-            ui.debug("Adding metadata to DB as %s.metadata " % dbkey)
             ui.debug(meta.data)
-            result = db.put(dbkey, u"metadata", meta.data, overwrite=ui.args.overwrite)
-            ui.debug(result)
+            db.put(dbkey, u"metadata", meta.data, overwrite=ui.args.overwrite)
         except Exception as e:
             ui.error("Could not get metadata from %s. %s" % (dbkey, e))
 
     else:
         ui.warning("%s is not an allowed mime type or download failed"
                    % download_file.mimeType)
+
     try:
         download_file.delete()
     except:
