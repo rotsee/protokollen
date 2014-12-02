@@ -43,11 +43,11 @@ class Storage:
         pass
 
     @abstractmethod
-    def putFile(self, localFilename, remoteFilename):
+    def put_file(self, localFilename, remoteFilename):
         pass
 
     @abstractmethod
-    def putFileFromString(self, string, remoteFilename):
+    def put_file_from_string(self, string, remoteFilename):
         pass
 
     @abstractmethod
@@ -140,11 +140,11 @@ class S3Storage(Storage):
         """
         return self.connection.fileExistsInBucket(fullfilename)
 
-    def putFile(self, localFilename, s3name):
-        self.connection.putFile(localFilename, s3name)
+    def put_file(self, localFilename, s3name):
+        self.connection.put_file(localFilename, s3name)
 
-    def putFileFromString(self, string, s3name):
-        self.connection.putFileFromString(string, s3name)
+    def put_file_from_string(self, string, s3name):
+        self.connection.put_file_from_string(string, s3name)
 
 
 class FakeKey(object):
@@ -198,7 +198,7 @@ class LocalUploader(Storage):
     def prefix_exists(self, prefix):
         raise NotImplementedError
 
-    def putFile(self, localFilename, remoteFilename):
+    def put_file(self, localFilename, remoteFilename):
         path = self.path + os.sep + remoteFilename
         d = os.path.dirname(path)
         if d and not os.path.exists(d):
@@ -218,7 +218,7 @@ class LocalUploader(Storage):
         # creating the LocalFile object copies the content to localFilename
         return LocalFile(key, localFilename)
 
-    def putFileFromString(self, string, remoteFilename):
+    def put_file_from_string(self, string, remoteFilename):
         mode = "wb" if isinstance(string, str) else "w"
         path = self.path + os.sep + remoteFilename
         d = os.path.dirname(path)
@@ -304,11 +304,11 @@ class DropboxUploader(Storage):
         except:
             return False
 
-    def putFile(self, localFilename, remoteFilename):
+    def put_file(self, localFilename, remoteFilename):
         with open(localFilename) as fp:
             resp = self.connection.put_file(self.path + "/" + remoteFilename, fp)
 
-    def putFileFromString(self, string, remoteFilename):
+    def put_file_from_string(self, string, remoteFilename):
         fp = BytesIO(string)
         resp = self.connection.put_file(self.path + "/" + remoteFilename, fp)
 
