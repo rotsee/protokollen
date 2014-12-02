@@ -42,6 +42,16 @@ def parse_rules(tuple_, header):
         return header.find(rule_val.upper()) > -1
 
 
+def get_document_type(header_text):
+    """
+     Return the first matching document type, based on this
+     header text.
+    """
+    for document_type in settings.document_rules:
+        if parse_rules(document_type[1], header_text):
+            return document_type[0]
+
+
 def main():
     """Entry point when run from command line"""
 
@@ -84,43 +94,63 @@ def main():
         # remote storage (no need to do expensive PDF processing if it
         # is.
         if ui.executionMode < Interface.DRY_MODE:
-            remote_filename = destination_files_connection.buildRemoteName(
+            remote_prefix = destination_files_connection.buildRemoteName(
                 key.basename,
-                ext="txt",
                 path=key.path_fragments)
-            if (destination_files_connection.prefix_exists(remote_filename) and
+            if (destination_files_connection.prefix_exists(remote_prefix) and
                     not ui.args.overwrite):
-                continue  # File is already in remote storage
+                continue  # Files already extracted FIXME query database too!
 
         ui.info("Fetching file %s" % key.name)
         try:
             temp_filename = path.join("temp", key.filename)
-            downloaded_file = source_files_connection.getFile(key,
-                                                              temp_filename)
+            downloaded_file = source_files_connection.get_file(key,
+                                                               temp_filename)
         except Exception as e:
             ui.warning("Could not fetch %s from storage: %s: %s" %
                        (key.name, type(e), e))
             continue
 
-        dbkey = db.create_key([key.path, key.filename])
-
         extractor = downloaded_file.extractor()
         ui.info("Extracting text with %s from %s" %
                 (extractor.__class__.__name__, downloaded_file.localFile))
 
-        db.put(dbkey, "text", extractor.get_text())
-
+        last_page_type = None
+        documents = []
         for page in extractor.get_next_page():
-            page_date = page.get_date() or extractor.get_date()
-            db.put(dbkey, "meeting_date", page_date)
+            page_text = page.get_text()
             page_header = page.get_header() or extractor.get_header()
-            db.put(dbkey, "header", page_header)
+            page_type = get_document_type(page_header)
+            page_date = page.get_date() or extractor.get_date()
 
-            page_type = None
-            for document_type in settings.document_rules:
-                if parse_rules(document_type[1], page_header.text):
-                    page_type = document_type[0]
+            if len(documents) > 0 and page_type == last_page_type:
+                documents[-1]["text"] = documents[-1]["text"] + page_text
+            else:
+                documents.append({
+                    "text": page_text,
+                    "header": page_header,
+                    "date": page_date,
+                    "type": page_type
+                })
+
+            last_page_type = page_type
+
+        i = 0
+        for document in documents:
+            i += 1
+            dbkey = db.create_key([key.path, i, key.filename])
+            db.put(dbkey, "meeting_date", document["date"])
+            db.put(dbkey, "header", document["header"])
+            db.put(dbkey, "source", key.path)
+            db.put(dbkey, "text", document["text"])
             db.put(dbkey, "document_type", page_type)
+
+            remote_filename = destination_files_connection.buildRemoteName(
+                key.filename,
+                ext="txt",
+                path=key.path_fragments.append(i))
+            destination_files_connection.put_file_from_string(document["text"],
+                                                              remote_filename)
 
         downloaded_file.delete()
 
