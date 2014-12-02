@@ -21,7 +21,7 @@ class Database(object):
            consistent with ElasticSearch's `amazon-s3-river` plugin, see
            https://github.com/lbroudoux/es-amazon-s3-river/blob/master/src/main/java/com/github/lbroudoux/elasticsearch/river/s3/river/S3River.java#LC508
         """
-        return "-".join(parts)
+        return "-".join([str(p) for p in parts])
 
     def put(self, key, attr, value):
         raise NotImplementedError('must be overridden by child classes')
@@ -36,6 +36,13 @@ class Database(object):
         return success
 
     def get(self, key, attr):
+        """Return a value, or None"""
+        raise NotImplementedError('must be overridden by child classes')
+
+    def get_attribute_with_value(self, attribute, value):
+        """Get a list of keys/rows where a attribute/column has
+           the specified value.
+        """
         raise NotImplementedError('must be overridden by child classes')
 
 if __name__ == "__main__":

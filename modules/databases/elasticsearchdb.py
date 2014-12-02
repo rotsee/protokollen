@@ -49,6 +49,22 @@ class ElasticSearch(Database):
         else:
             return None
 
+    def get_attribute_with_value(self, attribute, value):
+        """Get a list of keys/rows where a attribute/column has
+           the specified value.
+        """
+        res = self.es.search(index=self.index, body={
+            "query": {
+                "match_all": {}
+            },
+            "filter": {
+                "term": {
+                    attribute: value
+                }
+            }
+        })
+        return res["hits"]["hits"]
+
 if __name__ == "__main__":
     print "This module is only intended to be called from other scripts."
     import sys

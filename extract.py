@@ -1,10 +1,10 @@
 #!/usr/bin/env python2
 #coding=utf-8
-"""This is where we extract plain text and meta data from files,
+"""This is where we extract plain text and textual meta data from files,
    and upload it to a storage and/or a database.
    File content will be split up in documents, if multiple
    document types are detected within one file (e.g. agenda,
-   minutes and attachments) .
+   minutes and attachments).
 
    The actual extraction is done by format-specific modules.
    Run `./extractor.py --help` for options.
@@ -67,45 +67,60 @@ def main():
                    commandLineArgs=command_line_args)
 
     ui.info("Connecting to storage")
-    source_files_connection = settings.Storage(settings.access_key_id,
-                                               settings.secret_access_key,
-                                               settings.access_token,
-                                               settings.bucket_name)
-    destination_files_connection = settings.Storage(settings.access_key_id,
-                                                    settings.secret_access_key,
-                                                    settings.access_token,
-                                                    settings.text_bucket_name)
+    files_connection = settings.Storage(settings.access_key_id,
+                                        settings.secret_access_key,
+                                        settings.access_token,
+                                        settings.bucket_name)
+    docs_connection = settings.Storage(settings.access_key_id,
+                                       settings.secret_access_key,
+                                       settings.access_token,
+                                       settings.text_bucket_name)
 
     # Setup database for indexing uploaded files,
     # and storing metadata
-    ui.info("Connecting to database")
+    ui.info("Connecting to databases")
     try:
-        db = settings.Database(settings.db_server,
-                               settings.db_extactor_table,
-                               "info",
-                               port=settings.db_port
-                               )
+        files_db = settings.Database(settings.db_server,
+                                     settings.db_harvest_table,
+                                     "info",
+                                     port=settings.db_port
+                                     )
+        text_db = settings.Database(settings.db_server,
+                                    settings.db_extactor_table,
+                                    "info",
+                                    port=settings.db_port
+                                    )
     except (TypeError, NameError, AttributeError) as e:
         ui.info("No database setup found, using DebuggerDB")
-        db = DebuggerDB(None, settings.db_extactor_table or "TABLE")
+        files_db = None
+        text_db = DebuggerDB(None, settings.db_extactor_table or "TABLE")
 
-    for key in source_files_connection.get_next_file():
+    for key in files_connection.get_next_file():
         # first of all, check if the processed file already exists in
         # remote storage (no need to do expensive PDF processing if it
         # is.
-        if ui.executionMode < Interface.DRY_MODE:
-            remote_prefix = destination_files_connection.buildRemoteName(
-                key.basename,
-                path=key.path_fragments)
-            if (destination_files_connection.prefix_exists(remote_prefix) and
-                    not ui.args.overwrite):
-                continue  # Files already extracted FIXME query database too!
+        if ui.executionMode >= Interface.DRY_MODE:
+            continue
+
+        prefix = docs_connection.buildRemoteName(key.basename,
+                                                 path=key.path_fragments)
+        """ "Ale kommun/xxx" """
+        files_dbkey = files_db.create_key(key.path_fragments + [key.filename])
+        """ "Ale kommun-xxx.pdf" """
+        file_data = files_db.get_attribute_with_value("_id", files_dbkey)
+
+        if (docs_connection.prefix_exists(prefix) and
+                len(file_data) > 0 and
+                not ui.args.overwrite):
+            ui.debug("Documents already extracted for file %s (%s)" %
+                     (prefix, files_dbkey))
+            continue
 
         ui.info("Fetching file %s" % key.name)
         try:
             temp_filename = path.join("temp", key.filename)
-            downloaded_file = source_files_connection.get_file(key,
-                                                               temp_filename)
+            downloaded_file = files_connection.get_file(key,
+                                                        temp_filename)
         except Exception as e:
             ui.warning("Could not fetch %s from storage: %s: %s" %
                        (key.name, type(e), e))
@@ -138,19 +153,19 @@ def main():
         i = 0
         for document in documents:
             i += 1
-            dbkey = db.create_key([key.path, i, key.filename])
-            db.put(dbkey, "meeting_date", document["date"])
-            db.put(dbkey, "header", document["header"])
-            db.put(dbkey, "source", key.path)
-            db.put(dbkey, "text", document["text"])
-            db.put(dbkey, "document_type", page_type)
+            text_dbkey = text_db.create_key([key.path, i, key.filename])
+            text_db.put(text_dbkey, "meeting_date", document["date"])
+            text_db.put(text_dbkey, "header", document["header"])
+            text_db.put(text_dbkey, "source", key.path)
+            text_db.put(text_dbkey, "text", document["text"])
+            text_db.put(text_dbkey, "document_type", page_type)
 
-            remote_filename = destination_files_connection.buildRemoteName(
+            remote_filename = docs_connection.buildRemoteName(
                 key.filename,
                 ext="txt",
-                path=key.path_fragments.append(i))
-            destination_files_connection.put_file_from_string(document["text"],
-                                                              remote_filename)
+                path=key.path_fragments + [str(i)])
+            docs_connection.put_file_from_string(document["text"],
+                                                 remote_filename)
 
         downloaded_file.delete()
 

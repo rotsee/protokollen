@@ -29,6 +29,12 @@ class DebuggerDB(Database):
     def get(self, key, attr):
         return None
 
+    def get_attribute_with_value(self, attribute, value):
+        """Get a list of keys/rows where a attribute/column has
+           the specified value.
+        """
+        return None
+
 if __name__ == "__main__":
     print "This module is only intended to be called from other scripts."
     import sys

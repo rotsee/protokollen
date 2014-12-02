@@ -71,9 +71,9 @@ class Storage:
         pass
 
     @abstractmethod
-    def getFile(self, key, localFilename):
+    def get_file(self, key, localFilename):
         """Retrieves a file identified by key, storing it locally
-           as localFilename.
+           as localFilename, and returning a download.File object
         """
         pass
 
@@ -131,7 +131,7 @@ class S3Storage(Storage):
 
     # this'll retrieve the file identified by key (returned from
     # get_next_file) and return a download.File object with .localFile
-    def getFile(self, key, localFilename):
+    def get_file(self, key, localFilename):
         return FileFromS3(key, localFilename)
 
     def prefix_exists(self, fullfilename):
@@ -214,7 +214,7 @@ class LocalUploader(Storage):
                 key.localFilename = self.path + os.sep + logicpath
                 yield(key)
 
-    def getFile(self, key, localFilename):
+    def get_file(self, key, localFilename):
         # creating the LocalFile object copies the content to localFilename
         return LocalFile(key, localFilename)
 
@@ -289,7 +289,7 @@ class DropboxUploader(Storage):
                     path = thing['path'][len(self.path) + 1:]
                     yield FakeKey(None, path)
 
-    def getFile(self, key, localFilename):
+    def get_file(self, key, localFilename):
         key.dbclient = self.connection
         key.rootpath = self.path
         return DropboxFile(key, localFilename)
