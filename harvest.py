@@ -179,7 +179,7 @@ def do_download(browser, ui, uploader, row, db):
        ui.executionMode < Interface.DRY_MODE:
 
         ui.debug("Uploading file to storage")
-        uploader.putFile(local_filename,
+        uploader.put_file(local_filename,
                          uploader.buildRemoteName(filename,
                                                   ext=file_ext,
                                                   path=row["source"])
