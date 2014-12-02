@@ -41,7 +41,7 @@ class S3Connection(object):
         self._conn = _S3Connection(access_key_id, secret_access_key)
         self._bucket = self._conn.get_bucket(bucket_name)
 
-    def getNextFile(self):
+    def get_next_file(self):
         for key in self._bucket.list():
             yield Key(self._bucket, key)
 
