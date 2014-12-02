@@ -8,7 +8,6 @@ The quickly get started, see the [quick start guide](#quick)
 
 Prerequisites
 =============
-
  * Command line access to your server
  * Internet connection (even for a dry run)
  * Python2 => 2.5
@@ -25,7 +24,7 @@ For harvester.py
  Get it from http://chromedriver.storage.googleapis.com/index.html
  Firefox should work out of the box.
  
-For extractor.py
+For extract.py
 ----------------
  * wvText and wvSummary from `wv` (tested with version 1.2.1),
    using either `lynx` or `elinks` (but not `links`)
@@ -104,9 +103,9 @@ Run `python harvest.py --help` for more info on how to feed data into the script
 
 Extracting data from documents
 ------------------------------
-The extraction script `extractor.py` will go through files in a storage, and try to extract plain text and metadata from them, page by page. It understands pdf, docx and doc files, and can also do OCR on scanned pdf-files.
+The extraction script `extract.py` will go through files in a storage, and try to extract plain text and metadata from them, page by page. It understands pdf, docx and doc files, and can also do OCR on scanned pdf-files.
 
-Run `python extractor.py --help` for more info, or `pydoc ./extractor.py` (or `pdoc ./extractor.py`) for API help.
+Run `python extract.py --help` for more info, or `pydoc ./extract.py` (or `pdoc ./extract.py`) for API help.
 
 
 Analyzing data
