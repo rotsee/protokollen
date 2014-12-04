@@ -136,7 +136,7 @@ class Surfer:
         """
         element_list = self.selenium_driver.find_elements_by_xpath(xPath)
         if not element_list:
-            raise("No elements found for xPath `%s`" % xPath)
+            raise Exception("No elements found for xPath `%s`" % xPath)
         else:
             for element in element_list:
                 try:
