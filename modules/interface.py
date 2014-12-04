@@ -64,10 +64,10 @@ class Interface:
 
         self.logger = logging.getLogger(name)
         # Use handler, to print to stdout, not stderr
-        ch = logging.StreamHandler(sys.stdout)
-        ch.setLevel(self.args.loglevel * 10)  # https://docs.python.org/2/library/logging.html#levels
-        self.logger.addHandler(ch)
-#        self.logger.setLevel(self.args.loglevel * 10)  # https://docs.python.org/2/library/logging.html#levels
+#        ch = logging.StreamHandler(sys.stdout)
+#        ch.setLevel(self.args.loglevel * 10)  # https://docs.python.org/2/library/logging.html#levels
+ #       self.logger.addHandler(ch)
+        self.logger.setLevel(self.args.loglevel * 10)  # https://docs.python.org/2/library/logging.html#levels
 
         self.executionMode = self.NORMAL_MODE
         if self.args.dryrun:
