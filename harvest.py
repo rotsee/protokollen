@@ -22,7 +22,8 @@ from modules.utils import make_unicode
 from modules.databases.debuggerdb import DebuggerDB
 
 
-def click_through_dlclicks(browser,
+def click_through_dlclicks(ui,
+                           browser,
                            dlclicks_deque,
                            callback=None,
                            *args,
@@ -51,7 +52,7 @@ def click_through_dlclicks(browser,
                                                 **kwargs
                                                 )
             except Exception:
-                print("Element not clickable. This is not necessarily an\n\
+                ui.debug("Element not clickable. This is not necessarily an\n\
                        error but you might want to consider using a more\n\
                        specific xPath expression.")
                 continue
@@ -162,33 +163,29 @@ def do_download(browser, ui, uploader, row, db):
         download_file = FileFromWeb(url, local_filename, settings.user_agent)
         origin = url
 
-    prefix = uploader.buildRemoteName(filename, path=row["source"])
-    """Path and filename, but without extension.
-       We don't know the proper extension yet.
-    """
-
-    # Return early if a file with this name (no extension yet) exists
-    if uploader.prefix_exists(prefix) and ui.args.overwrite is not True:
-        ui.debug("%s already exists in storage" % url)
-        return
-
     filetype = download_file.get_file_type()
     file_ext = download_file.get_file_extension()
+    remote_name = uploader.buildRemoteName(filename,
+                                           path=row["source"],
+                                           ext=file_ext)
+    dbkey = db.create_key([row["source"], filename + "." + file_ext])
+    """ Database key is created from municipality and filename"""
+
+    # Return early if a file with this name exists
+    # in both storage and DB
+    if uploader.prefix_exists(remote_name) and\
+       db.get(dbkey) is not None and\
+       ui.args.overwrite is not True:
+        ui.debug("%s already exists in storage" % url)
+        return
 
     if filetype in settings.allowedFiletypes and\
        ui.executionMode < Interface.DRY_MODE:
 
         ui.debug("Uploading file to storage")
-        uploader.put_file(local_filename,
-                         uploader.buildRemoteName(filename,
-                                                  ext=file_ext,
-                                                  path=row["source"])
-                         )
+        uploader.put_file(local_filename, remote_name)
 
         ui.debug("Storing file data in database")
-        dbkey = db.create_key([row["source"], filename + "." + file_ext])
-        """ Database key is created from municipality and filename"""
-
         db.put(dbkey, u"origin", origin)
         # Should rather be the more generic “source”
         db.put(dbkey, u"municipality", row["source"])
@@ -248,7 +245,8 @@ def run_harvest(data_set, browser, uploader, ui, db):
                            (row["source"], preclick, e))
 
         ui.debug("Getting URL list from %s and on" % row["dlclick1"])
-        click_through_dlclicks(browser,
+        click_through_dlclicks(ui,
+                               browser,
                                deque(filter(None, dlclicks)),
                                callback=do_download,
                                ui=ui,
