@@ -131,6 +131,7 @@ def main():
                 (extractor.__class__.__name__, downloaded_file.localFile))
 
         last_page_type = None
+        last_page_date = None
         documents = []
         for page in extractor.get_next_page():
             page_text = page.get_text()
@@ -138,7 +139,9 @@ def main():
             page_type = get_document_type(page_header)
             page_date = page.get_date() or extractor.get_date()
 
-            if len(documents) > 0 and page_type == last_page_type:
+            if len(documents) > 0 and\
+               page_type == last_page_type and\
+               page_date == last_page_date:
                 documents[-1]["text"] = documents[-1]["text"] + page_text
             else:
                 documents.append({
@@ -149,6 +152,7 @@ def main():
                 })
 
             last_page_type = page_type
+            last_page_date = page_date
 
         i = 0
         for document in documents:
