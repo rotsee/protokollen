@@ -16,6 +16,7 @@ from os import path
 
 from modules.interface import Interface
 from modules.databases.debuggerdb import DebuggerDB
+from modules.utils import make_unicode
 
 
 def parse_rules(tuple_, header):
@@ -39,8 +40,11 @@ def parse_rules(tuple_, header):
         hit = not parse_rules(rule_val, header)
         return hit
     elif rule_key == "HEADER_CONTAINS":
-        return header.find(rule_val.upper()) > -1
-
+        try:
+            pos = make_unicode(header).find(rule_val.upper())
+        except UnicodeDecodeError:
+            pos = -1
+        return pos > -1
 
 def get_document_type(header_text):
     """
@@ -83,15 +87,14 @@ def main():
         files_db = settings.Database(settings.db_server,
                                      settings.db_harvest_table,
                                      "info",
-                                     port=settings.db_port
-                                     )
-        text_db = settings.Database(settings.db_server,
-                                    settings.db_extactor_table,
-                                    "info",
-                                    port=settings.db_port
-                                    )
+                                     port=settings.db_port)
+#        text_db = settings.Database(settings.db_server,
+#                                    settings.db_extactor_table,
+#                                    "info",
+#                                    port=settings.db_port)
+        text_db = DebuggerDB("server", "table")
     except (TypeError, NameError, AttributeError) as e:
-        ui.info("No database setup found, using DebuggerDB")
+        ui.info("No database setup found, using DebuggerDB (%s)" % e)
         files_db = None
         text_db = DebuggerDB(None, settings.db_extactor_table or "TABLE")
 
@@ -105,7 +108,7 @@ def main():
         prefix = docs_connection.buildRemoteName(key.basename,
                                                  path=key.path_fragments)
         """ "Ale kommun/xxx" """
-        files_dbkey = files_db.create_key(key.path_fragments + [key.filename])
+        files_dbkey = files_db.create_key(key.path_fragments + [key.filename]) or "key"
         """ "Ale kommun-xxx.pdf" """
         file_data = files_db.get_attribute_with_value("_id", files_dbkey)
 
