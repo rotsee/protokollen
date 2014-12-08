@@ -27,20 +27,18 @@ browser = "firefox"
 
 Storage = storage.LocalUploader
 """
- You need to set the storage parameters in login.py to use an external storage
+ You need to set the credentials below to use an external storage
 
  To use Dropbox, try
      Storage = storage.DropboxUploader
- (and set the login credentials below accordingly)
 
  To use Amazon S3, try
      Storage = storage.S3Storage
- (and set the login credentials below accordingly)
 """
 
 Database = None
 """
- You need to set the database parameters in login.py to use a database.
+ You need to set the credentials below to use a database.
 
  Remove or set to None to disable database indexing
 
