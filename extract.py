@@ -46,6 +46,7 @@ def parse_rules(tuple_, header):
             pos = -1
         return pos > -1
 
+
 def get_document_type(header_text):
     """
      Return the first matching document type, based on this
@@ -108,7 +109,7 @@ def main():
         prefix = docs_connection.buildRemoteName(key.basename,
                                                  path=key.path_fragments)
         """ "Ale kommun/xxx" """
-        files_dbkey = files_db.create_key(key.path_fragments + [key.filename]) or "key"
+        files_dbkey = files_db.create_key(key.path_fragments + [key.filename])
         """ "Ale kommun-xxx.pdf" """
         file_data = files_db.get_attribute_with_value("_id", files_dbkey)
 
@@ -151,7 +152,8 @@ def main():
                     "text": page_text,
                     "header": page_header,
                     "date": page_date,
-                    "type": page_type
+                    "type": page_type,
+                    "origin": key.path_fragments[0]
                 })
 
             last_page_type = page_type
@@ -162,8 +164,9 @@ def main():
             i += 1
             text_dbkey = text_db.create_key([key.path, i, key.filename])
             text_db.put(text_dbkey, "meeting_date", document["date"])
+            text_db.put(text_dbkey, "file_key", files_dbkey)
             text_db.put(text_dbkey, "header", document["header"])
-            text_db.put(text_dbkey, "source", key.path)
+            text_db.put(text_dbkey, "file", key.path)
             text_db.put(text_dbkey, "text", document["text"])
             text_db.put(text_dbkey, "document_type", page_type)
 
