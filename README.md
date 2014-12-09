@@ -41,6 +41,8 @@ These scripts have been tested under Ubuntu 14.04 and Debian 7.
 Installation
 ============
 
+The quickly get started with a test run, following the [quick start guide](#quick)
+
  * Clone this repository
  * From the protokollen directory, run `python setup.py develop`
  * Copy `settings.template.py` to `settings.py`, and all relevant credentials there
@@ -49,11 +51,11 @@ Installation
 
 <a name="quick">Quick start</a>
 ===========
+
 To quickly get started with the harvesting:
 
 Ubuntu, Debian, Linux Mint, others
 ----------------------------------
-
 Make sure all dependencies are installed
 
     sudo apt-get update && sudo apt-get install git python xvfb firefox libmagic-dev
@@ -78,32 +80,34 @@ Using ProtoCollection
 
 Harvesting documents
 ---------------------
-The harvesting script `harvest.py` takes a table with URLs and xPath expressions. It will fetch any new, valid files encountered, and put them in a storage, after checking their mime type. uRLs and xPaths can be provided throgh a CSV file, or a Google Spreadsheet document.
+The harvesting script `harvest.py` takes a table with URLs and xPath expressions. It will fetch any new, valid files encountered, and put them in a storage, after checking their mime type. uRLs and xPaths can be provided through a CSV file, or a Google Spreadsheet document.
 
 Run `python harvest.py --help` for more info on how to feed data into the script, or `pydoc ./harvest.py` (or `pdoc ./harvest.py`) for API help.
 
-[Here is an example csv file](https://github.com/rotsee/protokollen/blob/master/data/xpath_sample_data.csv) with xPaths from Dalarna and Gävleborg. The table should contain the following columns:
+[Here is an example csv file](https://github.com/rotsee/protokollen/blob/master/data/xpath_sample_data.csv) with xPaths for some Swedish municipality board meeting minutes. The table should contain the following columns:
 
 * `source`: Used to categorize documents. In our case names of municipalities.
 * `baseurl`: The starting point for the harvest.
 * Zero or more `preclick1`, `preclick2`, ...: xPaths pointing at stuff (e.g. form elements) that need to be clicked in order to access the list of documents. This is only rarely needed, when there is no way to access to real starting point from an URL.
-* One or more `dlclick1`, `dlclick2`, ...: xPaths pointing at the links that need too be followed for each download. All paths will be followed recursively:
+* One or more `dlclick1`, `dlclick2`, ...: xPaths pointing at the links that need too be followed for each download.
+ 
+All `dlclick` paths will be followed recursively:
 
-&nbsp; 
+     url─>preclick1─>preclick2─┬─>dlclick1─┬>dlclick2─>Sålunda KS 080124.pdf
+                               │           ├>dlclick2─>Sålunda KS 080314.pdf
+                               │           ├>dlclick2─>Sålunda KS 080502.pdf
+                               │           ├>dlclick2─>Sålunda KS 080612.pdf
+                               │           └>dlclick2─>Bilaga 1: Motion om
+                               │                       namnbyte på kommunen.pdf
+                               └─>dlclick1─┬>dlclick2─>Ingalunda KS 080724.pdf
+                                           ├>dlclick2─>Ingalunda KS 080911.pdf
+                                           └>dlclick2─>Ingalunda KS 081126.pdf 
 
-     url─>preclick1─>preclick2─┬─>dlclick1─┬>dlclick2─>Sålunda kommunstyrelse 2008-01-24.pdf
-                               │           ├>dlclick2─>Sålunda kommunstyrelse 2008-03-14.pdf
-                               │           ├>dlclick2─>Sålunda kommunstyrelse 2008-05-02.pdf
-                               │           ├>dlclick2─>Sålunda kommunstyrelse 2008-06-12.pdf
-                               │           └>dlclick2─>Bil. 1: Motion om namnbyte på kommunen.pdf
-                               └─>dlclick1─┬>dlclick2─>Ingalunda kommunstyrelse 2008-07-24.pdf
-                                           ├>dlclick2─>Ingalunda kommunstyrelse 2008-09-11.pdf
-                                           └>dlclick2─>Ingalunda kommunstyrelse 2008-11-26.pdf 
-
+The last step may be a file, or a html page.
 
 Extracting data from documents
 ------------------------------
-The extraction script `extract.py` will go through files in a storage, and try to extract plain text and metadata from them, page by page. It understands pdf, docx and doc files, and can also do OCR on scanned pdf-files.
+The extraction script `extract.py` will go through files in a storage, and try to extract plain text and metadata from them, page by page. It understands pdf, rtf, html, docx and doc files, and can also do OCR on scanned pdf-files.
 
 Run `python extract.py --help` for more info, or `pydoc ./extract.py` (or `pdoc ./extract.py`) for API help.
 
