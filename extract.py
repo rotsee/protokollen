@@ -16,7 +16,7 @@ from os import path
 
 from modules.interface import Interface
 from modules.databases.debuggerdb import DebuggerDB
-from modules.utils import make_unicode
+from modules.utils import make_unicode, get_single_date_from_text
 
 
 def parse_rules(tuple_, header):
@@ -89,15 +89,15 @@ def main():
                                      settings.db_harvest_table,
                                      "info",
                                      port=settings.db_port)
-#        text_db = settings.Database(settings.db_server,
-#                                    settings.db_extactor_table,
-#                                    "info",
-#                                    port=settings.db_port)
-        text_db = DebuggerDB("server", "table")
+        docs_db = settings.Database(settings.db_server,
+                                    settings.db_extactor_table,
+                                    "info",
+                                    port=settings.db_port)
+#        docs_db = DebuggerDB("server", "table")
     except (TypeError, NameError, AttributeError) as e:
         ui.info("No database setup found, using DebuggerDB (%s)" % e)
         files_db = None
-        text_db = DebuggerDB(None, settings.db_extactor_table or "TABLE")
+        docs_db = DebuggerDB(None, settings.db_extactor_table or "TABLE")
 
     for key in files_connection.get_next_file():
         # first of all, check if the processed file already exists in
@@ -112,9 +112,9 @@ def main():
         files_dbkey = files_db.create_key(key.path_fragments + [key.filename])
         """ "Ale kommun-xxx.pdf" """
         file_data = files_db.get_attribute_with_value("_id", files_dbkey)
-
+        docs_data = docs_db.get_attribute_with_value("file_key", files_dbkey)
         if (docs_connection.prefix_exists(prefix) and
-                len(file_data) > 0 and
+                len(docs_data) > 0 and
                 not ui.args.overwrite):
             ui.debug("Documents already extracted for file %s (%s)" %
                      (prefix, files_dbkey))
@@ -141,11 +141,12 @@ def main():
             page_text = page.get_text()
             page_header = page.get_header() or extractor.get_header()
             page_type = get_document_type(page_header)
-            page_date = page.get_date() or extractor.get_date()
+            page_date = (page.get_date() or extractor.get_date() or
+                         get_single_date_from_text(file_data["origin"]))
 
-            if len(documents) > 0 and\
-               page_type == last_page_type and\
-               page_date == last_page_date:
+            if (len(documents) > 0 and
+               page_type == last_page_type and
+               page_date == last_page_date):
                 documents[-1]["text"] = documents[-1]["text"] + page_text
             else:
                 documents.append({
@@ -162,13 +163,13 @@ def main():
         i = 0
         for document in documents:
             i += 1
-            text_dbkey = text_db.create_key([key.path, i, key.filename])
-            text_db.put(text_dbkey, "meeting_date", document["date"])
-            text_db.put(text_dbkey, "file_key", files_dbkey)
-            text_db.put(text_dbkey, "header", document["header"])
-            text_db.put(text_dbkey, "file", key.path)
-            text_db.put(text_dbkey, "text", document["text"])
-            text_db.put(text_dbkey, "document_type", page_type)
+            docs_dbkey = docs_db.create_key([key.path, i, key.filename])
+            docs_db.put(docs_dbkey, "meeting_date", document["date"])
+            docs_db.put(docs_dbkey, "file_key", files_dbkey)
+            docs_db.put(docs_dbkey, "header", document["header"])
+            docs_db.put(docs_dbkey, "file", key.path)
+            docs_db.put(docs_dbkey, "text", document["text"])
+            docs_db.put(docs_dbkey, "document_type", page_type)
 
             remote_filename = docs_connection.buildRemoteName(
                 key.filename,
