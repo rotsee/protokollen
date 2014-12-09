@@ -24,7 +24,8 @@ try:
         'html5lib',
         'html2text',
         'rtf2xml',
-        'httplib2 == 0.7.7'  # Known to work. Some 0.9.x versions have problems with p12 certs
+        'httplib2 == 0.7.7',  # Known to work. Some 0.9.x versions have problems with p12 certs
+        'python-dateutil'
     ]
 
     try:
