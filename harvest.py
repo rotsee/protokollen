@@ -54,12 +54,11 @@ def click_through_dlclicks(browser,
                                                 )
             except Exception as e:
                 if ui is not None:
-                    ui.debug("Element not clickable.")
-                    print e
+                    ui.debug("Element not clickable. Error: %s" % e)
                 continue
 
     else:
-        callback(browser, **kwargs)
+        callback(browser, ui=ui, **kwargs)
 
 
 def main():
@@ -248,8 +247,8 @@ def run_harvest(data_set, browser, uploader, ui, db):
         ui.debug("Getting URL list from %s and on" % row["dlclick1"])
         click_through_dlclicks(browser,
                                deque(filter(None, dlclicks)),
-                               callback=do_download,
                                ui=ui,
+                               callback=do_download,
                                uploader=uploader,
                                row=row,
                                db=db)
