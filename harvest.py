@@ -51,10 +51,9 @@ def click_through_dlclicks(ui,
                                                 *args,
                                                 **kwargs
                                                 )
-            except Exception:
-                ui.debug("Element not clickable. This is not necessarily an\n\
-                       error but you might want to consider using a more\n\
-                       specific xPath expression.")
+            except Exception as e:
+                ui.debug("Element not clickable.")
+                print e
                 continue
 
     else:
@@ -159,7 +158,7 @@ def do_download(browser, ui, uploader, row, db):
         ui.debug("Adding URL %s" % browser.selenium_driver.current_url)
         url = browser.selenium_driver.current_url
         filename = md5(url).hexdigest()
-        local_filename = path.join("temp", filename)
+        local_filename = path.join(ui.args.tempdir, filename)
         download_file = FileFromWeb(url, local_filename, settings.user_agent)
         origin = url
 

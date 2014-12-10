@@ -24,5 +24,11 @@ args = [
         "default": False,
         "dest": "overwrite",
         "help": "Should existing files and database entries be overwritten?"
+    }, {
+        "short": "-d", "long": "--tempdir",
+        "type": str,
+        "default": "temp",
+        "dest": "tempdir",
+        "help": "Where should we put temporarily downloaded files?"
     }
 ]
