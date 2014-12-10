@@ -22,9 +22,9 @@ from modules.utils import make_unicode
 from modules.databases.debuggerdb import DebuggerDB
 
 
-def click_through_dlclicks(ui,
-                           browser,
+def click_through_dlclicks(browser,
                            dlclicks_deque,
+                           ui=None,
                            callback=None,
                            *args,
                            **kwargs):
@@ -47,13 +47,15 @@ def click_through_dlclicks(ui,
                                                 # `browser` will be prepended
                                                 click_through_dlclicks,
                                                 new_dlclicks_deque,
+                                                ui=ui,
                                                 callback=callback,
                                                 *args,
                                                 **kwargs
                                                 )
             except Exception as e:
-                ui.debug("Element not clickable.")
-                print e
+                if ui is not None:
+                    ui.debug("Element not clickable.")
+                    print e
                 continue
 
     else:
@@ -244,10 +246,10 @@ def run_harvest(data_set, browser, uploader, ui, db):
                            (row["source"], preclick, e))
 
         ui.debug("Getting URL list from %s and on" % row["dlclick1"])
-        click_through_dlclicks(ui,
-                               browser,
+        click_through_dlclicks(browser,
                                deque(filter(None, dlclicks)),
                                callback=do_download,
+                               ui=ui,
                                uploader=uploader,
                                row=row,
                                db=db)
