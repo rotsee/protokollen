@@ -249,7 +249,6 @@ def run_harvest(data_set, browser, uploader, ui, db):
                                browser,
                                deque(filter(None, dlclicks)),
                                callback=do_download,
-                               ui=ui,
                                uploader=uploader,
                                row=row,
                                db=db)
