@@ -25,7 +25,7 @@ args = [
         "dest": "overwrite",
         "help": "Should existing files and database entries be overwritten?"
     }, {
-        "short": "-d", "long": "--tempdir",
+        "short": "-m", "long": "--tempdir",
         "type": str,
         "default": "temp",
         "dest": "tempdir",
