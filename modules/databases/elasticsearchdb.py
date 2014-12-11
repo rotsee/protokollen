@@ -6,6 +6,7 @@ from modules.databases.database import Database
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError
 from datetime import datetime
+import logging
 
 
 class ElasticSearch(Database):
@@ -19,6 +20,8 @@ class ElasticSearch(Database):
                                  "host": url,
                                  "port": port,
                                  }])
+        es_logger = logging.getLogger("elasticsearch")
+        es_logger.setLevel(logging.ERROR)
 
     def _get_id(self, id):
         try:
