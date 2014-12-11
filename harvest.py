@@ -171,41 +171,40 @@ def do_download(browser, ui, uploader, row, db):
     dbkey = db.create_key([row["source"], filename + "." + file_ext])
     """ Database key is created from municipality and filename"""
 
-    # Return early if a file with this name exists
+    # Check if a file with this name exists
     # in both storage and DB
-    if uploader.prefix_exists(remote_name) and\
-       db.get(dbkey) is not None and\
-       ui.args.overwrite is not True:
-        ui.debug("%s already exists in storage" % url)
-        return
-
-    if filetype in settings.allowedFiletypes and\
-       ui.executionMode < Interface.DRY_MODE:
-
-        ui.debug("Uploading file to storage")
-        uploader.put_file(local_filename, remote_name)
-
-        ui.debug("Storing file data in database")
-        db.put(dbkey, u"origin", origin)
-        # Should rather be the more generic “source”
-        db.put(dbkey, u"municipality", row["source"])
-        db.put(dbkey, u"harvesting_rules", row, overwrite=ui.args.overwrite)
-        try:
-            ui.debug("Extracting metadata")
-            extractor = download_file.extractor()
-            # HtmlExtractor will want to know where in the page to
-            # look for content. Send `html` column, if any
-            if "html" in row:
-                extractor.content_xpath = row["html"]
-            meta = extractor.get_metadata()
-            ui.debug(meta.data)
-            db.put(dbkey, u"metadata", meta.data, overwrite=ui.args.overwrite)
-        except Exception as e:
-            ui.error("Could not get metadata from %s. %s" % (dbkey, e))
-
+    if (uploader.prefix_exists(remote_name) and
+       db.get(dbkey) is not None and
+       ui.args.overwrite is not True):
+        ui.debug("%s already exists, not overwriting" % url)
     else:
-        ui.warning("%s is not an allowed mime type or download failed"
-                   % download_file.mimeType)
+        if (filetype in settings.allowedFiletypes and
+           ui.executionMode < Interface.DRY_MODE):
+
+            ui.info("Storing %s" % filename)
+            uploader.put_file(local_filename, remote_name)
+
+            ui.debug("Storing file data in database")
+            db.put(dbkey, u"origin", origin)
+            # Should rather be the more generic “source”
+            db.put(dbkey, u"municipality", row["source"])
+            db.put(dbkey, u"harvesting_rules", row, overwrite=ui.args.overwrite)
+            try:
+                ui.debug("Extracting metadata")
+                extractor = download_file.extractor()
+                # HtmlExtractor will want to know where in the page to
+                # look for content. Send `html` column, if any
+                if "html" in row:
+                    extractor.content_xpath = row["html"]
+                meta = extractor.get_metadata()
+                ui.debug(meta.data)
+                db.put(dbkey, u"metadata", meta.data, overwrite=ui.args.overwrite)
+            except Exception as e:
+                ui.error("Could not get metadata from %s. %s" % (dbkey, e))
+
+        else:
+            ui.warning("%s is not an allowed mime type or download failed"
+                       % download_file.mimeType)
 
     try:
         download_file.delete()
