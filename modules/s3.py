@@ -20,15 +20,17 @@ class Key(BotoKey):
                 self.name = key
             else:  # if initiated with an existing key
                 super(Key, self).__init__(bucket, key.name)
-                self.name = key.name  # 'foo/bar/helloworld.txt'
+                self.name = key.name  # 'foo/bar/hello.txt'
 
-            self.path_fragments = self.name.split("/")  # ['foo', 'bar', 'helloworld.txt']
-            self.filename = self.path_fragments.pop()  # 'helloworld.txt'
+            self.path_fragments = self.name.split("/")  # ['foo', 'bar', 'hello.txt']
+            self.filename = self.path_fragments.pop()  # 'hello.txt'
             self.path = "/".join(self.path_fragments)  # 'foo/bar'
-            self.extension = self.filename.split(".")[-1]  # 'txt'
-            self.basename = self.filename.split(".")[0]  # 'helloworld'
+            self.basename, self.extension = self.filename.split(".")  # hello, txt
         else:
             super(Key, self).__init__(bucket)
+
+    def __str__(self):
+        return self.name
 
 
 class S3Connection(object):
