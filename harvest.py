@@ -209,8 +209,8 @@ def do_download(browser, ui, uploader, row, db):
 
     try:
         download_file.delete()
-    except:
-        pass
+    except Exception as e:
+        ui.warning("Could not delete temp file %s (%s)" % (local_filename, e))
 
 
 def run_harvest(data_set, browser, uploader, ui, db):
