@@ -11,7 +11,8 @@ class Row(dict):
         super(Row, self).__init__(*arg, **kw)
 
     def enumerated_columns(self, enumerated_header):
-        """Return a list of column values corresponding to an enumerated header.
+        """Return a list of column values corresponding
+           to an enumerated header.
         """
         columns = []
         for header in enumerated_header:
@@ -90,9 +91,9 @@ class DataSet(object):
 
 class CSVFile(DataSet):
     """Represents data from a CSV file. Data is loaded on init.
-       First row is assumed to contain headers
     """
-    def __init__(self, filename, delimiter=',', quotechar='"'):
+    def __init__(self, filename,
+                 delimiter=',', quotechar='"', has_headers=True):
         import csv
         self.delimiter = delimiter
         self.quotechar = quotechar
@@ -104,7 +105,7 @@ class CSVFile(DataSet):
         try:
             with open(self.filename, 'rb') as csvfile:
                 reader = csv.reader(csvfile)
-                firstRow = True
+                firstRow = has_headers
                 for row in reader:
                     if firstRow:
                         self.headers = row
@@ -113,9 +114,14 @@ class CSVFile(DataSet):
                     else:
                         row_dict = {}
                         i = 0
+                        if not has_headers:
+                            self.width = max(self.width, len(row))
                         for col in row:
                             if i < self.width:
-                                col_name = self.headers[i]
+                                if has_headers:
+                                    col_name = self.headers[i]
+                                else:
+                                    col_name = str(i)
                                 row_dict[col_name] = col or None
                             else:
                                 pass  # skip columns outside headers
