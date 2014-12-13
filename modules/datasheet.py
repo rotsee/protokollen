@@ -89,6 +89,27 @@ class DataSet(object):
             yield row
 
 
+class HeaderlessDataSet(DataSet):
+    """Represents a tabular data set, where the data does not have column
+       headers. Inputed data is supposed to be a list of lists:
+       [[a, b, c], [aa, bb, cc]], ...].
+    """
+
+    def __init__(self, data):
+        self.data = []
+        self.headers = None
+        self.width = 0
+
+        for row in data:
+            self.width = max(self.width, len(row))
+            i = 0
+            data_row = {}
+            for col in row:
+                data_row[str(i)] = col
+                i += 1
+            self.data.append(data_row)
+
+
 class CSVFile(DataSet):
     """Represents data from a CSV file. Data is loaded on init.
     """
