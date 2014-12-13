@@ -19,6 +19,14 @@ class Row(dict):
             columns.append(self.get(header, None))
         return columns
 
+    def list(self):
+        """Return a list of column values, sorted by key.
+           Useful for headerless datasets. """
+        columns = []
+        for key in sorted(self):
+            columns.append(self[key])
+        return columns
+
 
 class DataSet(object):
     """Represents a tabular data set, from a CSV file or similar.
@@ -27,9 +35,10 @@ class DataSet(object):
     """
 
     def __init__(self, data):
-        self.data = data
+        self.data = []
         self.headers = []
         for row in data:
+            self.data.append(Row(row))
             self._append_keys_to_header(row)
 
     def _append_keys_to_header(self, dictionary):
@@ -107,7 +116,7 @@ class HeaderlessDataSet(DataSet):
             for col in row:
                 data_row[str(i)] = col
                 i += 1
-            self.data.append(data_row)
+            self.data.append(Row(data_row))
 
 
 class CSVFile(DataSet):
