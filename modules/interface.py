@@ -91,6 +91,34 @@ class Interface:
     def dryMode(self):
         return bool(self.executionMode)
 
+    def ask_if_continue(self, default="no", message="Really continue?"):
+        """Ask a yes/no question via raw_input() and return their answer
+
+           Command line implementation from
+           http://code.activestate.com/recipes/577058/
+        """
+        valid = {"yes": True, "y": True, "ja": True,
+                 "no": False, "n": False, "nej": False}
+        if default is None:
+            prompt = " [y/n] "
+        elif default == "yes":
+            prompt = " [Y/n] "
+        elif default == "no":
+            prompt = " [y/N] "
+        else:
+            raise ValueError("invalid default answer: '%s'" % default)
+
+        while 1:
+            sys.stdout.write(message + prompt)
+            choice = raw_input().lower()
+            if default is not None and choice == '':
+                return valid[default]
+            elif choice in valid.keys():
+                return valid[choice]
+            else:
+                sys.stdout.write("Please respond with 'yes' or 'no' "
+                                 "(or 'y' or 'n').\n")
+
     def exit(self):
         import sys
         sys.exit()
