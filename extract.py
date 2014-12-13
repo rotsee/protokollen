@@ -55,6 +55,7 @@ def get_document_type(header_text):
     for document_type in settings.document_rules:
         if parse_rules(document_type[1], header_text):
             return document_type[0]
+    return None
 
 
 def main():
@@ -112,9 +113,9 @@ def main():
         files_dbkey = files_db.create_key(key.path_fragments + [key.filename])
         """ "Ale kommun-xxx.pdf" """
         file_data = files_db.get_attribute_with_value("_id", files_dbkey)
-        docs_data = docs_db.get_attribute_with_value("file_key", files_dbkey)
+        old_docs_data = docs_db.get_attribute_with_value("file_key", files_dbkey)
         if (docs_connection.prefix_exists(prefix) and
-                len(docs_data) > 0 and
+                len(old_docs_data) > 0 and
                 not ui.args.overwrite):
             ui.debug("Documents already extracted for file %s (%s)" %
                      (prefix, files_dbkey))
@@ -131,8 +132,11 @@ def main():
             continue
 
         extractor = downloaded_file.extractor()
-        ui.info("Extracting text with %s from %s" %
-                (extractor.__class__.__name__, downloaded_file.localFile))
+        extractor_type = type(extractor).__name__
+        if extractor_type == "HtmlExtractor":
+            extractor.content_xpath = file_data["harvesting_rules"]["html"]
+        ui.info("Extracting from %s with %s" % (downloaded_file.localFile,
+                                                extractor_type))
 
         last_page_type = None
         last_page_date = None
@@ -163,18 +167,22 @@ def main():
         i = 0
         for document in documents:
             i += 1
-            docs_dbkey = docs_db.create_key([key.path, i, key.filename])
+            remote_filename = docs_connection.buildRemoteName(
+                str(i),
+                ext="txt",
+                path=key.path_fragments + [key.filename])
+            """ "Ale kommun/xxx/1.txt" """
+            docs_dbkey = docs_db.create_key([key.path, key.filename, str(i)])
+            """ "Ale kommun-xxx-1" """
             docs_db.put(docs_dbkey, "meeting_date", document["date"])
             docs_db.put(docs_dbkey, "file_key", files_dbkey)
+            docs_db.put(docs_dbkey, "file", key.name)
             docs_db.put(docs_dbkey, "header", document["header"])
-            docs_db.put(docs_dbkey, "file", key.path)
+            docs_db.put(docs_dbkey, "text_file", remote_filename)
             docs_db.put(docs_dbkey, "text", document["text"])
             docs_db.put(docs_dbkey, "document_type", page_type)
+            docs_db.put(docs_dbkey, "origin", document["origin"])
 
-            remote_filename = docs_connection.buildRemoteName(
-                key.filename,
-                ext="txt",
-                path=key.path_fragments + [str(i)])
             docs_connection.put_file_from_string(document["text"],
                                                  remote_filename)
 
