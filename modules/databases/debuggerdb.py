@@ -14,6 +14,10 @@ class DebuggerDB(Database):
         self.table = table
         pass
 
+    def delete(self, key):
+        print "Deleting %s" % key
+        return True
+
     def put(self, key, attr, value):
         """Will return True if a value was written, or False
         """

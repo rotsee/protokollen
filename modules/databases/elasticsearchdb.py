@@ -30,6 +30,14 @@ class ElasticSearch(Database):
         except NotFoundError:
             return None
 
+    def delete(self, key):
+        try:
+            res = self.es.delete(index=self.index, doc_type=self.doctype,
+                                 id=key)
+        except NotFoundError:
+            return None
+        return res
+
     def put(self, key, attr, value, overwrite=False):
         """Will return True if a value was written, or False
         """

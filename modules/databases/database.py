@@ -23,6 +23,11 @@ class Database(object):
         """
         return "-".join([str(p) for p in parts])
 
+    def delete(self, key):
+        """Delete an entry by key, if it exists.
+        """
+        raise NotImplementedError('must be overridden by child classes')
+
     def put(self, key, attr, value):
         raise NotImplementedError('must be overridden by child classes')
 
