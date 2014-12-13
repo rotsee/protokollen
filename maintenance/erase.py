@@ -105,17 +105,20 @@ def main():
             ui.debug("Storage: %s; Db: %s" % (file_path, file_path_from_db))
             if not ui.ask_if_continue():
                 ui.exit()
+
         docs = docs_db.get_attribute_with_value("file", db_key)
         if len(docs) == 0:
             message = "No documents for %s. Continue deleting only file?" % \
                       filename
             if not ui.ask_if_continue(message=message):
                 ui.exit()
-        file_db.delete(db_key)
-        file_storage.delete_file(file_path)
-        #for doc in docs:
-        #   doc
-        #   docs_storage.delete(create_key(get(doc, file)))
+
+        if ui.executionMode < Interface.DRY_MODE:
+            file_db.delete(db_key)
+            file_storage.delete_file(file_path)
+            #for doc in docs:
+            #   doc
+            #   docs_storage.delete(create_key(get(doc, file)))
 
 
 if __name__ == '__main__':
