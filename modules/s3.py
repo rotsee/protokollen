@@ -54,6 +54,9 @@ class S3Connection(object):
             i += 1
         return i
 
+    def delete_key(self, filename):
+        return self._bucket.delete_key(filename)
+
     def fileExistsInBucket(self, fullfilename):
         if self.getBucketListLength(fullfilename):
             return True

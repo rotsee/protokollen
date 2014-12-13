@@ -47,6 +47,10 @@ class Storage:
         pass
 
     @abstractmethod
+    def delete_file(self, filename):
+        pass
+
+    @abstractmethod
     def put_file_from_string(self, string, remoteFilename):
         pass
 
@@ -133,6 +137,9 @@ class S3Storage(Storage):
     # get_next_file) and return a download.File object with .localFile
     def get_file(self, key, localFilename):
         return FileFromS3(key, localFilename)
+
+    def delete_file(self, filename):
+        return self.connection.delete_key(filename)
 
     def prefix_exists(self, fullfilename):
         """Check if a file with this prefix exists (path and/or part
