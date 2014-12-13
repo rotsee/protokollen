@@ -5,6 +5,8 @@ ProtoCollection (Swedish: [ProtoKollen](README.sv.md)) is a web service that har
 
 The quickly get started, see the [quick start guide](#quick)
 
+This repository contains scripts for downloading files (`./harvest.py`) and extracting text (`./extract.py`), as well as various maintenance scripts (in the `maintenance` folder).
+
 
 Prerequisites
 =============
@@ -14,10 +16,11 @@ Prerequisites
 
 For harvester.py
 ----------------
- * Firefox (tested with version 32.0, 33.0, 33.1 and 34.0) or Chrome (tested with version 38.0)
- * Xvfb (tested with version 1.15.1)
+ * Firefox (tested with version 32, 33 and 34) or Chrome (tested with version 38)
+ * Xvfb (tested with version 1.15)
  * [Service-account credentials](https://developers.google.com/console/help/new/#serviceaccounts) from the [Google developers console](https://console.developers.google.com/), if you wish to use Google Spreadsheets as the source for your harvesting. Not needed if you use a local CSV file.
  * python-magic (installed by setup.py) and libmagic (needs to be installed separately)
+ * wvSummary from `wv` (tested with version 1.2)
  * Optionally a database, to keep track of downloaded files. Elastic Search is supported (tested with version 1.0.1 and 1.2.4)
 
  The ChromeDriver executable for your OS must be inside the bin directory for Chrome to work.
@@ -33,9 +36,9 @@ For extract.py
  * Language data for Tesseract (for Swedish: a file called [`SWE.traineddata`](https://code.google.com/p/tesseract-ocr/downloads/detail?name=swe.traineddata.gz), that must be put in Tesseract's data directory)
  * The Python Imaging Library, PIL (tested with version 2.3)
  * GhostScript (tested with version 9.10)
- * Optionally a database, to store text and metadata. Elastic Search is supported (tested with version 1.0.1)
+ * Optionally a database, to store text and metadata. Elastic Search is supported (tested with version 1.0.1 and 1.2.4)
 
-These scripts have been tested under Ubuntu 14.04 and Debian 7.
+These scripts have been tested under Ubuntu 14.04, Ubuntu 14.10 and Debian 7.
 
 
 Installation
@@ -58,7 +61,7 @@ Ubuntu, Debian, Linux Mint, others
 ----------------------------------
 Make sure all dependencies are installed
 
-    sudo apt-get update && sudo apt-get install git python xvfb firefox libmagic-dev
+    sudo apt-get update && sudo apt-get install git python xvfb firefox libmagic-dev wv
 
 Clone the repository
 
