@@ -188,6 +188,8 @@ def do_download(browser, ui, uploader, row, db):
             db.put(dbkey, u"origin", origin)
             # Should rather be the more generic “source”
             db.put(dbkey, u"municipality", row["source"])
+            db.put(dbkey, u"file_type", file_ext)
+            db.put(dbkey, u"storage_path", remote_name)
             db.put(dbkey, u"harvesting_rules", row, overwrite=ui.args.overwrite)
             try:
                 ui.debug("Extracting metadata")
@@ -200,7 +202,7 @@ def do_download(browser, ui, uploader, row, db):
                 ui.debug(meta.data)
                 db.put(dbkey, u"metadata", meta.data, overwrite=ui.args.overwrite)
             except Exception as e:
-                ui.error("Could not get metadata from %s. %s" % (dbkey, e))
+                ui.warning("Could not get metadata from %s. %s" % (dbkey, e))
 
         else:
             ui.warning("%s is not an allowed mime type or download failed"
