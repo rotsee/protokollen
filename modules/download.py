@@ -167,6 +167,8 @@ class FileFromWeb(File):
                 logging.warning("HTTP Error: %s %s" % (e.code, url))
             except urllib2.URLError, e:
                 logging.warning("URL Error: %s %s" % (e.reason, url))
+            except Exception as e:
+                logging.error("Error in FileFromWeb: %s" % e.reason)
 
             if self.exists():
                 self.success = True
