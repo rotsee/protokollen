@@ -116,7 +116,7 @@ def main():
     try:
         browser = Surfer(browser=settings.browser, delay=1)
         ui.debug("Browsing the web with %s" % browser.browser_version)
-        run_harvest(data_set, browser, uploader, ui, db)
+        run_harvest(data_set, browser, uploader, db)
     except Exception as e:
         ui.critical("%s: %s" % (type(e), e))
         raise
