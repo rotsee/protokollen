@@ -21,10 +21,17 @@ from modules.datasheet import CSVFile, GoogleSheet
 from modules.utils import make_unicode
 from modules.databases.debuggerdb import DebuggerDB
 
+############# GLOBAL VARIABLES ###############
+ui = Interface(__file__,
+               """This script will download all files pointed out by
+                  a series of URLs and xPath expressions, and upload
+                  them to the configured storage service. """)
+"""`ui` is our command line interface."""
+##############################################
+
 
 def click_through_dlclicks(browser,
                            dlclicks_deque,
-                           ui=None,
                            callback=None,
                            *args,
                            **kwargs):
@@ -47,36 +54,28 @@ def click_through_dlclicks(browser,
                                                 # `browser` will be prepended
                                                 click_through_dlclicks,
                                                 new_dlclicks_deque,
-                                                ui=ui,
                                                 callback=callback,
                                                 *args,
                                                 **kwargs
                                                 )
             except Exception as e:
-                if ui is not None:
-                    ui.debug("Element not clickable. Error: %s" % e)
+                ui.debug("Element not clickable. Error: %s" % e)
                 continue
 
     else:
-        callback(browser, ui=ui, **kwargs)
+        callback(browser, **kwargs)
 
 
 def main():
     """Entry point when run from command line.
-       Global variables:
+       Variables:
 
-       ui: User interface. Has methods to display messages, etc.
        db: A Database object, or None if no database is defined in settings.py
        data_set: A DataSet object with instructions for the harvester
        browser: A Surfer object, e.g. a wrapper for a selenium browser
 
        Command line options are in harvest_args.py
     """
-    ui = Interface(__file__,
-                   """This script will download all files pointed out by
-                      a series of URLs and xPath expressions, and upload
-                      them to the configured storage service. """)
-
     if ui.args.filename is not None:
         ui.info("Harvesting from CSV file `%s`" % ui.args.filename)
         data_set = CSVFile(ui.args.filename)
@@ -126,7 +125,7 @@ def main():
         browser.kill()
 
 
-def do_download(browser, ui, uploader, row, db):
+def do_download(browser, uploader, row, db):
     """Get the file, put it in the storage, and add a db entry for it
     """
     ui.debug("Starting download at %s" % browser.selenium_driver.current_url)
@@ -214,7 +213,7 @@ def do_download(browser, ui, uploader, row, db):
         ui.warning("Could not delete temp file %s (%s)" % (local_filename, e))
 
 
-def run_harvest(data_set, browser, uploader, ui, db):
+def run_harvest(data_set, browser, uploader, db):
     """ This is a tree step process, for each row in the data set:
 
         1. Go to a URL
@@ -248,7 +247,6 @@ def run_harvest(data_set, browser, uploader, ui, db):
         ui.debug("Getting URL list from %s and on" % row["dlclick1"])
         click_through_dlclicks(browser,
                                deque(filter(None, dlclicks)),
-                               ui=ui,
                                callback=do_download,
                                uploader=uploader,
                                row=row,
