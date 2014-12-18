@@ -40,6 +40,10 @@ class Database(object):
             success = success and self.put(key, k, v)
         return success
 
+    def exists(self, key):
+        """Return a value, or None"""
+        raise NotImplementedError('must be overridden by child classes')
+
     def get(self, key, attr):
         """Return a value, or None"""
         raise NotImplementedError('must be overridden by child classes')

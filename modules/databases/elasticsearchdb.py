@@ -53,6 +53,10 @@ class ElasticSearch(Database):
         else:
             return False
 
+    def exists(self, key):
+        res = self.get(key, "_id")
+        return res is not None
+
     def get(self, key, attr):
         res = self._get_id(key)
         if res is not None and attr in res:

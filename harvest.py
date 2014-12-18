@@ -173,7 +173,7 @@ def do_download(browser, uploader, row, db):
     # Check if a file with this name exists
     # in both storage and DB
     if (uploader.prefix_exists(remote_name) and
-       db.get(dbkey) is not None and
+       db.get.exists(dbkey) is not None and
        ui.args.overwrite is not True):
         ui.debug("%s already exists, not overwriting" % url)
     else:
