@@ -21,7 +21,7 @@ class Database(object):
            consistent with ElasticSearch's `amazon-s3-river` plugin, see
            https://github.com/lbroudoux/es-amazon-s3-river/blob/master/src/main/java/com/github/lbroudoux/elasticsearch/river/s3/river/S3River.java#LC508
         """
-        return "-".join([str(p) for p in parts])
+        return u"-".join([unicode(p) for p in parts])
 
     def delete(self, key):
         """Delete an entry by key, if it exists.
