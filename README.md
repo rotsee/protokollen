@@ -72,6 +72,7 @@ Setup the repository
     cd protokollen
     sudo python ./setup.py develop
     cp settings.template.py settings.py
+    mkdir temp
 
 Start harvesting
 
