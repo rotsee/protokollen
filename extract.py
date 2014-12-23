@@ -20,9 +20,7 @@ from modules.utils import make_unicode, get_single_date_from_text
 
 
 def parse_rules(tuple_, header):
-    """
-     Parse document rules. See settings.py for syntax
-    """
+    """Parse document rules. See settings.py for syntax"""
     rule_key = tuple_[0].upper()
     rule_val = tuple_[1]
     header = header.upper()
@@ -180,7 +178,7 @@ def main():
             docs_db.put(docs_dbkey, "header", document["header"])
             docs_db.put(docs_dbkey, "text_file", remote_filename)
             docs_db.put(docs_dbkey, "text", document["text"])
-            docs_db.put(docs_dbkey, "document_type", page_type)
+            docs_db.put(docs_dbkey, "document_type", document["type"])
             docs_db.put(docs_dbkey, "origin", document["origin"])
 
             docs_connection.put_file_from_string(document["text"],
