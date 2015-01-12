@@ -8,6 +8,7 @@ temp/*
 ./~lock*
 env
 ./log
+*.traineddata
 
 # Allow xpath samples
 !xpath_sample*.csv
