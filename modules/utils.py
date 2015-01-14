@@ -4,14 +4,14 @@
 import re
 
 datePatterns = [
-    '(19|20)?\d{2}-\d{1,2}-\d{1,2}',  # 2014-04-24, 2014-4-24 or 14-04-24
-    '(19|20)\d{2}/\d{1,2}/\d{1,2}',  # 2014/04/24 or 2014/4/24
-    '\d{1,2}\.\d{1,2}\.(19|20)\d{2}',  # 24.4.2014
-]
+    '(19|20)\d{2}-\d{1,2}-\d{1,2}',  # 2014-03-24, 2014-3-24
+    '(19|20)\d{2}/\d{1,2}/\d{1,2}',  # 2014/03/24 or 2014/3/24
+    '\d{1,2}\.\d{1,2}\.(19|20)\d{2}',  # 24.3.2014
+    '\d{1,2}\s(januari|februari|mars|april|maj|juni|juli|augusti|september|oktober|november|december)\s(19|20)\d{2}',  # 24 mars 2014
+    '\d{1,2}\s(jan|feb|mar|apr|jun|jul|aug|sep|okt|nov|dec)\.?\s?(19|20)\d{2}']  # 24 mar 2014, 24 mar. 2014, 24 mar.2014
 """Date patterns for get_first_date_from_text and get_date_from_text
-   “Myndigheternas skrivregler” recommends using 2005-05-14 or 15.5.2005
+   “Myndigheternas skrivregler” recommends using 2005-05-24 or 24.5.2005
    in document headers.
-   TODO Also common, but not yet handled: 14 maj 2005.
 """
 
 python_encodings = ["ascii",
