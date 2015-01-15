@@ -4,14 +4,14 @@
 import re
 
 datePatterns = [
-    '(19|20)\d{2}-\d{1,2}-\d{1,2}',  # 2014-03-24, 2014-3-24
-    '(19|20)\d{2}/\d{1,2}/\d{1,2}',  # 2014/03/24 or 2014/3/24
-    '\d{1,2}\.\d{1,2}\.(19|20)\d{2}',  # 24.3.2014
-    '\d{1,2}\s(januari|februari|mars|april|maj|juni|juli|augusti|september|oktober|november|december)\s(19|20)\d{2}',  # 24 mars 2014
-    '\d{1,2}\s(jan|feb|mar|apr|jun|jul|aug|sep|okt|nov|dec)\.?\s?(19|20)\d{2}']  # 24 mar 2014, 24 mar. 2014, 24 mar.2014
+    '((19|20)\d{2}-\d{1,2}-\d{1,2})',  # 2014-03-24, 2014-3-24
+    '((19|20)\d{2}/\d{1,2}/\d{1,2})',  # 2014/03/24 or 2014/3/24
+    '(\d{1,2}\.\d{1,2}\.(19|20)\d{2})',  # 24.3.2014
+    '(\d{1,2}\s(januari|februari|mars|april|maj|juni|juli|augusti|september|oktober|november|december)\s(19|20)\d{2})',  # 24 mars 2014
+    '(\d{1,2}\s(jan|feb|mar|apr|jun|jul|aug|sep|okt|nov|dec)\.?\s?(19|20)\d{2})']  # 24 mar 2014, 24 mar. 2014, 24 mar.2014
 """Date patterns for get_first_date_from_text and get_date_from_text
    “Myndigheternas skrivregler” recommends using 2005-05-24 or 24.5.2005
-   in document headers.
+   in document headers. 24 mars 2014 is also not uncommon.
 """
 
 python_encodings = ["ascii",
@@ -84,6 +84,14 @@ def is_number(s):
         return False
 
 
+def replace_set(text, dictionary):
+    import re
+
+    rep = dict((re.escape(k), v) for k, v in dictionary.iteritems())
+    pattern = re.compile("|".join(rep.keys()))
+    return pattern.sub(lambda m: rep[re.escape(m.group(0))], text)
+
+
 def _get_dates_list(text):
     dates = []
     for pattern in datePatterns:
@@ -91,17 +99,35 @@ def _get_dates_list(text):
     return dates
 
 
+def _parse_date(date):
+    import dateutil.parser as dateParser
+    month_dict = {u"januari": u"January",
+                  u"februari": u"February",
+                  u"mars": u"March",
+                  u"april": u"April",
+                  u"maj": u"May",
+                  u"juni": u"June",
+                  u"juli": u"July",
+                  u"augusti": u"August",
+                  u"september": u"September",
+                  u"oktober": u"October",
+                  u"november": u"November",
+                  u"december": u"December",
+                  u"okt": u"October"}
+    date_string = replace_set(date, month_dict)
+    return dateParser.parse(date_string, fuzzy=True)
+
+
 def get_single_date_from_text(text):
     """ Returns the date portion from a short text, that is known to contain
-        one and one date. None if the number of matches is not 1
+        one and only one date. None if the number of matches is not 1
     """
 
     if text is not None:
         dates = _get_dates_list(text)
 
         if (len(dates) == 1):
-            import dateutil.parser as dateParser
-            return dateParser.parse(dates[0], fuzzy=True)
+            return _parse_date(dates[0][0])
         else:
             return None
 
@@ -118,14 +144,10 @@ def get_date_from_text(text):
 
         if (len(dates) > 0):
             from collections import Counter
-            import dateutil.parser as dateParser
-
             # Count occurences of each date and get the most common one
             c = Counter(dates).most_common(1)[0]
             # Parse the date
-            date = dateParser.parse(c[0], fuzzy=True)
+            return _parse_date(c[0][0])
         else:
             # Case: no matcing dates found
-            date = None
-
-        return date
+            return None
