@@ -115,7 +115,12 @@ def _parse_date(date):
                   u"december": u"December",
                   u"okt": u"October"}
     date_string = replace_set(date, month_dict)
-    return dateParser.parse(date_string, fuzzy=True)
+
+    try:
+        parsed_date = dateParser.parse(date_string, fuzzy=True)
+    except ValueError:
+        parsed_date = None
+    return parsed_date
 
 
 def get_single_date_from_text(text):
