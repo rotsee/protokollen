@@ -1,5 +1,5 @@
 #!/usr/bin/env python2
-#coding=utf-8
+# -*- coding: utf-8 -*-
 """This is where we extract plain text and textual meta data from files,
    and upload it to a storage and/or a database.
    File content will be split up in documents, if multiple
@@ -111,6 +111,8 @@ def main():
         files_dbkey = files_db.create_key(key.path_fragments + [key.filename])
         """ "Ale kommun-xxx.pdf" """
         file_data = files_db.get_attribute_with_value("_id", files_dbkey)
+        file_data = (file_data or [None])[0]  # Get first hit, should be one
+
         old_docs_data = docs_db.get_attribute_with_value("file_key", files_dbkey)
         if (docs_connection.prefix_exists(prefix) and
                 len(old_docs_data) > 0 and
@@ -143,20 +145,28 @@ def main():
             page_text = page.get_text()
             page_header = page.get_header() or extractor.get_header()
             page_type = get_document_type(page_header)
-            page_date = (page.get_date() or extractor.get_date() or
-                         get_single_date_from_text(file_data["origin"]))
+            if "origin" in file_data:
+                page_source = file_data["origin"]
+            else:
+                page_source = None
+                page_date = (page.get_date() or extractor.get_date() or
+                             get_single_date_from_text(page_source))
 
             if (len(documents) > 0 and
                page_type == last_page_type and
                page_date == last_page_date):
-                documents[-1]["text"] = documents[-1]["text"] + page_text
+                try:
+                    documents[-1]["text"] = documents[-1]["text"] + page_text
+                except UnicodeDecodeError:
+                    documents[-1]["text"] = documents[-1]["text"] + make_unicode(page_text)
             else:
                 documents.append({
                     "text": page_text,
                     "header": page_header,
                     "date": page_date,
                     "type": page_type,
-                    "origin": key.path_fragments[0]
+                    "origin": key.path_fragments[0],
+                    "source": page_source
                 })
 
             last_page_type = page_type
@@ -180,6 +190,7 @@ def main():
             docs_db.put(docs_dbkey, "text", document["text"])
             docs_db.put(docs_dbkey, "document_type", document["type"])
             docs_db.put(docs_dbkey, "origin", document["origin"])
+            docs_db.put(docs_dbkey, "source", document["source"])
 
             docs_connection.put_file_from_string(document["text"],
                                                  remote_filename)

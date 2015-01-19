@@ -1,4 +1,4 @@
-#coding=utf-8
+# -*- coding: utf-8 -*-
 """This module includes tools for handling and extracting text from PDF files.
 """
 
@@ -7,6 +7,7 @@ import logging
 from modules.extractors.documentBase import ExtractorBase, Page
 from modules.metadata import Metadata
 from modules.xmp import xmp_to_dict
+from modules.utils import make_unicode
 
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfdocument import PDFDocument
@@ -41,7 +42,10 @@ class PdfPage(Page):
         text_content = []
         for lt_obj in self.LTPage:
             text_content.append(self._parse_obj(lt_obj))
-        self._text_cache = '\n'.join(text_content)
+        try:
+            self._text_cache = u'\n'.join(text_content)
+        except UnicodeDecodeError:
+            self._text_cache = u'\n'.join(make_unicode(x) for x in text_content)
 
         return self._text_cache
 
@@ -241,7 +245,11 @@ class PdfExtractor(ExtractorBase):
             text = page.get_text()
             if text.strip() != "":
                 text_list.append(text)
-        self._text_cache = '\n'.join(text_list)
+        try:
+            self._text_cache = u'\n'.join(text_list)
+        except UnicodeDecodeError:
+            self._text_cache = u'\n'.join(make_unicode(x) for x in text_list)
+
         return self._text_cache
 
 if __name__ == "__main__":
