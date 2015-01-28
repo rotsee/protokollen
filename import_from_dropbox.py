@@ -9,6 +9,8 @@
 
 import settings
 
+from hashlib import md5
+
 from modules.interface import Interface
 from modules.storage import DropboxStorage
 from modules.databases.debuggerdb import DebuggerDB
