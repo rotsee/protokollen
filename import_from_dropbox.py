@@ -73,9 +73,10 @@ def main():
     for file_ in source.get_next_file():
         try:
             filename = md5(file_.name).hexdigest()
+        except UnicodeEncodeError:
+            filename = md5(unicode(file_.name).encode('utf-8')).hexdigest()
         except UnicodeDecodeError:
             filename = md5(make_unicode(file_.name)).hexdigest()
-        filename = md5(file_.name).hexdigest()
         local_filename = "temp/" + filename
         download_file = source.get_file(file_, local_filename)
         source_fragment = file_.path_fragments[ui.args.source_fragment]
@@ -94,7 +95,7 @@ def main():
         if (dest_storage.prefix_exists(remote_name) and
            db.exists(dbkey) is not None and
            ui.args.overwrite is not True):
-            ui.debug("%s already exists, not overwriting" % url)
+            ui.debug("%s already exists, not overwriting" % dbkey)
         else:
             if filetype in settings.allowedFiletypes:
                 ui.info("Storing %s" % local_filename)
