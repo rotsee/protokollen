@@ -80,7 +80,7 @@ document_rules = [
     ("kommunstyrelseprotokoll",
         ("and", [
             ("or", [
-                ("header_contains", "protokoll"),
+                ("header_contains", "protoko"),  # OCR often confuse l with i
                 ("header_contains", "sammanträde")
             ]),
             ("or", [
@@ -88,7 +88,7 @@ document_rules = [
                 ("header_contains", "regionstyrelse")  # Gotland
             ]),
             ("not",
-                ("header_contains", "arbetsutskott")
+                ("header_contains", "arbetsutskott")  # Do not include KSAU
              )
         ])
      )
