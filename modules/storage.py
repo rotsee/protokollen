@@ -5,7 +5,7 @@ from io import BytesIO
 import shutil
 from abc import ABCMeta, abstractmethod
 
-from download import FileFromS3, LocalFile, DropboxFile
+from download import FileFromS3, LocalFile, File
 
 
 class Storage:
@@ -161,15 +161,16 @@ class FakeKey(object):
         assert isinstance(key, basestring)  # keys are really filename strings
         # bucket is not used
         self.name = key
-        """full logical path of the file """
+        """ /Path/to/file.ext """
         self.path_fragments = key.split("/")
+        """ [Path, to] """
         self.filename = self.path_fragments.pop()
-        """ filename w/o path """
+        """ file.ext """
         self.basename, self.extension = os.path.splitext(self.filename)
-        """ filename w/o extension and only extension, respectively """
+        """ file, ext """
 
 
-class LocalUploader(Storage):
+class LocalStorages(Storage):
     """Handles file “uploads” to a local directory.
 
     In order to use this backend, you first need to uncomment the
@@ -235,16 +236,13 @@ class LocalUploader(Storage):
             fp.write(string)
 
 
-class DropboxUploader(Storage):
+class DropboxStorage(Storage):
     """Handles file uploads to Dropbox folders.
 
     In order to use this backend, you first need to create a Dropbox
     app at https://www.dropbox.com/developers/apps/. You can use
     permission type App folder so that it only has access to it's own
     files.
-
-    In login.py, put your App key as access_key_id and your App
-    secret as secret_access_key.
 
     Leave access_token blank at first. The first time you run any
     script which uses this backend, you'll be prompted to authorize
@@ -291,15 +289,16 @@ class DropboxUploader(Storage):
                 if thing['is_dir']:
                     paths.append(thing['path'])
                 else:
-                    # do not include the leading path, eg
-                    # "/staffanm-protokollen-text/"
-                    path = thing['path'][len(self.path) + 1:]
+                    path = thing['path']
                     yield FakeKey(None, path)
 
-    def get_file(self, key, localFilename):
-        key.dbclient = self.connection
-        key.rootpath = self.path
-        return DropboxFile(key, localFilename)
+    def get_file(self, key, local_filename):
+        out = open(local_filename, "wb")
+        print (key.name)
+        with self.connection.get_file(key.name) as f:
+            out.write(f.read())
+            out.close()
+        return File(local_filename)
 
     def prefix_exists(self, prefix):
         raise NotImplementedError
@@ -307,18 +306,24 @@ class DropboxUploader(Storage):
     def fileExists(self, fullfilename):
         try:
             m = self.connection.metadata(self.path + "/" + fullfilename)
-            return m['is_dir'] == False
+            if m['is_dir']:
+                return False
+            else:
+                return True
         except:
             return False
 
-    def put_file(self, localFilename, remoteFilename):
-        with open(localFilename) as fp:
-            resp = self.connection.put_file(self.path + "/" + remoteFilename, fp)
+    def put_file(self, local_filename, remote_filename):
+        with open(local_filename) as fp:
+            self.connection.put_file(self.path + "/" + remote_filename, fp)
 
-    def put_file_from_string(self, string, remoteFilename):
+    def put_file_from_string(self, string, remote_filename):
         fp = BytesIO(string)
-        resp = self.connection.put_file(self.path + "/" + remoteFilename, fp)
+        self.connection.put_file(self.path + "/" + remote_filename, fp)
 
+    def delete_file(self, filename):
+        # TODO
+        pass
 
 if __name__ == "__main__":
     print "This module is only intended to be called from other scripts."

@@ -1,4 +1,7 @@
 #coding=utf-8
+# TODO:This should be renamed DownloadedFile orsimilar,as all Dropbox, S3 specific things can now go in the Storage class
+# File from web is special, and belongs in a download class
+
 import logging
 import os
 import shutil
@@ -123,18 +126,10 @@ class File(object):
 
 
 class LocalFile(File):
+    """Deprecated"""
     def __init__(self, source, localFile):
-                super(LocalFile, self).__init__(source, localFile)
-                shutil.copy2(source.localFilename, localFile)
-
-
-class DropboxFile(File):
-        def __init__(self, source, localFile):
-                super(DropboxFile, self).__init__(source, localFile)
-                out = open(localFile, "wb")
-                with source.dbclient.get_file(source.rootpath + "/" + source.name) as f:
-                        out.write(f.read())
-                out.close()
+        super(LocalFile, self).__init__(source, localFile)
+        shutil.copy2(source.localFilename, localFile)
 
 
 class FileFromWeb(File):
