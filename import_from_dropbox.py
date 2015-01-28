@@ -68,17 +68,19 @@ def main():
                             path="/Kommuner")
 
     for file_ in source.get_next_file():
-        local_filename = "temp/" + file_.basename
+
+        filename = md5(file_.name).hexdigest()
+        local_filename = "temp/" + filename
         download_file = source.get_file(file_, local_filename)
         source_fragment = file_.path_fragments[ui.args.source_fragment]
 
         filetype = download_file.get_file_type()
         file_ext = download_file.get_file_extension()
-        remote_name = dest_storage.buildRemoteName(file_.basename,
+        remote_name = dest_storage.buildRemoteName(filename,
                                                    path=source_fragment,
                                                    ext=file_ext)
         """ Remote file name is created from source and filename"""
-        dbkey = db.create_key([source_fragment, file_.basename + "." + file_ext])
+        dbkey = db.create_key([source_fragment, filename + "." + file_ext])
         """ Database key is created from source and filename"""
 
         # Check if a file with this name exists
