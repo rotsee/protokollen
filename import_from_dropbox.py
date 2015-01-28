@@ -14,6 +14,7 @@ from hashlib import md5
 from modules.interface import Interface
 from modules.storage import DropboxStorage
 from modules.databases.debuggerdb import DebuggerDB
+from modules.utils import make_unicode
 
 ############# GLOBAL VARIABLES ###############
 commandline_args = [{
@@ -70,7 +71,10 @@ def main():
                             path="/Kommuner")
 
     for file_ in source.get_next_file():
-
+        try:
+            filename = md5(file_.name).hexdigest()
+        except UnicodeDecodeError:
+            filename = md5(make_unicode(file_.name)).hexdigest()
         filename = md5(file_.name).hexdigest()
         local_filename = "temp/" + filename
         download_file = source.get_file(file_, local_filename)
