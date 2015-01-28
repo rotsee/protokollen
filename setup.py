@@ -24,8 +24,9 @@ try:
         'html5lib',
         'html2text',
         'rtf2xml',
-        'httplib2 == 0.7.7',  # Known to work. Some 0.9.x versions have problems with p12 certs
-        'python-dateutil'
+        'httplib2 == 0.8',  # Known to work. Some 0.9 versions have problems with p12 certs
+        'python-dateutil',
+        'dropbox'  # For Dropbox storage or import
     ]
 
     try:
