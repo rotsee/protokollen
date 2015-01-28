@@ -95,7 +95,7 @@ def main():
                 dest_storage.put_file(local_filename, remote_name)
 
                 ui.debug("Storing file data in database")
-                db.put(dbkey, u"origin", None)
+                db.put(dbkey, u"origin", file_.basename)
 
                 # Should rather be the more generic “source”
                 db.put(dbkey, u"municipality", source_fragment)
