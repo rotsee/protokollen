@@ -32,6 +32,12 @@ commandline_args = [{
     "default": False,
     "dest": "overwrite",
     "help": "Should existing files and database entries be overwritten?"
+}, {
+    "short": "-p", "long": "--path",
+    "default": "/",
+    "type": str,
+    "help": "Folder path to look (recursively) in at Dropbox.",
+    "dest": "path",
 }]
 ui = Interface(__file__,
                """This script will import files from a custom
@@ -68,7 +74,7 @@ def main():
     source = DropboxStorage(settings.dropbox_key,
                             settings.dropbox_secret,
                             token=settings.dropbox_token,
-                            path="/Kommuner")
+                            path=ui.args.path)
 
     for file_ in source.get_next_file():
         try:
