@@ -67,7 +67,7 @@ def main():
 
     if ui.args.path is None:
         ui.warning("No Dropbox path given. Will start from your root folder.")
-        if not ui.ask_if_continue:
+        if not ui.ask_if_continue():
             ui.exit()
 
     ui.info("Connecting to file storage")
