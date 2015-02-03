@@ -13,7 +13,7 @@
 import settings
 
 from modules.interface import Interface
-from modules.datasheet import CSVFile, GoogleSheet, DataSet, HeaderlessDataSet
+from modules.datasheet import CSVFile, GoogleSheet, HeaderlessDataSet
 from modules.databases.debuggerdb import DebuggerDB
 
 
