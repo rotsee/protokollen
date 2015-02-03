@@ -65,6 +65,11 @@ def main():
         ui.info("No database setup found, using DebuggerDB")
         db = DebuggerDB(None, settings.db_harvest_table or "TABLE")
 
+    if ui.args.path is None:
+        ui.warning("No Dropbox path given. Will start from your root folder.")
+        if not ui.ask_if_continue:
+            ui.exit()
+
     ui.info("Connecting to file storage")
     dest_storage = settings.Storage(settings.access_key_id,
                                     settings.secret_access_key,
