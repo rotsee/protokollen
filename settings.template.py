@@ -91,6 +91,14 @@ document_rules = [
                 ("header_contains", "arbetsutskott")  # Do not include KSAU
              )
         ])
+     ),
+    ("kallelse",
+        ("and", [
+            ("header_contains", "kallelse"),
+            ("not",
+                ("header_contains", "protoko")
+             )
+        ])
      )
 ]
 """
@@ -105,4 +113,21 @@ document_rules = [
  ------
  A list of tuples (name, rules), where `rules` are nested lists and tuples:
  "and": [], "or": [], "not": (), "header_contains": ""
+"""
+
+document_type_settings = [
+    ("kommunstyrelseprotokoll",
+        {
+            "disallow_infixes": True  # Holes are most often due to OCR errors
+        }
+     )
+]
+"""
+ Various document type specific settings:
+
+ disallow_infixes:
+    If set to true, “holes” in a document is not considered separate documents.
+    A file where the pages are identified as `ABAAACC` type pages, will be
+    stored as [A,C] if disallow_infixes is True for A, otherwise as [A,B,A,C]
+    default: False
 """
