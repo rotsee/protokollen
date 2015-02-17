@@ -23,7 +23,7 @@ from pdfminer.pdfpage import PDFTextExtractionNotAllowed
 from pdfminer.pdfinterp import PDFResourceManager
 from pdfminer.pdfinterp import PDFPageInterpreter
 
-from pdfminer.layout import LAParams, LTTextBox, LTTextLine, LTFigure, LTImage
+from pdfminer.layout import LAParams, LTTextBox, LTTextLine, LTFigure, LTImage, LTRect
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.pdftypes import resolve1
 
@@ -77,7 +77,6 @@ class PdfImage(object):
             text += " \n"
             rotated_image = temp_image.transpose(Image.FLIP_TOP_BOTTOM)
             text += pytesseract.image_to_string(rotated_image, lang="swe")
-            #print text
             return text
 
     def _get_image(self):
@@ -88,7 +87,8 @@ class PdfImage(object):
             # Assume war image data
             temp_image = Image.frombuffer(self.color_mode,
                                           (self.width, self.height),
-                                          self._raw_data, "raw")
+                                          self._raw_data, "raw",
+                                          self.color_mode, 0, 1)
         except Exception:
             # Not raw image data.
             # Can we make sense of this stream some other way?
@@ -259,7 +259,7 @@ class PdfPage(Page):
 
         text_content = []
         for lt_obj in self.LTPage:
-            text_content.append(self._parse_obj(lt_obj))    
+            text_content.append(self._parse_obj(lt_obj))
         try:
             self._text_cache = u'\n'.join(text_content)
         except UnicodeDecodeError:
@@ -269,35 +269,43 @@ class PdfPage(Page):
 
     def get_header(self):
         """Tries to guess what text belongs to the page header.
-
-           FIXME We should check actual coordinates for each object, to find
-           the topmost ones. This is a quick and dirty implementation.
         """
         try:
             return self._header_cache
         except AttributeError:  # cache is not there
             pass
 
-        i = 0
-        header_text = []
-        # Objects are ordered top-to-bottom, left-to-right
+        page_bbox = self.LTPage.bbox
+        top_fifth = (page_bbox[3] - page_bbox[0]) * 0.8
+
+        # Get all objects containing text
+        all_objects = []
         for obj in self.LTPage:
             obj_text = self._parse_obj(obj, do_ocr=True)
+            y1 = obj.bbox[1]
+            all_objects.append((y1, obj_text))
+        from operator import itemgetter
+        all_objects.sort(key=itemgetter(0), reverse=True)
+
+        # Get what looks most like a header
+        header_texts = []
+        i = 0
+        for (y1, obj_text) in all_objects:
             text_length = len(obj_text.strip())
             if text_length > 100:  # break on first paragraph
                 break
-            elif i > 7:  # or break on 8th object with content
+            elif i > 5:  # or break on 8th object with content
+                break
+            elif y1 < top_fifth:  # TODO break on 1/5 of page
                 break
             else:
-                header_text.append(obj_text)
+                header_texts.append(obj_text)
             if text_length > 0:
                 i += 1
-
         try:
-            self._header_cache = u'\n'.join(header_text)
+            self._header_cache = u' '.join(header_texts)
         except UnicodeDecodeError:
-            self._header_cache = u'\n'.join(make_unicode(x) for x in header_text)
-
+            self._header_cache = u' '.join(make_unicode(x) for x in header_texts)
         return self._header_cache
 
     def _parse_obj(self, lt_obj, do_ocr=False):
@@ -313,12 +321,13 @@ class PdfPage(Page):
             # TODO apply matrix to images
             for lt_sub_obj in lt_obj:
                 sub_text_content = self._parse_obj(lt_sub_obj, do_ocr=do_ocr)
-                text_content.extend(sub_text_content)
+                text_content.append(sub_text_content)
         elif (isinstance(lt_obj, LTImage)) and (do_ocr is True):
             # An image
             image = PdfImage(lt_obj)
             text_content.append(image.get_text())
-
+        elif isinstance(lt_obj, LTRect):
+            pass
         return ''.join(text_content)
 
 
