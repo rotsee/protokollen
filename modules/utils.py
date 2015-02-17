@@ -76,6 +76,15 @@ def make_unicode(str_):
     return output
 
 
+def last_index(list_, value):
+    """Return the index of the last occurance if an item in a list, or None
+    """
+    try:
+        return (len(list_) - 1) - list_[::-1].index(value)
+    except ValueError:
+        return None
+
+
 def is_number(s):
     try:
         float(s)
