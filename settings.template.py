@@ -115,13 +115,12 @@ document_rules = [
  "and": [], "or": [], "not": (), "header_contains": ""
 """
 
-document_type_settings = [
-    ("kommunstyrelseprotokoll",
-        {
-            "disallow_infixes": True  # Holes are most often due to OCR errors
-        }
-     )
-]
+document_type_settings = {
+    'kommunstyrelseprotokoll': {
+        'disallow_infixes': True
+    }
+}
+
 """
  Various document type specific settings:
 
