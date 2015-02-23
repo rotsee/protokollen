@@ -170,7 +170,7 @@ class FakeKey(object):
         """ file, ext """
 
 
-class LocalStorages(Storage):
+class LocalStorage(Storage):
     """Handles file “uploads” to a local directory.
 
     In order to use this backend, you first need to uncomment the
