@@ -25,12 +25,12 @@ browser = "firefox"
 
 """
 
-Storage = storage.LocalUploader
+Storage = storage.LocalStorage
 """
  You need to set the credentials below to use an external storage
 
  To use Dropbox, try
-     Storage = storage.DropboxUploader
+     Storage = storage.DropboxStorage
 
  To use Amazon S3, try
      Storage = storage.S3Storage
