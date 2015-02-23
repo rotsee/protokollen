@@ -22,10 +22,11 @@ from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfpage import PDFTextExtractionNotAllowed
 from pdfminer.pdfinterp import PDFResourceManager
 from pdfminer.pdfinterp import PDFPageInterpreter
+from pdfminer.ccitt import ccittfaxdecode
 
 from pdfminer.layout import LAParams, LTTextBox, LTTextLine, LTFigure, LTImage, LTRect
 from pdfminer.converter import PDFPageAggregator
-from pdfminer.pdftypes import resolve1
+from pdfminer.pdftypes import resolve1, PDFObjRef
 
 hexadecimal = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6,
                '7': 7, '8': 8, '9': 9, 'a': 10, 'b': 11, 'c': 12,
@@ -55,14 +56,35 @@ class PdfImage(object):
 
         self.width = image_obj.stream["Width"]
         self.height = image_obj.stream["Height"]
-        self._filter = self._clean_up_stream_attribute(image_obj.stream["Filter"])
+        if "F" in image_obj.stream:
+            self._filter = self._clean_up_stream_attribute(image_obj.stream["F"])
+        else:
+            self._filter = self._clean_up_stream_attribute(image_obj.stream["Filter"])
+        if "DP" in image_obj.stream:
+            self._filter_params = image_obj.stream["DP"]
+        elif "DecodeParms" in image_obj.stream:
+            self._filter_params = image_obj.stream["DecodeParms"]
+        elif "FDecodeParms" in image_obj.stream:
+            self._filter_params = image_obj.stream["FDecodeParms"]
+
+
         self._bits = image_obj.stream["BitsPerComponent"]
         self._raw_data = image_obj.stream.get_rawdata()
         if self._filter is not None:
             self._decompress()
-        self.color_mode = self.get_colormode(image_obj.stream["ColorSpace"],
+        if "CS" in image_obj.stream:
+            self.colorspace = image_obj.stream["CS"]
+        elif "ColorSpace" in image_obj.stream:
+            self.colorspace = image_obj.stream["ColorSpace"]
+        else:
+            self.colorspace = "DeviceGray"
+
+        if isinstance(self.colorspace, PDFObjRef):
+            self.colorspace = self.colorspace.resolve()
+        self.color_mode = self.get_colormode(self.colorspace,
                                              bits=self._bits)
         if self.color_mode is None:
+            print self.colorspace
             raise Exception("No method for handling colorspace")
 
     def get_text(self):
@@ -92,33 +114,48 @@ class PdfImage(object):
         except Exception:
             # Not raw image data.
             # Can we make sense of this stream some other way?
-            import StringIO
-            temp_image = Image.open(StringIO.StringIO(self._raw_data))
-        except Exception:
-            # PIL failed us. Try to print data to a file, and open it
-            file_ext = self._determine_image_type(self._raw_data[0:4])
-            if file_ext:
-                # TODO use tempfile
-                file_name = os_sep.join(["header", file_ext])
-                with open("temp/" + file_name, "w") as image_file:
-                    image_file.write(self._raw_data)
-                temp_image = Image.open(image_file)
+            try:
+                import StringIO
+                temp_image = Image.open(StringIO.StringIO(self._raw_data))
+            except Exception:
+                # PIL failed us. Try to print data to a file, and open it
+                file_ext = self._determine_image_type(self._raw_data[0:4])
+                if file_ext:
+                    # TODO use tempfile
+                    file_name = os_sep.join(["header", file_ext])
+                    with open("temp/" + file_name, "w") as image_file:
+                        image_file.write(self._raw_data)
+                    temp_image = Image.open(image_file)
 
-        return temp_image
+        return temp_image or None
 
     def get_colormode(self, color_space, bits=None):
         color_mode = None
-        try:
+        if isinstance(color_space, list):
             color_space_family = self._clean_up_stream_attribute(color_space[0])
-        except TypeError:
+        else:
             color_space_family = self._clean_up_stream_attribute(color_space)
 
         if color_space_family == "indexed":
-            color_schema = self._clean_up_stream_attribute(color_space[1])
+            color_schema = color_space[1]
+            if isinstance(color_schema, PDFObjRef):
+                color_schema = color_schema.resolve()
+            if isinstance(color_schema, list):
+                color_schema = color_schema[0]
+            color_schema = self._clean_up_stream_attribute(color_schema)
+
             bits = color_space[2] or bits
+            if isinstance(bits, PDFObjRef):
+                bits = bits.resolve()
+
             if color_schema == "devicegray" and bits == 1:
                 color_mode = "1"
             elif color_schema == "devicegray" and bits == 8:
+                color_mode = "L"
+            elif color_schema == "iccbased":
+                # FIXME This just happens to work often enough. We should
+                # let PDFMiner take care of all this work, though, rather
+                # than implementníng all the logic (this is complex!) ourselves
                 color_mode = "L"
         elif color_space_family == "pattern":
             pass
@@ -133,14 +170,14 @@ class PdfImage(object):
         elif color_space_family == "lab":
             pass
         elif color_space_family == "iccbased":
-            pass
+            color_mode = "L"
         elif color_space_family == "devicegray":
             if bits == 8:
                 color_mode = "L"
             else:
                 color_mode = "1"
         elif color_space_family == "devicergb":
-            pass
+            color_mode = "RGB"
         elif color_space_family == "devicecmyk":
             pass
         return color_mode
@@ -154,7 +191,9 @@ class PdfImage(object):
             self._raw_data = self._ascii85decode(self._raw_data)
         elif self._filter == 'flatedecode':
             self._raw_data = zlib.decompress(self._raw_data)
-        return
+        elif self._filter == "ccittfaxdecode":
+            self._raw_data = ccittfaxdecode(self._raw_data, self._filter_params)
+        return None
 
     def _clean_up_stream_attribute(self, attribute):
         try:
@@ -328,7 +367,11 @@ class PdfPage(Page):
             text_content.append(image.get_text())
         elif isinstance(lt_obj, LTRect):
             pass
-        return ''.join(text_content)
+        try:
+            return ''.join(text_content)
+        except TypeError:
+            # text_content was not a string. Probably a failed image extraction
+            return ""
 
 
 class PdfPageFromOcr(PdfPage):
@@ -348,9 +391,8 @@ class PdfPageFromOcr(PdfPage):
             # Break on first paragraph
             if text_length > 100:
                 break
-            # or break on 5th object with content.
-            # Only text here, hence lower limit than in parent method
-            elif i > 4:
+            # or break on nth row.
+            elif i > 10:
                 break
             else:
                 header_text.append(row)
