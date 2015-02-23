@@ -44,8 +44,8 @@ class DocxExtractor(ExtractorBase):
         document = Document(self.path)
         #Get header (we know were it is)
         import xml.etree.ElementTree as ET
-        for rel, val in document._document_part._rels.iteritems():
-            if val._reltype == "http://schemas.openxmlformats.org/officeDocument/2006/relationships/header":
+        for rel, val in document._part._rels.iteritems():
+            if val.reltype == "http://schemas.openxmlformats.org/officeDocument/2006/relationships/header":
                 xml = val._target._blob
                 root = ET.fromstring(xml)
                 namespaces = dict(w="http://schemas.openxmlformats.org/wordprocessingml/2006/main")
