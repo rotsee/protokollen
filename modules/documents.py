@@ -1,4 +1,4 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
 """This module contains classes for documents, and lists of documents.
    Documents are defined by the document rules in settings.py
 
@@ -59,7 +59,7 @@ class DocumentList(object):
             if type_ in disallow_infixes and last_match > i:
                 num_docs_to_merge = last_match - i + 1
                 new_doc = documents.pop(0)
-                for j in range(i, num_docs_to_merge):
+                for j in range(i, last_match):
                     new_doc.merge_with(documents.pop(0))
                 self._documents.append(new_doc)
                 i += num_docs_to_merge
@@ -107,7 +107,10 @@ class Document(object):
 
     def merge_with(self, document):
         """Merge this document with another one"""
-        self.text += document.text
+        try:
+            self.text += document.text
+        except UnicodeDecodeError:
+            self.text = make_unicode(self.text) + make_unicode(document.text)
 
     def __len__(self):
         """len is the length of the total plaintext"""
