@@ -33,13 +33,14 @@ For extract.py
    using either `lynx` or `elinks` (but not `links`)
  * AbiWord (tested with version 3.0.0)
  * Tesseract >= version 3.02.02
- * Language data for Tesseract (for Swedish: a file called [`SWE.traineddata`](https://code.google.com/p/tesseract-ocr/downloads/detail?name=swe.traineddata.gz), that must be put in Tesseract's data directory)
+ * Language data for Tesseract. For Swedish: a file called [`SWE.traineddata`](https://code.google.com/p/tesseract-ocr/downloads/detail?name=swe.traineddata.gz), that must be put in Tesseract's data directory (the error message you get when you run Tesseract the first time will guide you to the directory).
  * The Python Imaging Library, PIL (tested with version 2.3)
  * GhostScript (tested with version 9.10)
  * Optionally a database, to store text and metadata. Elastic Search is supported (tested with version 1.0.1 and 1.2.4)
 
 These scripts have been tested under Ubuntu 14.04, Ubuntu 14.10 and Debian 7.
 
+AbiWord is not supported by OS X. AbiWord is currently used to parse .doc and .rtf files.
 
 Installation
 ============
