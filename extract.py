@@ -72,6 +72,8 @@ def main():
         """ "Ale kommun-xxx.pdf" """
         file_data = files_db.get_attribute_with_value("_id", files_dbkey)
         file_data = (file_data or [None])[0]  # Get first hit, should be one
+        if file_data is not None:
+            file_data = file_data[u"_source"]
 
         old_docs_data = docs_db.get_attribute_with_value("file_key", files_dbkey)
         if (docs_connection.prefix_exists(prefix) and
@@ -118,9 +120,12 @@ def main():
                 print "meeting_date",
                 print document.date
                 print "origin",
-                print old_docs_data["origin"]
+                print file_data[u"origin"]
                 print "source",
-                print old_docs_data["source"]
+                if u"source" in file_data:
+                    print file_data[u"source"]
+                else:
+                    print "None"
                 continue
             """ "Ale kommun-xxx-1" """
             docs_db.put(docs_dbkey, "meeting_date", document.date)
@@ -130,8 +135,9 @@ def main():
             docs_db.put(docs_dbkey, "text_file", remote_filename)
             docs_db.put(docs_dbkey, "text", document.text)
             docs_db.put(docs_dbkey, "document_type", document.type_)
-            docs_db.put(docs_dbkey, "origin", old_docs_data["origin"])
-            docs_db.put(docs_dbkey, "source", old_docs_data["source"])
+            docs_db.put(docs_dbkey, "origin", file_data[u"origin"])
+            if u"source" in file_data:
+                docs_db.put(docs_dbkey, "source", file_data[u"source"])
 
             docs_connection.put_file_from_string(document.text,
                                                  remote_filename)
