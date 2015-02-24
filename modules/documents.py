@@ -16,11 +16,11 @@ class DocumentList(object):
     """Contains a list of documents, extracted from a file.
     """
 
-    _documents = []
-
     def __init__(self, extractor):
         """Create a list of documents, using `extractor`
         """
+
+        self._documents = []
 
         page_types_and_dates = []
         """Keep track of documents by type and date, to be able to merge

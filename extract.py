@@ -55,7 +55,6 @@ def main():
                                     settings.db_extactor_table,
                                     "info",
                                     port=settings.db_port)
-#        docs_db = DebuggerDB("server", "table")
     except (TypeError, NameError, AttributeError) as e:
         ui.info("No database setup found, using DebuggerDB (%s)" % e)
         files_db = None
@@ -65,6 +64,7 @@ def main():
         # first of all, check if the processed file already exists in
         # remote storage (no need to do expensive PDF processing if it
         # is.
+
         prefix = docs_connection.buildRemoteName(key.basename,
                                                  path=key.path_fragments)
         """ "Ale kommun/xxx" """
@@ -83,6 +83,7 @@ def main():
                      (prefix, files_dbkey))
             continue
 
+        downloaded_file = None
         ui.info("Fetching file %s" % key.name)
         try:
             temp_filename = path.join("temp", key.filename)
@@ -97,11 +98,11 @@ def main():
         extractor_type = type(extractor).__name__
         if extractor_type == "HtmlExtractor":
             extractor.content_xpath = file_data["harvesting_rules"]["html"]
+            ui.debug("HTML file. Content is in %s" % extractor.content_xpath)
+
         ui.info("Extracting from %s with %s" % (downloaded_file.localFile,
                                                 extractor_type))
-
         document_list = DocumentList(extractor)
-
         i = 0
         # FIXME: let DocumentList keep track of this
         for document in document_list.get_next_document():
@@ -114,15 +115,22 @@ def main():
             docs_dbkey = docs_db.create_key([key.path, key.filename, str(i)])
 
             if ui.executionMode >= Interface.DRY_MODE:
+                print "docs_dbkey"
+                print docs_dbkey
                 print "document_type",
                 print document.type_
-                print docs_dbkey
                 print "meeting_date",
                 print document.date
                 print "source",
                 print file_data[u"origin"]
                 print "origin",
                 print file_data[u"municipality"]
+                print "text_file",
+                print remote_filename
+                print "original file",
+                print files_dbkey
+                print "text length",
+                print len(document.text)
                 continue
             """ "Ale kommun-xxx-1" """
             docs_db.put(docs_dbkey, "meeting_date", document.date)
