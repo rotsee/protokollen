@@ -6,7 +6,6 @@
 from modules.extractors.documentBase import ExtractorBase, Page
 
 from docx import Document
-#from docx import opendocx, getdocumenttext  # good for text, bad for metadata
 import openxmllib  # good for metadata, bad for text
 from modules.metadata import Metadata
 
@@ -38,21 +37,68 @@ class DocxExtractor(ExtractorBase):
 
     def get_header(self):
         """Our docx library has no support for headers yet.
-           For now carve out the header ourselves. Ugly, but works.
+           For now carve out the header ourselves by parsing xml files.
         """
         headers = []
-        document = Document(self.path)
-        #Get header (we know were it is)
+        namespaces = dict(
+            w = "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+            v = "urn:schemas-microsoft-com:vml",
+            r = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+        )
+
         import xml.etree.ElementTree as ET
-        for rel, val in document._document_part._rels.iteritems():
-            if val._reltype == "http://schemas.openxmlformats.org/officeDocument/2006/relationships/header":
-                xml = val._target._blob
-                root = ET.fromstring(xml)
-                namespaces = dict(w="http://schemas.openxmlformats.org/wordprocessingml/2006/main")
-                text_element = root.find(".//w:t", namespaces)
+
+        """ Docx is basically a zip file with embedded xml and media files
+        """
+        import zipfile
+        z = zipfile.ZipFile(self.path)
+
+        """ Get all header files and parse them for text
+        """
+        docx_files = z.namelist()
+        header_xml_files = filter(lambda x: x.startswith('word/header'), docx_files)
+        
+        for header_xml in header_xml_files:
+            header_name = header_xml.replace('word/','')
+            xml_file = z.open(header_xml, 'r')
+
+            root = ET.fromstring(xml_file.read())
+
+            """ Get all text tags
+            """
+            text_elements = root.findall(".//w:t", namespaces)
+            for text_element in text_elements:
                 if text_element.text is not None:
                     headers.append(text_element.text)
+
+            """ Headers might also include images with text
+                To get those we find all images in header 
+                    => get id's of those images 
+                    => find corresponding image files in the /media directory
+                    => OCR
+            """
+            images = root.findall(".//v:imagedata", namespaces)
+            for image in images:
+                id_key = '{%s}id' % namespaces['r']
+                image_id = image.attrib[id_key]
+                relation_file_path = 'word/_rels/%s.rels' % header_name
+                relation_file = z.open(relation_file_path, 'r')
+                relation_file_root = ET.fromstring(relation_file.read())
+                xpath = ".//*[@Id='%s']" % image_id
+                image_path = 'word/%s' % relation_file_root.find(xpath, namespaces).attrib['Target']
+                
+                """ OCR
+                """
+                import pytesseract
+                from PIL import Image
+                import cStringIO
+                img = Image.open(cStringIO.StringIO(z.open(image_path).read()))
+                string_from_image = pytesseract.image_to_string(img, lang='swe')
+                headers.append(string_from_image.decode('utf-8'))
+
+
         return "\n".join(headers)
+
 
     def get_next_page(self):
         """Returns all the text in one single page.
