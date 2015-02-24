@@ -16,44 +16,7 @@ from os import path
 
 from modules.interface import Interface
 from modules.databases.debuggerdb import DebuggerDB
-from modules.utils import make_unicode, get_single_date_from_text
-
-
-def parse_rules(tuple_, header):
-    """Parse document rules. See settings.py for syntax"""
-    rule_key = tuple_[0].upper()
-    rule_val = tuple_[1]
-    header = header.upper()
-    if rule_key == "AND":
-        hit = True
-        for rule in rule_val:
-            hit = hit and parse_rules(rule, header)
-        return hit
-    elif rule_key == "OR":
-        hit = False
-        for rule in rule_val:
-            hit = hit or parse_rules(rule, header)
-        return hit
-    elif rule_key == "NOT":
-        hit = not parse_rules(rule_val, header)
-        return hit
-    elif rule_key == "HEADER_CONTAINS":
-        try:
-            pos = make_unicode(header).find(rule_val.upper())
-        except UnicodeDecodeError:
-            pos = -1
-        return pos > -1
-
-
-def get_document_type(header_text):
-    """
-     Return the first matching document type, based on this
-     header text.
-    """
-    for document_type in settings.document_rules:
-        if parse_rules(document_type[1], header_text):
-            return document_type[0]
-    return None
+from modules.documents import DocumentList
 
 
 def main():
@@ -102,9 +65,6 @@ def main():
         # first of all, check if the processed file already exists in
         # remote storage (no need to do expensive PDF processing if it
         # is.
-        if ui.executionMode >= Interface.DRY_MODE:
-            continue
-
         prefix = docs_connection.buildRemoteName(key.basename,
                                                  path=key.path_fragments)
         """ "Ale kommun/xxx" """
@@ -138,42 +98,10 @@ def main():
         ui.info("Extracting from %s with %s" % (downloaded_file.localFile,
                                                 extractor_type))
 
-        last_page_type = None
-        last_page_date = None
-        documents = []
-        for page in extractor.get_next_page():
-            page_text = page.get_text()
-            page_header = page.get_header() or extractor.get_header()
-            page_type = get_document_type(page_header)
-            if "origin" in file_data:
-                page_source = file_data["origin"]
-            else:
-                page_source = None
-                page_date = (page.get_date() or extractor.get_date() or
-                             get_single_date_from_text(page_source))
-
-            if (len(documents) > 0 and
-               page_type == last_page_type and
-               page_date == last_page_date):
-                try:
-                    documents[-1]["text"] = documents[-1]["text"] + page_text
-                except UnicodeDecodeError:
-                    documents[-1]["text"] = documents[-1]["text"] + make_unicode(page_text)
-            else:
-                documents.append({
-                    "text": page_text,
-                    "header": page_header,
-                    "date": page_date,
-                    "type": page_type,
-                    "origin": key.path_fragments[0],
-                    "source": page_source
-                })
-
-            last_page_type = page_type
-            last_page_date = page_date
+        document_list = DocumentList(extractor)
 
         i = 0
-        for document in documents:
+        for document in document_list:
             i += 1
             remote_filename = docs_connection.buildRemoteName(
                 str(i),
@@ -181,18 +109,30 @@ def main():
                 path=key.path_fragments + [key.filename])
             """ "Ale kommun/xxx/1.txt" """
             docs_dbkey = docs_db.create_key([key.path, key.filename, str(i)])
+
+            if ui.executionMode >= Interface.DRY_MODE:
+                print "document_type",
+                print document.type_
+                print docs_dbkey
+                print "meeting_date",
+                print document.date
+                print "origin",
+                print old_docs_data["origin"]
+                print "source",
+                print old_docs_data["source"]
+                continue
             """ "Ale kommun-xxx-1" """
-            docs_db.put(docs_dbkey, "meeting_date", document["date"])
+            docs_db.put(docs_dbkey, "meeting_date", document.date)
             docs_db.put(docs_dbkey, "file_key", files_dbkey)
             docs_db.put(docs_dbkey, "file", key.name)
-            docs_db.put(docs_dbkey, "header", document["header"])
+            docs_db.put(docs_dbkey, "header", document.header)
             docs_db.put(docs_dbkey, "text_file", remote_filename)
-            docs_db.put(docs_dbkey, "text", document["text"])
-            docs_db.put(docs_dbkey, "document_type", document["type"])
-            docs_db.put(docs_dbkey, "origin", document["origin"])
-            docs_db.put(docs_dbkey, "source", document["source"])
+            docs_db.put(docs_dbkey, "text", document.text)
+            docs_db.put(docs_dbkey, "document_type", document.type_)
+            docs_db.put(docs_dbkey, "origin", old_docs_data["origin"])
+            docs_db.put(docs_dbkey, "source", old_docs_data["source"])
 
-            docs_connection.put_file_from_string(document["text"],
+            docs_connection.put_file_from_string(document.text,
                                                  remote_filename)
 
         downloaded_file.delete()
