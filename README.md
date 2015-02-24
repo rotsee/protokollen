@@ -16,7 +16,7 @@ Prerequisites
 
 For harvester.py
 ----------------
- * Firefox (tested with version 32, 33 and 34) or Chrome (tested with version 38)
+ * Firefox (tested with versions 32 through 35) or Chrome (tested with version 38)
  * Xvfb (tested with version 1.15)
  * [Service-account credentials](https://developers.google.com/console/help/new/#serviceaccounts) from the [Google developers console](https://console.developers.google.com/), if you wish to use Google Spreadsheets as the source for your harvesting. Not needed if you use a local CSV file.
  * python-magic (installed by setup.py) and libmagic (needs to be installed separately)
@@ -150,6 +150,7 @@ and the Firefox [Open in Browser extension](https://addons.mozilla.org/En-us/fir
 
 and the Firefox [WebODF extension](https://addons.mozilla.org/en-US/firefox/addon/inlinedisposition/), copyright © 2014, [KO GmbH](https://github.com/kogmbh/WebODF), and released under [GNU General Public License, version 3.0](http://www.gnu.org/licenses/gpl-3.0.html).
 
+The [PDF extactor](https://github.com/rotsee/protokollen/blob/master/modules/extractors/pdf.py) contains code adopted from [PDFTools](http://www.boddie.org.uk/david/Projects/Python/pdftools/), copyright © 2001–2008 by [David Boddie](http://www.boddie.org.uk/david/index.html), and released under [GNU General Public License, version 2](http://www.gnu.org/licenses/gpl-2.0.html).
 
 Everything else is copyright © 2014 [Protokollen Contributors](https://github.com/rotsee/protokollen/graphs/contributors), released under the MIT License (MIT).
 
