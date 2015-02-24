@@ -119,13 +119,10 @@ def main():
                 print docs_dbkey
                 print "meeting_date",
                 print document.date
-                print "origin",
-                print file_data[u"origin"]
                 print "source",
-                if u"source" in file_data:
-                    print file_data[u"source"]
-                else:
-                    print "None"
+                print file_data[u"origin"]
+                print "origin",
+                print file_data[u"municipality"]
                 continue
             """ "Ale kommun-xxx-1" """
             docs_db.put(docs_dbkey, "meeting_date", document.date)
@@ -135,9 +132,8 @@ def main():
             docs_db.put(docs_dbkey, "text_file", remote_filename)
             docs_db.put(docs_dbkey, "text", document.text)
             docs_db.put(docs_dbkey, "document_type", document.type_)
-            docs_db.put(docs_dbkey, "origin", file_data[u"origin"])
-            if u"source" in file_data:
-                docs_db.put(docs_dbkey, "source", file_data[u"source"])
+            docs_db.put(docs_dbkey, "source", file_data[u"origin"])
+            docs_db.put(docs_dbkey, "origin", file_data[u"municipality"])
 
             docs_connection.put_file_from_string(document.text,
                                                  remote_filename)
