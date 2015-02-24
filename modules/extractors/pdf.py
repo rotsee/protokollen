@@ -13,6 +13,7 @@ from modules.extractors.pdfUtils import Stream
 
 from PIL import Image
 from os import unlink
+from os import path as os_path
 from tempfile import NamedTemporaryFile
 
 from pytesseract import image_to_string
@@ -191,7 +192,7 @@ class PdfPageFromOcr(PdfPage):
 
     def do_ocr(self):
         import subprocess
-        temp_filename = os.path.join("temp", "ocr.png")
+        temp_filename = os_path.join("temp", "ocr.png")
         try:
             arglist = ["gs",
                        "-dSAFE",
