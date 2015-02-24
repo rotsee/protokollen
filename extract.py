@@ -101,7 +101,8 @@ def main():
         document_list = DocumentList(extractor)
 
         i = 0
-        for document in document_list:
+        # FIXME: let DocumentList keep track of this
+        for document in document_list.get_next_document():
             i += 1
             remote_filename = docs_connection.buildRemoteName(
                 str(i),
