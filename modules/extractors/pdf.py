@@ -24,7 +24,7 @@ from pdfminer.pdfpage import PDFPage, PDFTextExtractionNotAllowed
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.layout import LAParams, LTTextBox, LTTextLine, LTFigure, LTImage
 from pdfminer.converter import PDFPageAggregator
-from pdfminer.pdftypes import resolve1
+from pdfminer.pdftypes import resolve1, PDFNotImplementedError
 from pdfminer.image import ImageWriter
 
 
@@ -50,7 +50,12 @@ class PdfImage(object):
     def get_text(self):
         """Does OCR on this image."""
         image_writer = ImageWriter("temp")
-        temp_image = image_writer.export_image(self._image_obj)
+        try:
+            temp_image = image_writer.export_image(self._image_obj)
+        except PDFNotImplementedError:
+            # No filter method available for this stream
+            # https://github.com/euske/pdfminer/issues/99
+            return u""
         try:
             text = image_to_string(Image.open("temp/" + temp_image),
                                    lang="swe")
