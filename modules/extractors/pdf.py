@@ -160,8 +160,12 @@ class PdfPage(Page):
                 text_content.append(sub_text_content)
         elif (isinstance(lt_obj, LTImage)) and (do_ocr is True):
             # An image
-            image = PdfImage(lt_obj)
-            text_content.append(image.get_text())
+            try:
+                image = PdfImage(lt_obj)
+                text_content.append(image.get_text())
+            except Exception:
+                pass
+
         try:
             return ''.join(text_content)
         except TypeError:

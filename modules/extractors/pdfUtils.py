@@ -14,8 +14,8 @@ class Stream (object):
     def get(self, attribute):
         """Returns a cleaned up PDF stream attribute value
         """
-        value = self.stream[attribute]
         try:
+            value = self.stream[attribute]
             return str(value).strip("/_").lower()
         except Exception:
             return None
