@@ -76,6 +76,12 @@ Database = None
  to define harvesting rules.
 """
 
+#error_api_token = "your_secret_token"
+#error_api_url = "http://your_error_api"
+"""
+ A token needed to make requests to our own Error API.
+"""
+
 document_rules = [
     ("kommunstyrelseprotokoll",
         ("and", [
