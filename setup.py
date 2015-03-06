@@ -1,11 +1,11 @@
 #!/usr/bin/env python2
-#coding=utf-8
+# -*- coding=utf-8 -*-
 
 try:
     from setuptools import setup
 
     install_requires = [
-        'selenium >= 2.43.0',
+        'selenium >= 2.45.0',
         'xvfbwrapper',
         'python-magic',
         'oauth2client',
