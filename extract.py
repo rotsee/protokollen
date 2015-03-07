@@ -72,10 +72,14 @@ def main():
         """ "Ale kommun-xxx.pdf" """
         file_data = files_db.get_attribute_with_value("_id", files_dbkey)
         file_data = (file_data or [None])[0]  # Get first hit, should be one
-        if file_data is not None:
+        if file_data is None:
+            ui.warning("File db data missing for file %s" % key)
+            continue
+        else:
             file_data = file_data[u"_source"]
 
-        old_docs_data = docs_db.get_attribute_with_value("file_key", files_dbkey)
+        old_docs_data = docs_db.get_attribute_with_value("file_key",
+                                                         files_dbkey)
         if (docs_connection.prefix_exists(prefix) and
                 len(old_docs_data) > 0 and
                 not ui.args.overwrite):
@@ -140,7 +144,10 @@ def main():
             docs_db.put(docs_dbkey, "text_file", remote_filename)
             docs_db.put(docs_dbkey, "text", document.text)
             docs_db.put(docs_dbkey, "document_type", document.type_)
-            docs_db.put(docs_dbkey, "source", file_data[u"origin"])
+            if u"origin" in file_data:
+                # Original URL, if any
+                docs_db.put(docs_dbkey, "source", file_data[u"origin"])
+            # NB We use a different, but more logical naming scheme for docs
             docs_db.put(docs_dbkey, "origin", file_data[u"municipality"])
 
             docs_connection.put_file_from_string(document.text,
