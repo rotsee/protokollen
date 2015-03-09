@@ -102,7 +102,8 @@ class Interface:
         self.logger.error(msg, *args, **kwargs)
 
     def critical(self, msg, *args, **kwargs):
-        msg = TerminalColors.FAIL + msg + TerminalColors.ENDC
+        msg = TerminalColors.FAIL + TerminalColors.BOLD + \
+            msg + TerminalColors.ENDC
         self.logger.critical(msg, *args, **kwargs)
 
     def dry_mode(self):
