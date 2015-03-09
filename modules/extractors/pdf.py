@@ -59,8 +59,6 @@ class PdfImage(object):
         try:
             text = image_to_string(Image.open("temp/" + temp_image),
                                    lang="swe")
-            unlink("temp/" + temp_image)
-            return text
         except IOError:
             # PdfMiner did not return an image
             # Let's try to create one ourselves
@@ -72,7 +70,8 @@ class PdfImage(object):
                                           self._stream.get_data(), "raw",
                                           "L", 0, 1)
             text = image_to_string(temp_image, lang="swe")
-            return text
+        unlink("temp/" + temp_image)
+        return text
 
 
 class PdfPage(Page):
