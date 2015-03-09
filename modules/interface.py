@@ -13,6 +13,17 @@ FORMAT = '%(asctime)s %(levelname)s: %(message)s'
 logging.basicConfig(format=FORMAT)
 
 
+class TerminalColors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 class Interface:
     """This class represents the common user interface shared amongst
        ProtoKollen scripts.
@@ -63,32 +74,38 @@ class Interface:
         self.args = self.parser.parse_args()
 
         self.logger = logging.getLogger(name)
-        # Use handler, to print to stdout, not stderr
-#        ch = logging.StreamHandler(sys.stdout)
-#        ch.setLevel(self.args.loglevel * 10)  # https://docs.python.org/2/library/logging.html#levels
- #       self.logger.addHandler(ch)
-        self.logger.setLevel(self.args.loglevel * 10)  # https://docs.python.org/2/library/logging.html#levels
+
+        # https://docs.python.org/2/library/logging.html#levels
+        self.logger.setLevel(self.args.loglevel * 10)
 
         self.executionMode = self.NORMAL_MODE
         if self.args.dryrun:
             self.logger.info("Running in dry mode")
             self.executionMode = self.DRY_MODE
 
-    #Convenience shortcuts to logger methods
+    # Convenience shortcuts to logger methods
     def log(self, msg, mode=logging.INFO):
         self.logger.log(mode, msg)
-    def debug(self, *args, **kwargs):
-        self.logger.debug(*args, **kwargs)
-    def info(self, *args, **kwargs):
-        self.logger.info(*args, **kwargs)
-    def warning(self, *args, **kwargs):
-        self.logger.warning(*args, **kwargs)
-    def error(self, *args, **kwargs):
-        self.logger.error(*args, **kwargs)
-    def critical(self, *args, **kwargs):
-        self.logger.critical(*args, **kwargs)
 
-    def dryMode(self):
+    def debug(self, msg, *args, **kwargs):
+        self.logger.debug(msg, *args, **kwargs)
+
+    def info(self, msg, *args, **kwargs):
+        self.logger.info(msg, *args, **kwargs)
+
+    def warning(self, msg, *args, **kwargs):
+        msg = TerminalColors.WARNING + msg + TerminalColors.ENDC
+        self.logger.warning(msg, *args, **kwargs)
+
+    def error(self, msg, *args, **kwargs):
+        msg = TerminalColors.FAIL + msg + TerminalColors.ENDC
+        self.logger.error(msg, *args, **kwargs)
+
+    def critical(self, msg, *args, **kwargs):
+        msg = TerminalColors.FAIL + msg + TerminalColors.ENDC
+        self.logger.critical(msg, *args, **kwargs)
+
+    def dry_mode(self):
         return bool(self.executionMode)
 
     def ask_if_continue(self, default="no", message="Really continue?"):
