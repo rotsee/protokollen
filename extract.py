@@ -28,6 +28,12 @@ def main():
         "dest": "overwrite",
         "action": "store_true",
         "help": "Overwrite old files and database values."
+    }, {
+        "short": "-f",
+        "long": "--from",
+        "dest": "start_from",
+        "type": str,
+        "help": "What file to start extracting from."
     }]
     ui = Interface(__file__,
                    "Extracts text and metadata from files",
@@ -60,11 +66,20 @@ def main():
         files_db = None
         docs_db = DebuggerDB(None, settings.db_extactor_table or "TABLE")
 
+    keep_waiting = (ui.args.start_from is not None)
+
     for key in files_connection.get_next_file():
+
+        # Are we waiting for a certain key before starting?
+        if keep_waiting is True:
+            if key.name == ui.args.start_from:
+                keep_waiting = False
+            else:
+                continue
+
         # first of all, check if the processed file already exists in
         # remote storage (no need to do expensive PDF processing if it
         # is.
-
         prefix = docs_connection.buildRemoteName(key.basename,
                                                  path=key.path_fragments)
         """ "Ale kommun/xxx" """
