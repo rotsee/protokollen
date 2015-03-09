@@ -78,7 +78,11 @@ def main():
     """
     if ui.args.filename is not None:
         ui.info("Harvesting from CSV file `%s`" % ui.args.filename)
-        data_set = CSVFile(ui.args.filename)
+        try:
+            data_set = CSVFile(ui.args.filename)
+        except IOError:
+            ui.critical("Could not open CSV file %s" % ui.args.filename)
+            ui.exit()
     elif settings.google_spreadsheet_key is not None:
         ui.info("Harvesting from Google Spreadsheet`%s`" %
                 settings.google_spreadsheet_key)
