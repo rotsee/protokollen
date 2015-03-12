@@ -1,5 +1,5 @@
 #!/usr/bin/env python2
-# coding=utf-8
+# -*- coding: utf-8 -*-
 """An extract.py fork, that extracts documents from a single,
    local file. This script is useful for debugging. It does
    not store anything in the databases or storages.
@@ -11,6 +11,7 @@ from modules.interface import Interface
 from modules.download import File
 from modules.databases.debuggerdb import DebuggerDB
 from modules.documents import DocumentList
+from modules.extractors.documentBase import ExtractionNotAllowed
 
 
 def main():
@@ -59,8 +60,11 @@ def main():
     # for page in extractor.get_next_page():
     #     print "NEXT PAGE --------------------------------------------------"
     #     print page.get_header()
-
-    document_list = DocumentList(extractor)
+    try:
+        document_list = DocumentList(extractor)
+    except ExtractionNotAllowed:
+        ui.warning("Exraction not allowed for this file")
+        ui.exit()
     for document in document_list.get_next_document():
         print "---------------------------------------------"
         print "type",
