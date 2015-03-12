@@ -72,7 +72,7 @@ def main():
 
         # Are we waiting for a certain key before starting?
         if keep_waiting is True:
-            if key.name == ui.args.start_from:
+            if key.name == ui.args.start_from.decode("utf8"):
                 keep_waiting = False
             else:
                 continue
