@@ -17,6 +17,7 @@ from os import path
 from modules.interface import Interface
 from modules.databases.debuggerdb import DebuggerDB
 from modules.documents import DocumentList
+from modules.extractors.documentBase import ExtractionNotAllowed
 
 
 def main():
@@ -121,7 +122,12 @@ def main():
 
         ui.info("Extracting from %s with %s" % (downloaded_file.localFile,
                                                 extractor_type))
-        document_list = DocumentList(extractor)
+        try:
+            document_list = DocumentList(extractor)
+        except ExtractionNotAllowed:
+            ui.warning("Exraction not allowed for %s" % key.name)
+            # Continue without deleting. We might want to inspect this file
+            continue
         i = 0
         # FIXME: let DocumentList keep track of this
         for document in document_list.get_next_document():

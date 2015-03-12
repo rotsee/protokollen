@@ -6,6 +6,7 @@
 import logging
 
 from modules.extractors.documentBase import ExtractorBase, Page
+from modules.extractors.documentBase import ExtractionNotAllowed
 from modules.metadata import Metadata
 from modules.xmp import xmp_to_dict
 from modules.utils import make_unicode
@@ -302,16 +303,19 @@ class PdfExtractor(ExtractorBase):
             pass
 
         self._page_cache = []
-        with PdfMinerWrapper(self.path) as document:
-            for page in document:
-                if page.word_count() == 0:
-                    logging.info("No text, doing OCR. This will take a while.")
-                    ocr_page = PdfPageFromOcr(self.path, page.page_number)
-                    self._page_cache.append(ocr_page)
-                    yield ocr_page
-                else:
-                    self._page_cache.append(page)
-                    yield page
+        try:
+            with PdfMinerWrapper(self.path) as document:
+                for page in document:
+                    if page.word_count() == 0:
+                        logging.info("No text, doing OCR.")
+                        ocr_page = PdfPageFromOcr(self.path, page.page_number)
+                        self._page_cache.append(ocr_page)
+                        yield ocr_page
+                    else:
+                        self._page_cache.append(page)
+                        yield page
+        except PDFTextExtractionNotAllowed:
+            raise ExtractionNotAllowed
 
     def get_text(self):
         """Returns all text content from the PDF as plain text.

@@ -1,14 +1,18 @@
-#coding=utf-8
+# -*- coding: utf-8 -*-
 """This module contains the base class for all document classes.
 """
 
 from modules.utils import get_date_from_text, get_single_date_from_text
 
 
+class ExtractionNotAllowed(Exception):
+    """The author of this file has disallowed extraction somehow"""
+    pass
+
+
 class DocumentType(object):
     """Store document types.
     """
-
     UNKNOWN = 0
     MEETING_MINUTES = 1
     AGENDA = 2
