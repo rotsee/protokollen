@@ -52,9 +52,15 @@ def main():
         ui.warning("Could not open file %s. %s" % (ui.args.file, e))
         exit()
 
+    file_type = local_file.get_file_type()
+    if file_type not in settings.allowedFiletypes:
+        ui.error("Filetype %s is not allowed in settings.py" % file_type)
+        ui.exit()
+
     extractor = local_file.extractor()
     extractor_type = type(extractor).__name__
     if extractor_type == "HtmlExtractor":
+        ui.debug("HTML file. Content is in %s" % extractor.content_xpath)
         extractor.content_xpath = ui.args.html
 
     # for page in extractor.get_next_page():

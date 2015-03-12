@@ -114,6 +114,11 @@ def main():
                        (key.name, type(e), e))
             continue
 
+        file_type = downloaded_file.get_file_type()
+        if file_type not in settings.allowedFiletypes:
+            ui.error("Filetype %s is not allowed in settings.py" % file_type)
+            continue
+
         extractor = downloaded_file.extractor()
         extractor_type = type(extractor).__name__
         if extractor_type == "HtmlExtractor":
