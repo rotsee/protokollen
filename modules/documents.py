@@ -10,6 +10,7 @@
 
 import settings
 from modules.utils import make_unicode, last_index
+from modules.extractors.documentBase import ExtractionNotAllowed
 
 
 class DocumentList(object):
@@ -31,19 +32,22 @@ class DocumentList(object):
         last_page_type = None
         last_page_date = None
         documents = []
-        for page in extractor.get_next_page():
-            temp_doc = Document(page, extractor)
+        try:
+            for page in extractor.get_next_page():
+                temp_doc = Document(page, extractor)
 
-            if (len(documents) > 0 and
-               temp_doc.type_ == last_page_type and
-               temp_doc.date == last_page_date):
-                documents[-1].merge_with(temp_doc)
-            else:
-                documents.append(temp_doc)
-                page_types_and_dates.append((temp_doc.type_, temp_doc.date))
+                if (len(documents) > 0 and
+                   temp_doc.type_ == last_page_type and
+                   temp_doc.date == last_page_date):
+                    documents[-1].merge_with(temp_doc)
+                else:
+                    documents.append(temp_doc)
+                    page_types_and_dates.append((temp_doc.type_, temp_doc.date))
 
-            last_page_type = temp_doc.type_
-            last_page_date = temp_doc.date
+                last_page_type = temp_doc.type_
+                last_page_date = temp_doc.date
+        except ExtractionNotAllowed:
+            raise ExtractionNotAllowed
 
         # merge documents, if disallow_infixes == True
         doc_settings = settings.document_type_settings

@@ -20,7 +20,7 @@ from tempfile import NamedTemporaryFile
 from pytesseract import image_to_string
 
 from pdfminer.pdfparser import PDFParser
-from pdfminer.pdfdocument import PDFDocument
+from pdfminer.pdfdocument import PDFDocument, PDFEncryptionError
 from pdfminer.pdfpage import PDFPage, PDFTextExtractionNotAllowed
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.layout import LAParams, LTTextBox, LTTextLine, LTFigure, LTImage
@@ -281,7 +281,7 @@ class PdfExtractor(ExtractorBase):
                 catalog = pdf_miner.document.catalog['Metadata']
                 xmp_metadata = resolve1(catalog).get_data()
                 xmp_dict = xmp_to_dict(xmp_metadata)
-                #Let's add only the most useful one
+                # Let's add only the most useful one
                 if "xap" in xmp_dict:
                     metadata.add(xmp_dict["xap"])
                 if "pdf" in xmp_dict:
@@ -315,6 +315,11 @@ class PdfExtractor(ExtractorBase):
                         self._page_cache.append(page)
                         yield page
         except PDFTextExtractionNotAllowed:
+            # Simply not allowed
+            raise ExtractionNotAllowed
+        except PDFEncryptionError:
+            # I have actually no idea what going on here,
+            # but this error occurs in some protected PDF's
             raise ExtractionNotAllowed
 
     def get_text(self):
