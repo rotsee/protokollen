@@ -1,4 +1,4 @@
-#coding=utf-8
+# -*- coding: utf-8 -*-
 """This module includes tools for handling and extracting text from
    RTF files
 """

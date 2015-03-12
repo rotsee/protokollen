@@ -1,4 +1,4 @@
-#coding=utf-8
+# -*- coding: utf-8 -*-
 """This module includes tools for handling and extracting text from
    old Microsoft Word (.doc) files. It uses the Abiword
 """
@@ -63,8 +63,17 @@ class DocExtractor(ExtractorBase):
         root = tree.getroot()
 
         text = ""
+#        list_ = list(root.iter())
+#        for l in list_:
+#            print l.tag, l.attrib
+#            if not "base64" in l.attrib:
+#                print l.text
+
         section = root.find(".//{%s}section[@type='header']" % self.NS_ABW)
-        if len(section) > 0:
+        if section is None:
+            # Assuming even and odd headers contain more or less the same data
+            section = root.find(".//{%s}section[@type='header-even']" % self.NS_ABW)
+        if section is not None:
             for tag in section.iterfind(".//*"):
                 if tag.text is not None:
                     text += tag.text
