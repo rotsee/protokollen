@@ -126,7 +126,6 @@ document_type_settings = {
         'disallow_infixes': True
     }
 }
-
 """
  Various document type specific settings:
 
