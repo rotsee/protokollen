@@ -1,4 +1,4 @@
-#coding=utf-8
+# -*- coding: utf-8 -*-
 """ Utility functions to be used in several modules.
 """
 import re
@@ -110,6 +110,7 @@ def _get_dates_list(text):
 
 def _parse_date(date):
     import dateutil.parser as dateParser
+    from datetime import datetime
     month_dict = {u"januari": u"January",
                   u"februari": u"February",
                   u"mars": u"March",
@@ -126,7 +127,15 @@ def _parse_date(date):
     date_string = replace_set(date, month_dict)
 
     try:
-        parsed_date = dateParser.parse(date_string, fuzzy=True)
+        parsed_date = dateParser.parse(date_string,
+                                       fuzzy=True,
+                                       ignoretz=True,  # No timezones used
+                                       yearfirst=True,  # 2014-03-24
+                                       dayfirst=True)  # 24.3.2014
+        now = datetime.now()
+        if parsed_date > now:
+            # Future date, can't be right
+            parsed_date = None
     except ValueError:
         parsed_date = None
     return parsed_date
@@ -165,3 +174,8 @@ def get_date_from_text(text):
         else:
             # Case: no matcing dates found
             return None
+
+if __name__ == "__main__":
+    print "This module is only intended to be called from other scripts."
+    import sys
+    sys.exit()
