@@ -1,4 +1,4 @@
-#coding=utf-8
+# -*- coding: utf-8 -*-
 """This module contains a class for interacting with ElasticSearch
 """
 
@@ -54,7 +54,7 @@ class ElasticSearch(Database):
             return False
 
     def exists(self, key):
-        res = self.get(key, "_id")
+        res = self._get_id(key)
         return res is not None
 
     def get(self, key, attr):
@@ -68,17 +68,19 @@ class ElasticSearch(Database):
         """Get a list of keys/rows where a attribute/column has
            the specified value.
         """
-        res = self.es.search(index=self.index, body={
+        hits = self.es.search(index=self.index, body={
             "query": {
                 "match_all": {}
             },
+            "fields": [],
             "filter": {
                 "term": {
                     attribute: value
                 }
             }
         })
-        return res["hits"]["hits"]
+        hits = hits["hits"]["hits"]
+        return [hit["_id"] for hit in hits]
 
 if __name__ == "__main__":
     print "This module is only intended to be called from other scripts."
