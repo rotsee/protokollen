@@ -38,7 +38,7 @@ def main():
     }]
     ui = Interface(__file__,
                    "Extracts text and metadata from files",
-                   commandLineArgs=command_line_args)
+                   commandline_args=command_line_args)
 
     ui.info("Connecting to storage")
     files_connection = settings.Storage(settings.access_key_id,
@@ -84,20 +84,20 @@ def main():
         prefix = docs_connection.buildRemoteName(key.basename,
                                                  path=key.path_fragments)
         """ "Ale kommun/xxx" """
+        ui.debug("file prefix: %s" % prefix)
+
         files_dbkey = files_db.create_key(key.path_fragments + [key.filename])
         """ "Ale kommun-xxx.pdf" """
-        file_data = files_db.get_attribute_with_value("_id", files_dbkey)
-        file_data = (file_data or [None])[0]  # Get first hit, should be one
-        if file_data is None:
+        ui.debug("files_dbkey: %s" % files_dbkey)
+
+        if not files_db.exists(files_dbkey):
             ui.warning("File db data missing for file %s" % key)
             continue
-        else:
-            file_data = file_data[u"_source"]
 
-        old_docs_data = docs_db.get_attribute_with_value("file_key",
-                                                         files_dbkey)
+        existing_docs_data = docs_db.get_attribute_with_value("file_key",
+                                                              files_dbkey)
         if (docs_connection.prefix_exists(prefix) and
-                len(old_docs_data) > 0 and
+                existing_docs_data is not None and
                 not ui.args.overwrite):
             ui.debug("Documents already extracted for file %s (%s)" %
                      (prefix, files_dbkey))
@@ -122,7 +122,8 @@ def main():
         extractor = downloaded_file.extractor()
         extractor_type = type(extractor).__name__
         if extractor_type == "HtmlExtractor":
-            extractor.content_xpath = file_data["harvesting_rules"]["html"]
+            harvesting_rules = files_db.get(files_dbkey, "harvesting_rules")
+            extractor.content_xpath = harvesting_rules["html"]
             ui.debug("HTML file. Content is in %s" % extractor.content_xpath)
 
         ui.info("Extracting from %s with %s" % (downloaded_file.localFile,
@@ -152,9 +153,9 @@ def main():
                 print "meeting_date",
                 print document.date
                 print "source",
-                print file_data[u"origin"]
+                print files_db.get(files_dbkey, u"origin")
                 print "origin",
-                print file_data[u"municipality"]
+                print files_db.get(files_dbkey, u"municipality")
                 print "text_file",
                 print remote_filename
                 print "original file",
@@ -170,11 +171,12 @@ def main():
             docs_db.put(docs_dbkey, "text_file", remote_filename)
             docs_db.put(docs_dbkey, "text", document.text)
             docs_db.put(docs_dbkey, "document_type", document.type_)
-            if u"origin" in file_data:
-                # Original URL, if any
-                docs_db.put(docs_dbkey, "source", file_data[u"origin"])
+            # Original URL, if any
+            docs_db.put(docs_dbkey, "source",
+                        files_db.get(files_dbkey, u"origin"))
             # NB We use a different, but more logical naming scheme for docs
-            docs_db.put(docs_dbkey, "origin", file_data[u"municipality"])
+            docs_db.put(docs_dbkey, "origin",
+                        files_db.get(files_dbkey, u"municipality"))
 
             docs_connection.put_file_from_string(document.text,
                                                  remote_filename)
