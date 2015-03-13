@@ -1,4 +1,4 @@
-#coding=utf-8
+# -*- coding: utf-8 -*-
 """This module is included in the main entry points of ProtoKollen,
    to provide common functionality, such as error handling, etc.
 """
@@ -9,6 +9,8 @@ sys.path.insert(1, "modules")  # All project specific modules go here
 import argparse
 import argcomplete
 import logging
+from modules.errors import ErrorReport
+
 FORMAT = '%(asctime)s %(levelname)s: %(message)s'
 logging.basicConfig(format=FORMAT)
 
@@ -33,7 +35,7 @@ class Interface:
     NORMAL_MODE = 0
     DRY_MODE = 1
 
-    def __init__(self, name, description, commandLineArgs=[]):
+    def __init__(self, name, description, commandline_args=[]):
         """Command line arguments can also be put in a file named
            SCRIPTNAME_args.py, e.g. `harvest_args.py`.
         """
@@ -51,7 +53,7 @@ class Interface:
             "-d", "--dry",
             dest="dryrun",
             action='store_true',
-            help="Dry run. Do not upload any files, or put stuff in databases.")
+            help="Dry run. Do not upload files, or put stuff in databases.")
 
         # Check for FILENAME_args.py file
         import __main__
@@ -60,11 +62,11 @@ class Interface:
             filename = os.path.basename(__main__.__file__)
             filename = os.path.splitext(filename)[0]
             args_from_file = __import__(filename + "_args")
-            commandLineArgs = commandLineArgs + args_from_file.args
+            commandline_args = commandline_args + args_from_file.args
         except ImportError:
             pass
 
-        for c in commandLineArgs:
+        for c in commandline_args:
             self.parser.add_argument(
                 c.pop("short", None),
                 c.pop("long", None),
@@ -83,6 +85,13 @@ class Interface:
             self.logger.info("Running in dry mode")
             self.executionMode = self.DRY_MODE
 
+    def post_error(self, level, msg):
+        """Calls the error reporting API
+        """
+        error_report = ErrorReport(msg)
+        error_report.level = level
+        error_report.post()
+
     # Convenience shortcuts to logger methods
     def log(self, msg, mode=logging.INFO):
         self.logger.log(mode, msg)
@@ -96,15 +105,18 @@ class Interface:
     def warning(self, msg, *args, **kwargs):
         msg = TerminalColors.WARNING + msg + TerminalColors.ENDC
         self.logger.warning(msg, *args, **kwargs)
+        self.post_error(logging.WARNING, msg)
 
     def error(self, msg, *args, **kwargs):
         msg = TerminalColors.FAIL + msg + TerminalColors.ENDC
         self.logger.error(msg, *args, **kwargs)
+        self.post_error(logging.ERROR, msg)
 
     def critical(self, msg, *args, **kwargs):
         msg = TerminalColors.FAIL + TerminalColors.BOLD + \
             msg + TerminalColors.ENDC
         self.logger.critical(msg, *args, **kwargs)
+        self.post_error(logging.CRITICAL, msg)
 
     def dry_mode(self):
         return bool(self.executionMode)
@@ -140,3 +152,8 @@ class Interface:
     def exit(self):
         import sys
         sys.exit()
+
+if __name__ == "__main__":
+    print "This module is only intended to be called from other scripts."
+    import sys
+    sys.exit()
