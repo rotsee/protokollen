@@ -63,7 +63,17 @@ class Storage:
         pass
 
     @abstractmethod
-    def getFileListLength(self, path):
+    def get_file_list_length(self, path):
+        """Returns the number of files at a certain path,
+           prefix (S3), or similar.
+        """
+        pass
+
+    @abstractmethod
+    def get_next_file_by_path(self, path):
+        """Like get_next_file, but will return file keys from a
+           folder (Dropbox), prefix (Amazon S3), or similar.
+        """
         pass
 
     @abstractmethod
@@ -77,7 +87,7 @@ class Storage:
     @abstractmethod
     def get_file(self, key, localFilename):
         """Retrieves a file identified by key, storing it locally
-           as localFilename, and returning a download.File object
+           as localFilename, and returning a download. File object
         """
         pass
 
@@ -114,8 +124,8 @@ class S3Storage(Storage):
     AWS Secret Access Key as secret_access_key (you can ignore
     access_token). Finally enter the name of your buckets as
     bucket_name and text_bucket_name, respectively.
-
     """
+#   :param path: Bucket name
     def __init__(self,
                  accesskey,
                  secret,
@@ -125,12 +135,16 @@ class S3Storage(Storage):
         self.bucket = path
         self.connection = s3.S3Connection(accesskey, secret, path)
 
-    def getFileListLength(self, pathFragment):
+    def get_file_list_length(self, pathFragment):
         return self.connection.getBucketListLength(pathFragment)
 
     # this'll return a Key or Key-like object with .filename, .name
     def get_next_file(self):
         for k in self.connection.get_next_file():
+            yield k
+
+    def get_next_file_by_path(self, path):
+        for k in self.connection._bucket.list(path):
             yield k
 
     # this'll retrieve the file identified by key (returned from
@@ -197,7 +211,7 @@ class LocalStorage(Storage):
                  path="protokollen"):
         self.path = path
 
-    def getFileListLength(self, pathFragment):
+    def get_file_list_length(self, pathFragment):
         raise NotImplementedError
 
     def fileExists(self, fullfilename):
@@ -221,6 +235,9 @@ class LocalStorage(Storage):
                 key = FakeKey(None, logicpath)
                 key.localFilename = self.path + os.sep + logicpath
                 yield(key)
+
+    def get_next_file_by_path(self, path):
+        raise NotImplementedError
 
     def get_file(self, key, localFilename):
         # creating the LocalFile object copies the content to localFilename
@@ -277,7 +294,7 @@ class DropboxStorage(Storage):
         self.connection = dropbox.client.DropboxClient(token)
         self.connection.account_info()  # test that the OAuth works
 
-    def getFileListLength(self, pathFragment):
+    def get_file_list_length(self, pathFragment):
         raise NotImplementedError
 
     def get_next_file(self):
@@ -291,6 +308,9 @@ class DropboxStorage(Storage):
                 else:
                     path = thing['path']
                     yield FakeKey(None, path)
+
+    def get_next_file_by_path(self, path):
+        raise NotImplementedError
 
     def get_file(self, key, local_filename):
         out = open(local_filename, "wb")
