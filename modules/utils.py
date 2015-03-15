@@ -108,7 +108,7 @@ def _get_dates_list(text):
     return dates
 
 
-def _parse_date(date):
+def _parse_date(date, after):
     import dateutil.parser as dateParser
     from datetime import datetime
     month_dict = {u"januari": u"January",
@@ -133,15 +133,15 @@ def _parse_date(date):
                                        yearfirst=True,  # 2014-03-24
                                        dayfirst=True)  # 24.3.2014
         now = datetime.now()
-        if parsed_date > now:
-            # Future date, can't be right
+        after_date = datetime.strptime(after, "format")
+        if (parsed_date > now) or (parsed_date < after_date):
             parsed_date = None
     except ValueError:
         parsed_date = None
     return parsed_date
 
 
-def get_single_date_from_text(text):
+def get_single_date_from_text(text, after="1990-01-01"):
     """ Returns the date portion from a short text, that is known to contain
         one and only one date. None if the number of matches is not 1
     """
@@ -150,12 +150,12 @@ def get_single_date_from_text(text):
         dates = _get_dates_list(text)
 
         if (len(dates) == 1):
-            return _parse_date(dates[0][0])
+            return _parse_date(dates[0][0], after)
         else:
             return None
 
 
-def get_date_from_text(text):
+def get_date_from_text(text, after="1990-01-01"):
     """ Takes a bunch of text, looks for dates and returns the most common one
         and the number of times it occured.
         Intended to be used with document classes to specifiy the date of the
@@ -170,7 +170,7 @@ def get_date_from_text(text):
             # Count occurences of each date and get the most common one
             c = Counter(dates).most_common(1)[0]
             # Parse the date
-            return _parse_date(c[0][0])
+            return _parse_date(c[0][0], after)
         else:
             # Case: no matcing dates found
             return None
