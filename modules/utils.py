@@ -133,7 +133,7 @@ def _parse_date(date, after):
                                        yearfirst=True,  # 2014-03-24
                                        dayfirst=True)  # 24.3.2014
         now = datetime.now()
-        after_date = datetime.strptime(after, "format")
+        after_date = datetime.strptime(after, "%Y-%m-%d")
         if (parsed_date > now) or (parsed_date < after_date):
             parsed_date = None
     except ValueError:
