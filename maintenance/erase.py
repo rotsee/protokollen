@@ -90,7 +90,11 @@ def main():
 
     for row in data_set.get_next():
         path_fragments = row.list()  # ["Ale kommun", "abc.pdf"]
-        db_key = file_db.create_key(path_fragments)  # "Ale kommun-abc.pdf"
+        try:
+            db_key = file_db.create_key(path_fragments)  # "Ale kommun-abc.pdf"
+        except UnicodeDecodeError:
+            path_fragments = [p.decode("utf-8") for p in path_fragments]
+            db_key = file_db.create_key(path_fragments)  # "Ale kommun-abc.pdf"
         filename = path_fragments.pop()  # "abc.pdf"
         # path_fragments: ["Ale kommun"]
         file_path = file_storage.buildRemoteName(filename, path=path_fragments)
@@ -105,7 +109,7 @@ def main():
                 ui.exit()
 
         docs_db_ids = docs_db.get_attribute_with_value("file",
-                                                       file_path_from_db)
+                                                       file_path)
 
         num_docs_in_storage = docs_storage.get_file_list_length(file_path)
         if num_docs_in_storage != len(docs_db_ids):
