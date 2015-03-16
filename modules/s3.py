@@ -63,7 +63,7 @@ class S3Connection(object):
         else:
             return False
 
-    def put_file(self, local_filename, s3name):
+    def put_file(self, local_filename, s3name, headers=None):
         k = Key(self._bucket, s3name)
         k.set_contents_from_filename(local_filename)
 
