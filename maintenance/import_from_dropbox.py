@@ -16,7 +16,6 @@ from modules.storage import DropboxStorage
 from modules.databases.debuggerdb import DebuggerDB
 from modules.utils import make_unicode
 
-############# GLOBAL VARIABLES ###############
 commandline_args = [{
     "short": "-f", "long": "--source-from-fragment",
     "dest": "source_fragment",
@@ -44,7 +43,6 @@ ui = Interface(__file__,
                   storage, and add them to the Protokollen
                   file storage(s) and database(s).""",
                commandline_args=commandline_args)
-##############################################
 
 
 def main():
@@ -104,7 +102,7 @@ def main():
         # Check if a file with this name exists
         # in both storage and DB
         if (dest_storage.prefix_exists(remote_name) and
-           db.exists(dbkey) is not None and
+           db.exists(dbkey) and
            ui.args.overwrite is not True):
             ui.debug("%s already exists, not overwriting" % dbkey)
         else:
@@ -117,11 +115,8 @@ def main():
 
                 # Should rather be the more generic “source”
                 db.put(dbkey, u"municipality", source_fragment)
-                #print "municipality: %s" % source_fragment
                 db.put(dbkey, u"file_type", file_ext)
-                #print "file_type: %s" % file_ext
                 db.put(dbkey, u"storage_path", remote_name)
-                #print "storage_path: %s" % remote_name
                 db.put(dbkey, u"harvesting_rules", None)
                 try:
                     ui.debug("Extracting metadata")
@@ -129,9 +124,8 @@ def main():
                     meta = extractor.get_metadata()
                     ui.debug(meta.data)
                     db.put(dbkey, u"metadata", meta.data, overwrite=ui.args.overwrite)
-                    #print meta.data
                 except Exception as e:
-                    ui.warning("Could not get metadata from %s. %s" % (dbkey, e))
+                    ui.info("Could not get metadata from %s. %s" % (dbkey, e))
 
             else:
                 ui.warning("%s is not an allowed mime type or download failed"
