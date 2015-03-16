@@ -43,7 +43,7 @@ ui = Interface(__file__,
                """This script will import files from a custom
                   storage, and add them to the Protokollen
                   file storage(s) and database(s).""",
-               commandLineArgs=commandline_args)
+               commandline_args=commandline_args)
 ##############################################
 
 
