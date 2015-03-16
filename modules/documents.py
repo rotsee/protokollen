@@ -12,6 +12,12 @@ import settings
 from modules.utils import make_unicode, last_index
 from modules.extractors.documentBase import ExtractionNotAllowed
 
+document_headers = {
+    "Content-Type": "text/plain",
+    "Content-Disposition": "attachment",
+    "Cache-Control": "public"
+}
+
 
 class DocumentList(object):
     """Contains a list of documents, extracted from a file.
