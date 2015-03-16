@@ -41,9 +41,9 @@ class DocxExtractor(ExtractorBase):
         """
         headers = []
         namespaces = dict(
-            w = "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
-            v = "urn:schemas-microsoft-com:vml",
-            r = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+            w="http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+            v="urn:schemas-microsoft-com:vml",
+            r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
         )
 
         import xml.etree.ElementTree as ET
@@ -56,27 +56,27 @@ class DocxExtractor(ExtractorBase):
         """ Get all header files and parse them for text
         """
         docx_files = z.namelist()
-        header_xml_files = filter(lambda x: x.startswith('word/header'), docx_files)
-        
-        for header_xml in header_xml_files:
-            header_name = header_xml.replace('word/','')
-            xml_file = z.open(header_xml, 'r')
+        header_xml_files = filter(lambda x: x.startswith('word/header'),
+                                  docx_files)
 
+        for header_xml in header_xml_files:
+            # header_name = header_xml.replace('word/', '')
+            xml_file = z.open(header_xml, 'r')
             root = ET.fromstring(xml_file.read())
 
-            """ Get all text tags
-            """
             text_elements = root.findall(".//w:t", namespaces)
             for text_element in text_elements:
                 if text_element.text is not None:
                     headers.append(text_element.text)
 
             """ Headers might also include images with text
-                To get those we find all images in header 
-                    => get id's of those images 
+                To get those we find all images in header
+                    => get id's of those images
                     => find corresponding image files in the /media directory
                     => OCR
             """
+            """
+            # Disiable OCR, as PIL on *nix can't handle WMF images
             images = root.findall(".//v:imagedata", namespaces)
             for image in images:
                 id_key = '{%s}id' % namespaces['r']
@@ -86,17 +86,15 @@ class DocxExtractor(ExtractorBase):
                 relation_file_root = ET.fromstring(relation_file.read())
                 xpath = ".//*[@Id='%s']" % image_id
                 image_path = 'word/%s' % relation_file_root.find(xpath, namespaces).attrib['Target']
-                
-                """ OCR
-                """
+
+                # OCR
                 import pytesseract
                 from PIL import Image
                 import cStringIO
                 img = Image.open(cStringIO.StringIO(z.open(image_path).read()))
                 string_from_image = pytesseract.image_to_string(img, lang='swe')
                 headers.append(string_from_image.decode('utf-8'))
-
-
+            """
         return "\n".join(headers)
 
 
