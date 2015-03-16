@@ -16,7 +16,7 @@ from os import path
 
 from modules.interface import Interface
 from modules.databases.debuggerdb import DebuggerDB
-from modules.documents import DocumentList
+from modules.documents import DocumentList, document_headers
 from modules.extractors.documentBase import ExtractionNotAllowed
 
 
@@ -179,7 +179,8 @@ def main():
                         files_db.get(files_dbkey, u"municipality"))
 
             docs_connection.put_file_from_string(document.text,
-                                                 remote_filename)
+                                                 remote_filename,
+                                                 headers=document_headers)
 
         downloaded_file.delete()
 
