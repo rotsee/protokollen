@@ -135,8 +135,8 @@ class S3Storage(Storage):
         self.bucket = path
         self.connection = s3.S3Connection(accesskey, secret, path)
 
-    def get_file_list_length(self, pathFragment):
-        return self.connection.getBucketListLength(pathFragment)
+    def get_file_list_length(self, path_fragment):
+        return self.connection.get_bucket_list_length(path_fragment)
 
     # this'll return a Key or Key-like object with .filename, .name
     def get_next_file(self):
@@ -149,8 +149,8 @@ class S3Storage(Storage):
 
     # this'll retrieve the file identified by key (returned from
     # get_next_file) and return a download.File object with .localFile
-    def get_file(self, key, localFilename):
-        return FileFromS3(key, localFilename)
+    def get_file(self, key, local_filename):
+        return FileFromS3(key, local_filename)
 
     def delete_file(self, filename):
         return self.connection.delete_key(filename)
@@ -161,8 +161,8 @@ class S3Storage(Storage):
         """
         return self.connection.fileExistsInBucket(fullfilename)
 
-    def put_file(self, localFilename, s3name):
-        self.connection.put_file(localFilename, s3name)
+    def put_file(self, local_filename, s3name):
+        self.connection.put_file(local_filename, s3name)
 
     def put_file_from_string(self, string, s3name):
         self.connection.put_file_from_string(string, s3name)

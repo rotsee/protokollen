@@ -47,8 +47,8 @@ class S3Connection(object):
         for key in self._bucket.list():
             yield Key(self._bucket, key)
 
-    def getBucketListLength(self, pathFragment):
-        l = self._bucket.list(pathFragment)
+    def get_bucket_list_length(self, path_fragment):
+        l = self._bucket.list(path_fragment)
         i = 0
         for key in l:
             i += 1
@@ -58,16 +58,16 @@ class S3Connection(object):
         return self._bucket.delete_key(filename)
 
     def fileExistsInBucket(self, fullfilename):
-        if self.getBucketListLength(fullfilename):
+        if self.get_bucket_list_length(fullfilename):
             return True
         else:
             return False
 
-    def put_file(self, localFilename, s3name):
+    def put_file(self, local_filename, s3name):
         k = Key(self._bucket, s3name)
-        k.set_contents_from_filename(localFilename)
+        k.set_contents_from_filename(local_filename)
 
-    def put_file_from_string(self, string, s3name):
+    def put_file_from_string(self, string, s3name, headers=None):
         k = Key(self._bucket, s3name)
         k.set_contents_from_string(string)
 
