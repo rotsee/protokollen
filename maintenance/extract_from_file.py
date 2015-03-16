@@ -17,14 +17,14 @@ from modules.extractors.documentBase import ExtractionNotAllowed
 def main():
     """Entry point when run from command line"""
 
-    command_line_args = [{
+    commandline_args = [{
         "short": "-f", "long": "--file",
         "type": str, "dest": "file",
         "help": "File to extract document(s) from."
     }]
     ui = Interface(__file__,
                    "Extracts text and metadata from a local file",
-                   commandLineArgs=command_line_args)
+                   commandline_args=commandline_args)
 
     ui.info("Connecting to storage")
 #    docs_connection = settings.Storage(settings.access_key_id,
