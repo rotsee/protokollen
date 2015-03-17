@@ -16,7 +16,7 @@ Prerequisites
 
 For harvester.py
 ----------------
- * Firefox (tested with versions 32 through 36) or Chrome (tested with version 38)
+ * Firefox (tested with versions 32 through 36) or Chrome (tested with versions 38 through 41)
  * Xvfb (tested with version 1.15)
  * [Service-account credentials](https://developers.google.com/console/help/new/#serviceaccounts) from the [Google developers console](https://console.developers.google.com/), if you wish to use Google Spreadsheets as the source for your harvesting. Not needed if you use a local CSV file.
  * python-magic (installed by setup.py) and libmagic (needs to be installed separately)
@@ -25,7 +25,8 @@ For harvester.py
 
  The ChromeDriver executable for your OS must be inside the bin directory for Chrome to work.
  Get it from http://chromedriver.storage.googleapis.com/index.html
- Firefox should work out of the box.
+ 
+ Firefox should work out of the box, but the Selenium driver sometimes looses focus when working with multiple tabs, causing the script to crash. We have no workaround for that.
  
 For extract.py
 ----------------
@@ -37,6 +38,7 @@ For extract.py
  * The Python Imaging Library, PIL (tested with version 2.3)
  * GhostScript (tested with version 9.10)
  * Optionally a database, to store text and metadata. Elastic Search is supported (tested with version 1.0.1 and 1.2.4)
+ * You might want to use the [latest development version of PdfMiner](https://github.com/euske/pdfminer), as some bugs have been fixed since the last release.
 
 These scripts have been tested under Ubuntu 14.04, Ubuntu 14.10 and Debian 7.
 
@@ -44,13 +46,13 @@ AbiWord is not supported by OS X. AbiWord is currently used to parse .doc and .r
 
 Installation
 ============
+Installation in a nutshell:
 
-The quickly get started with a test run, following the [quick start guide](#quick)
-
+ * Install all dependenices from the lists above
  * Clone this repository
  * From the protokollen directory, run `python setup.py develop`
- * Copy `settings.template.py` to `settings.py`, and all relevant credentials there
- * If using a Google Docs sheet: Copy your Google API p12 file to `google_api.p12` (or specify another path in `settings.py`)
+ * Copy `settings.template.py` to `settings.py`, and add relevant credentials there
+ * If using a Google Docs sheet: Copy your Google API p12 file to `google_api.p12` (or specify another path in `settings.py`), and use `chmod 0600` to protect it,
 
 
 <a name="quick">Quick start</a>
