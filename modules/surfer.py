@@ -1,11 +1,14 @@
-#coding=utf-8
+# -*- coding=utf-8 -*-
 from selenium.webdriver import Firefox, Chrome, FirefoxProfile
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.support.ui import Select
-from selenium.webdriver.support.events import EventFiringWebDriver,\
-                                            AbstractEventListener
+from selenium.webdriver.support.events import EventFiringWebDriver
+from selenium.webdriver.support.events import AbstractEventListener
+from selenium.webdriver.common.action_chains import ActionChains
+
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import InvalidSelectorException, ElementNotVisibleException
+from selenium.common.exceptions import InvalidSelectorException
+from selenium.common.exceptions import ElementNotVisibleException
 from xvfbwrapper import Xvfb
 from time import sleep
 import urlparse
@@ -103,17 +106,17 @@ class Surfer:
            Returns the result of `callback`
         """
         try:
+            actions = ActionChains(self.selenium_driver)
+            actions.move_to_element(element).perform()
             element.send_keys(Keys.SHIFT + Keys.ENTER)
         except ElementNotVisibleException:
             raise
-        # self.selenium_driver.implicitly_wait(self.extra_delay)
-        # FIXME implicitly_wait doesn't work on FF?
-        sleep(self.extra_delay)
+        self.selenium_driver.implicitly_wait(self.extra_delay)
+        sleep(self.extra_delay)  # implicitly_wait doesn't work on FF?
         windows = self.selenium_driver.window_handles
-        self.selenium_driver.switch_to_default_content()
         self.selenium_driver.switch_to_window(windows[-1])
-        res = callback_(self, *args, **kwargs)
         if len(windows) > 1:
+            res = callback_(self, *args, **kwargs)
             self.selenium_driver.close()
         windows = self.selenium_driver.window_handles
         self.selenium_driver.switch_to_window(windows[-1])
@@ -124,7 +127,7 @@ class Surfer:
         self.selenium_driver.get(url)
         self.selenium_driver.implicitly_wait(self.extra_delay)
 
-    def click_on_stuff(self, xPath):
+    def click_on_stuff(self, xpath):
         """Will click on any elements pointed out by xPath.
 
            Options in select menus will be selected, and an
@@ -133,9 +136,9 @@ class Surfer:
 
            Currently assumes there is an id on the select element.
         """
-        element_list = self.selenium_driver.find_elements_by_xpath(xPath)
+        element_list = self.selenium_driver.find_elements_by_xpath(xpath)
         if not element_list:
-            raise Exception("No elements found for xPath `%s`" % xPath)
+            raise Exception("No elements found for xPath `%s`" % xpath)
         else:
             for element in element_list:
                 try:

@@ -1,4 +1,4 @@
-#coding=utf-8
+# -*- coding: utf-8 -*-
 """This module contains the base class for all database classes.
 """
 
@@ -17,11 +17,13 @@ class Database(object):
 
     def create_key(self, parts=None):
         """We might want keys to correspond somehow to filenames and paths.
-           For instance, if we create keys like `path-file`, they will be
-           consistent with ElasticSearch's `amazon-s3-river` plugin, see
-           https://github.com/lbroudoux/es-amazon-s3-river/blob/master/src/main/java/com/github/lbroudoux/elasticsearch/river/s3/river/S3River.java#LC508
+           Keys like `path-file` will be consistent with ElasticSearch's
+           `amazon-s3-river` plugin
         """
-        return u"-".join([unicode(p) for p in parts])
+        try:
+            return "-".join(parts)
+        except UnicodeDecodeError:
+            return u"-".join([unicode(p) for p in parts])
 
     def delete(self, key):
         """Delete an entry by key, if it exists.

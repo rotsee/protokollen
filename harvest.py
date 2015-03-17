@@ -21,13 +21,11 @@ from modules.datasheet import CSVFile, GoogleSheet
 from modules.utils import make_unicode
 from modules.databases.debuggerdb import DebuggerDB
 
-############# GLOBAL VARIABLES ###############
 ui = Interface(__file__,
                """This script will download all files pointed out by
                   a series of URLs and xPath expressions, and upload
                   them to the configured storage service. """)
 """`ui` is our command line interface."""
-##############################################
 
 
 def click_through_dlclicks(browser,
@@ -59,7 +57,7 @@ def click_through_dlclicks(browser,
                                                 **kwargs
                                                 )
             except Exception as e:
-                ui.debug("Element not clickable. Error: %s" % e)
+                ui.warning("Element not clickable. Check your xPath. %s" % e)
                 continue
 
     else:
@@ -117,8 +115,8 @@ def main():
                                 settings.bucket_name)
 
     ui.info("Setting up virtual browser")
+    browser = Surfer(browser=settings.browser, delay=1)
     try:
-        browser = Surfer(browser=settings.browser, delay=1)
         ui.debug("Browsing the web with %s" % browser.browser_version)
         run_harvest(data_set, browser, uploader, db)
     except Exception as e:
@@ -181,19 +179,20 @@ def do_download(browser, uploader, row, db):
        ui.args.overwrite is not True):
         ui.debug("%s already exists, not overwriting" % url)
     else:
-        if (filetype in settings.allowedFiletypes and
-           ui.executionMode < Interface.DRY_MODE):
-
+        if filetype in settings.allowedFiletypes:
             ui.info("Storing %s" % filename)
-            uploader.put_file(local_filename, remote_name)
+            if ui.executionMode < Interface.DRY_MODE:
+                uploader.put_file(local_filename, remote_name)
 
             ui.debug("Storing file data in database")
-            db.put(dbkey, u"origin", origin)
-            # Should rather be the more generic “source”
-            db.put(dbkey, u"municipality", row["source"])
-            db.put(dbkey, u"file_type", file_ext)
-            db.put(dbkey, u"storage_path", remote_name)
-            db.put(dbkey, u"harvesting_rules", row, overwrite=ui.args.overwrite)
+            if ui.executionMode < Interface.DRY_MODE:
+                db.put(dbkey, u"origin", origin)
+                # Should rather be the more generic “source”
+                db.put(dbkey, u"municipality", row["source"])
+                db.put(dbkey, u"file_type", file_ext)
+                db.put(dbkey, u"storage_path", remote_name)
+                db.put(dbkey, u"harvesting_rules", row,
+                       overwrite=ui.args.overwrite)
             try:
                 ui.debug("Extracting metadata")
                 extractor = download_file.extractor()
@@ -203,12 +202,14 @@ def do_download(browser, uploader, row, db):
                     extractor.content_xpath = row["html"]
                 meta = extractor.get_metadata()
                 ui.debug(meta.data)
-                db.put(dbkey, u"metadata", meta.data, overwrite=ui.args.overwrite)
+                if ui.executionMode < Interface.DRY_MODE:
+                    db.put(dbkey, u"metadata", meta.data,
+                           overwrite=ui.args.overwrite)
             except Exception as e:
                 ui.warning("Could not get metadata from %s. %s" % (dbkey, e))
 
         else:
-            ui.warning("%s is not an allowed mime type or download failed"
+            ui.warning("%s is not an allowed mime type"
                        % download_file.mimeType)
 
     try:
