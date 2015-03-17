@@ -18,6 +18,7 @@ from modules.interface import Interface
 from modules.databases.debuggerdb import DebuggerDB
 from modules.documents import DocumentList, document_headers
 from modules.extractors.documentBase import ExtractionNotAllowed
+from modules.extractors.documentBase import CompatibilityError
 
 
 def main():
@@ -134,6 +135,9 @@ def main():
             ui.warning("Exraction not allowed for %s" % key.name)
             # Continue without deleting. We might want to inspect this file
             continue
+        except CompatibilityError:
+            ui.warning("Could not understand the file %s" % key.name)
+            # Continue without deleting. We might want to inspect this file
         i = 0
         # FIXME: let DocumentList keep track of this
         for document in document_list.get_next_document():

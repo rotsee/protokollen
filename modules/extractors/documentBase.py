@@ -6,8 +6,14 @@ from modules.utils import get_date_from_text, get_single_date_from_text
 
 
 class ExtractionNotAllowed(Exception):
-    """The author of this file has disallowed extraction somehow"""
-    pass
+    """The author of this file has disallowed extraction somehow.
+    """
+
+
+class CompatibilityError(Exception):
+    """Our libraries and/or helper programmes could not understand this file.
+       The file might be malformed.
+    """
 
 
 class DocumentType(object):

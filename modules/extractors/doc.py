@@ -7,6 +7,7 @@ from modules.extractors.documentBase import ExtractorBase, Page
 
 import subprocess
 from modules.metadata import Metadata
+from modules.documents.documentBase import CompatibilityError
 
 
 class DocPage(Page):
@@ -112,8 +113,11 @@ class DocExtractor(ExtractorBase):
             raise OSError
 
         self._text_cache = ""
-        with open(temp_filename, 'rb') as file_:
-            self._text_cache = file_.read()
+        try:
+            with open(temp_filename, 'rb') as file_:
+                self._text_cache = file_.read()
+        except IOError:
+            raise CompatibilityError("Abiword failed to convert this file.")
         os.unlink(temp_filename)
         return self._text_cache
 
