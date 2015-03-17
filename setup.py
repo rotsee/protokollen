@@ -10,7 +10,7 @@ try:
         'python-magic',
         'oauth2client',
         'gdata',
-        'pdfminer == 20140328',
+        'pdfminer >= 20140328',
         'python-docx',  # good for text, bad for metadata
         'openxmllib',  # good for metadata, bad for text
         'pytesseract',
