@@ -4,10 +4,10 @@
 """
 
 from modules.extractors.documentBase import ExtractorBase, Page
+from modules.extractors.documentBase import CompatibilityError
 
 import subprocess
 from modules.metadata import Metadata
-from modules.documents.documentBase import CompatibilityError
 
 
 class DocPage(Page):

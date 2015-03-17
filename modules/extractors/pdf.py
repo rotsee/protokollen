@@ -7,6 +7,7 @@ import logging
 
 from modules.extractors.documentBase import ExtractorBase, Page
 from modules.extractors.documentBase import ExtractionNotAllowed
+from modules.extractors.documentBase import CompatibilityError
 from modules.metadata import Metadata
 from modules.xmp import xmp_to_dict
 from modules.utils import make_unicode
@@ -15,11 +16,10 @@ from modules.extractors.pdfUtils import Stream
 from PIL import Image
 from os import unlink
 from os import path as os_path
-from tempfile import NamedTemporaryFile
 
 from pytesseract import image_to_string
 
-from pdfminer.pdfparser import PDFParser
+from pdfminer.pdfparser import PDFParser, PSEOF
 from pdfminer.pdfdocument import PDFDocument, PDFEncryptionError
 from pdfminer.pdfpage import PDFPage, PDFTextExtractionNotAllowed
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
@@ -214,8 +214,8 @@ class PdfPageFromOcr(PdfPage):
                        self.pdf_path]
             subprocess.call(args=arglist, stderr=subprocess.STDOUT)
         except OSError as e:
-            logging.error("Failed to run GhostScript.\
-                           I/O error({0}): {1}".format(e.errno, e.strerror))
+            logging.error("Failed to run GhostScript." +
+                          "I/O error({0}): {1}".format(e.errno, e.strerror))
         # Do OCR
         import time
         time.sleep(1)  # make sure the server has time to write the files
@@ -233,8 +233,12 @@ class PdfMinerWrapper(object):
 
     def __enter__(self):
         self.file_pointer = open(self.filename, "rb")
-        self.parser = PDFParser(self.file_pointer)
-        self.document = PDFDocument(self.parser)
+        try:
+            self.parser = PDFParser(self.file_pointer)
+            self.document = PDFDocument(self.parser)
+        except PSEOF:
+            raise CompatibilityError("PdfMiner reported an unexpected EOF")
+
         if not self.document.is_extractable:
             raise PDFTextExtractionNotAllowed
         self.parser.set_document(self.document)
