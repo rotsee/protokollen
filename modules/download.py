@@ -1,4 +1,4 @@
-#coding=utf-8
+# -*- coding: utf-8 -*-
 # TODO:This should be renamed DownloadedFile orsimilar,as all Dropbox, S3 specific things can now go in the Storage class
 # File from web is special, and belongs in a download class
 
@@ -158,12 +158,10 @@ class FileFromWeb(File):
                 with open(self.localFile, "wb") as localFileHandle:
                     localFileHandle.write(f.read())
 
-            except urllib2.HTTPError, e:
-                logging.warning("HTTP Error: %s %s" % (e.code, url))
-            except urllib2.URLError, e:
-                logging.warning("URL Error: %s %s" % (e.reason, url))
-            except Exception as e:
-                logging.error("Error in FileFromWeb: %s" % e.reason)
+            except urllib2.HTTPError:
+                raise
+            except urllib2.URLError:
+                raise
 
             if self.exists():
                 self.success = True
@@ -175,9 +173,9 @@ class FileFromWeb(File):
 class FileFromS3(File):
     """Represents a file downloaded from Amazon S3.
     """
-    def __init__(self, key, localFile):
-        self.localFile = localFile
-        key.get_contents_to_filename(localFile)
+    def __init__(self, key, local_file):
+        self.localFile = local_file
+        key.get_contents_to_filename(local_file)
         self._determineMime()
 
 
