@@ -45,10 +45,10 @@ class Interface:
             dest="loglevel",
             help="""Log level.
                     5=only critical, 4=errors, 3=warnings, 2=info, 1=debug.
-                    Setting this to 1 will print a lot! Default=3.)""",
+                    Setting this to 1 will print a lot!)""",
             type=int,
             choices=(1, 2, 3, 4, 5),
-            default=3)
+            default=2)
         self.parser.add_argument(
             "-d", "--dry",
             dest="dryrun",
