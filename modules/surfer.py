@@ -7,8 +7,10 @@ from selenium.webdriver.support.events import AbstractEventListener
 from selenium.webdriver.common.action_chains import ActionChains
 
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import InvalidSelectorException
-from selenium.common.exceptions import ElementNotVisibleException
+from selenium.common.exceptions import \
+    InvalidSelectorException, \
+    TimeoutException, \
+    ElementNotVisibleException
 from xvfbwrapper import Xvfb
 from time import sleep
 import urlparse
@@ -16,6 +18,12 @@ from shutil import rmtree
 from os import listdir
 from os import sep as os_sep
 from tempfile import mkdtemp
+
+
+class ConnectionError(Exception):
+    """Generic error for timeouts, server error etc,
+       that are outside our control.
+    """
 
 
 class CustomListener(AbstractEventListener):
@@ -92,6 +100,12 @@ class Surfer:
                 ancestor = None
         return ancestor
 
+    def _scroll_element_into_view(self, element):
+        """Scroll attached element into view
+        """
+        y = element.location['y']
+        self.selenium_driver.execute_script('window.scrollTo(0, {0})'.format(y))
+
     def with_open_in_new_window(self, element, callback_, *args, **kwargs):
         """Shift-clicks on an element to open a new window,
            calls the callback function, and then closes the
@@ -108,6 +122,7 @@ class Surfer:
         try:
             actions = ActionChains(self.selenium_driver)
             actions.move_to_element(element).perform()
+            self._scroll_element_into_view(element)
             element.send_keys(Keys.SHIFT + Keys.ENTER)
         except ElementNotVisibleException:
             raise
@@ -124,7 +139,10 @@ class Surfer:
 
     def surf_to(self, url):
         """Simply go to an URL"""
-        self.selenium_driver.get(url)
+        try:
+            self.selenium_driver.get(url)
+        except TimeoutException:
+            raise ConnectionError
         self.selenium_driver.implicitly_wait(self.extra_delay)
 
     def click_on_stuff(self, xpath):
@@ -178,23 +196,23 @@ class Surfer:
                         raise Exception("No <select> parent found for <option>")
             self.selenium_driver.implicitly_wait(self.extra_delay)
 
-    def get_url_list(self, xPath):
+    def get_url_list(self, xpath):
         url_list = []
-        element_list = self.selenium_driver.find_elements_by_xpath(xPath)
+        element_list = self.selenium_driver.find_elements_by_xpath(xpath)
         for element in element_list:
             href = element.get_attribute("href")
             if href is not None:
                 url_list.append(Url(href))
         return url_list  # list of Url objects
 
-    def get_element_list(self, xPath):
+    def get_element_list(self, xpath):
         try:
-            return self.selenium_driver.find_elements_by_xpath(xPath)
+            return self.selenium_driver.find_elements_by_xpath(xpath)
         except InvalidSelectorException:
             pass
         # maybe our xPath points at an attribute?
         try:
-            return self.selenium_driver.find_elements_by_xpath(xPath + "/..")
+            return self.selenium_driver.find_elements_by_xpath(xpath + "/..")
         except InvalidSelectorException:
             pass
         return None

@@ -1,5 +1,5 @@
 #!/usr/bin/env python2
-#coding=utf-8
+# -*- coding: utf-8 -*-
 """This script will download all files pointed out by a series of URLs
    and xPath expressions, and put them in a storage (e.g. a local folder
    or an Amazon S3 server).
@@ -16,7 +16,7 @@ from copy import deepcopy
 
 from modules.interface import Interface
 from modules.download import FileFromWeb, File
-from modules.surfer import Surfer
+from modules.surfer import Surfer, ConnectionError
 from modules.datasheet import CSVFile, GoogleSheet
 from modules.utils import make_unicode
 from modules.databases.debuggerdb import DebuggerDB
@@ -57,7 +57,7 @@ def click_through_dlclicks(browser,
                                                 **kwargs
                                                 )
             except Exception as e:
-                ui.warning("Element not clickable. Check your xPath. %s" % e)
+                ui.warning("Element not clickable. %s" % e)
                 continue
 
     else:
@@ -120,7 +120,7 @@ def main():
         ui.debug("Browsing the web with %s" % browser.browser_version)
         run_harvest(data_set, browser, uploader, db)
     except Exception as e:
-        ui.critical("%s: %s" % (type(e), e))
+        ui.error("%s: %s" % (type(e), e))
         raise
     finally:
         ui.info("Closing virtual browser")
@@ -206,7 +206,7 @@ def do_download(browser, uploader, row, db):
                     db.put(dbkey, u"metadata", meta.data,
                            overwrite=ui.args.overwrite)
             except Exception as e:
-                ui.warning("Could not get metadata from %s. %s" % (dbkey, e))
+                ui.info("Could not get metadata from %s. %s" % (dbkey, e))
 
         else:
             ui.warning("%s is not an allowed mime type"
@@ -239,7 +239,11 @@ def run_harvest(data_set, browser, uploader, db):
         dlclicks = row.enumerated_columns(dlclick_headers)
 
         ui.info("Processing %s at URL %s" % (municipality, row["url"]))
-        browser.surf_to(row["url"])
+        try:
+            browser.surf_to(row["url"])
+        except ConnectionError as e:
+            ui.error(e)
+            continue
 
         for preclick in filter(None, preclicks):
             ui.debug("Preclicking %s " % preclick)
