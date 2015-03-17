@@ -106,10 +106,11 @@ class Surfer:
             element.send_keys(Keys.SHIFT + Keys.ENTER)
         except ElementNotVisibleException:
             raise
-        self.selenium_driver.implicitly_wait(self.extra_delay)
-        #FIXME implicitly_wait doesnät work on FF?
+        # self.selenium_driver.implicitly_wait(self.extra_delay)
+        # FIXME implicitly_wait doesn't work on FF?
         sleep(self.extra_delay)
         windows = self.selenium_driver.window_handles
+        self.selenium_driver.switch_to_default_content()
         self.selenium_driver.switch_to_window(windows[-1])
         res = callback_(self, *args, **kwargs)
         if len(windows) > 1:
