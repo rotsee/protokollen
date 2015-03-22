@@ -2,22 +2,21 @@
 from selenium.webdriver import Firefox, Chrome, FirefoxProfile
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.support.ui import Select
-from selenium.webdriver.support.events import EventFiringWebDriver
-from selenium.webdriver.support.events import AbstractEventListener
+from selenium.webdriver.support.events import (EventFiringWebDriver,
+                                               AbstractEventListener)
 from selenium.webdriver.common.action_chains import ActionChains
 
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import \
-    InvalidSelectorException, \
-    TimeoutException, \
-    ElementNotVisibleException
+from selenium.common.exceptions import (InvalidSelectorException,
+                                        TimeoutException,
+                                        ElementNotVisibleException)
 from xvfbwrapper import Xvfb
 from time import sleep
 import urlparse
 from shutil import rmtree
-from os import listdir
-from os import sep as os_sep
 from tempfile import mkdtemp
+from os import (listdir,
+                sep as os_sep)
 
 
 class ConnectionError(Exception):
@@ -56,8 +55,10 @@ class Surfer:
             # Download to temp dir, for files we can't open inline
             profile.set_preference("browser.download.dir", self.temp_dir)
             profile.set_preference("browser.download.folderList", 2)
-            profile.set_preference("browser.download.manager.showWhenStarting", "False")
-            profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/msword, application/vnd.ms-word, application/rtf, application/octet-stream")
+            profile.set_preference("browser.download.manager.showWhenStarting",
+                                   "False")
+            profile.set_preference("browser.helperApps.neverAsk.saveToDisk",
+                                   "application/msword, application/vnd.ms-word, application/rtf, application/octet-stream")
 
             # Add extension for overriding Content-Disposition headers, etc
             extensions_dir = os_sep.join(['bin', 'firefox-plugins-enabled'])
@@ -70,18 +71,18 @@ class Surfer:
             # Add extension for overriding Content-Disposition headers
             options = ChromeOptions()
             options.add_extension('bin/undisposition.crx')
-            driver = Chrome(executable_path='bin/chromedriver', chrome_options=options)
+            driver = Chrome(executable_path='bin/chromedriver',
+                            chrome_options=options)
         else:
             raise Exception("Not a valid browser name")
+
         self.selenium_driver = EventFiringWebDriver(driver, CustomListener())
         """selenium_driver is a EventFiringWebDriver, so that it can
            trigger javascript event
         """
-        self.browser_version = \
-            self.selenium_driver.capabilities['browserName'] \
-            + " " \
-            + self.selenium_driver.capabilities['version']
-        """Browser name and version, e.g. 'Firefox 33.0' """
+        self.browser_version = " ".join[
+            self.selenium_driver.capabilities['browserName'],
+            self.selenium_driver.capabilities['version']]  # 'Firefox 33.0'
 
     def get_last_download(self):
         files = sorted([
@@ -104,7 +105,8 @@ class Surfer:
         """Scroll attached element into view
         """
         y = element.location['y']
-        self.selenium_driver.execute_script('window.scrollTo(0, {0})'.format(y))
+        self.selenium_driver.execute_script('window.scrollTo(0, {0})'
+                                            .format(y))
 
     def with_open_in_new_window(self, element, callback_, *args, **kwargs):
         """Shift-clicks on an element to open a new window,
@@ -149,11 +151,9 @@ class Surfer:
         """Will click on any elements pointed out by xPath.
 
            Options in select menus will be selected, and an
-           onChange event fired (as this does not always happen automatically):
-           http://stackoverflow.com/questions/2544336/selenium-onchange-not-working
-
-           Currently assumes there is an id on the select element.
+           onChange event fired (as this does not always happen automatically)
         """
+        # FIXME: Select menus will only work if they have an id!
         element_list = self.selenium_driver.find_elements_by_xpath(xpath)
         if not element_list:
             raise Exception("No elements found for xPath `%s`" % xpath)
@@ -193,7 +193,7 @@ class Surfer:
                             self.selenium_driver.execute_script(js_function)
                             self.selenium_driver.execute_script("triggerChange();")
                     else:
-                        raise Exception("No <select> parent found for <option>")
+                        raise Exception("No <select> tag found for <option>")
             self.selenium_driver.implicitly_wait(self.extra_delay)
 
     def get_url_list(self, xpath):
