@@ -24,13 +24,7 @@ from modules.extractors.documentBase import CompatibilityError
 def main():
     """Entry point when run from command line"""
 
-    command_line_args = [{
-        "short": "-o",
-        "long": "--overwrite",
-        "dest": "overwrite",
-        "action": "store_true",
-        "help": "Overwrite old files and database values."
-    }, {
+    command_line_args = ["overwrite", {
         "short": "-f",
         "long": "--from",
         "dest": "start_from",

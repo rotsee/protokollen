@@ -35,25 +35,50 @@ class Interface:
     NORMAL_MODE = 0
     DRY_MODE = 1
 
+    predefined_args = {
+        "loglevel": {
+            "short": "-l",
+            "long": "--loglevel",
+            "dest": "loglevel",
+            "type": int,
+            "help": "Log level. " +
+                     "5=only critical, 4=errors, 3=warnings, 2=info, 1=debug.",
+            "choices": (1, 2, 3, 4, 5),
+            "default": 2
+        },
+        "dryrun": {
+            "short": "-d",
+            "long": "--dry",
+            "dest": "dryrun",
+            "action": 'store_true',
+            "help": "Dry run. Do not upload files, or put stuff in databases."
+        },
+        "overwrite": {
+            "short": "-o", "long": "--overwrite",
+            "action": "store_true",
+            "default": False,
+            "dest": "overwrite",
+            "help": "Should we overwrite existing files and database entries?"
+        },
+        "tempdir": {
+            "short": "-m",
+            "long": "--tempdir",
+            "type": str,
+            "default": "temp",
+            "dest": "tempdir",
+            "help": "Where should we put temporarily downloaded files?"
+        }
+    }
+
     def __init__(self, name, description, commandline_args=[]):
-        """Command line arguments can also be put in a file named
-           SCRIPTNAME_args.py, e.g. `harvest_args.py`.
+        """Command line arguments can be a list of shortcuts from
+        `predefined_args`, or a list of dictionaries. Arguments can also
+        be put in a file named SCRIPTNAME_args.py, e.g. `harvest_args.py`.
         """
         self.parser = argparse.ArgumentParser(description)
-        self.parser.add_argument(
-            "-l", "--loglevel",
-            dest="loglevel",
-            help="""Log level.
-                    5=only critical, 4=errors, 3=warnings, 2=info, 1=debug.
-                    Setting this to 1 will print a lot!)""",
-            type=int,
-            choices=(1, 2, 3, 4, 5),
-            default=2)
-        self.parser.add_argument(
-            "-d", "--dry",
-            dest="dryrun",
-            action='store_true',
-            help="Dry run. Do not upload files, or put stuff in databases.")
+
+        # Add one ubiqitous command line arguments
+        commandline_args += ["loglevel", "dryrun"]
 
         # Check for FILENAME_args.py file
         import __main__
@@ -62,11 +87,15 @@ class Interface:
             filename = os.path.basename(__main__.__file__)
             filename = os.path.splitext(filename)[0]
             args_from_file = __import__(filename + "_args")
-            commandline_args = commandline_args + args_from_file.args
+            commandline_args += args_from_file.args
         except ImportError:
             pass
 
+        # Add all the command line arguments
         for c in commandline_args:
+            # cCheck for shortcuts used
+            if isinstance(c, str):
+                c = self.predefined_args[c]
             self.parser.add_argument(
                 c.pop("short", None),
                 c.pop("long", None),
