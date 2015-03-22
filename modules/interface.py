@@ -67,6 +67,12 @@ class Interface:
             "default": "temp",
             "dest": "tempdir",
             "help": "Where should we put temporarily downloaded files?"
+        },
+        "limit": {
+            "short": "-i", "long": "--limit",
+            "dest": "limit",
+            "type": int,
+            "help": "Maximum number of operations."
         }
     }
 

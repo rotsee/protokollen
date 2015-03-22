@@ -26,18 +26,12 @@ commandline_args = [{
                in `/files/municipalities/Arboga/`.
                You can also use -1, to start from the end."""
 }, {
-    "short": "-o", "long": "--overwrite",
-    "action": "store_true",
-    "default": False,
-    "dest": "overwrite",
-    "help": "Should existing files and database entries be overwritten?"
-}, {
     "short": "-p", "long": "--path",
     "default": "/",
     "type": str,
     "help": "Folder path to look (recursively) in at Dropbox.",
     "dest": "path",
-}]
+}, "overwrite"]
 ui = Interface(__file__,
                """This script will import files from a custom
                   storage, and add them to the Protokollen
@@ -74,6 +68,7 @@ def main():
                                     settings.access_token,
                                     settings.bucket_name)
 
+    ui.info("Connecting to Dropbox storage")
     source = DropboxStorage(settings.dropbox_key,
                             settings.dropbox_secret,
                             token=settings.dropbox_token,

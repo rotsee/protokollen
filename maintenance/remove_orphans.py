@@ -12,15 +12,9 @@ from modules.interface import Interface
 def main():
     """Entry point when run from command line"""
 
-    commandline_args = [{
-        "short": "-m", "long": "--limit",
-        "dest": "limit",
-        "type": int,
-        "help": """Maximum number of operations."""
-    }]
     ui = Interface(__file__,
                    "Removes files w/o db entries and vice versa",
-                   commandline_args=commandline_args)
+                   commandline_args=["limit"])
 
     ui.info("Connecting to file storage")
     file_storage = settings.Storage(settings.access_key_id,
