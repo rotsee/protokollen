@@ -80,9 +80,9 @@ class Surfer:
         """selenium_driver is a EventFiringWebDriver, so that it can
            trigger javascript event
         """
-        self.browser_version = " ".join[
+        self.browser_version = " ".join([
             self.selenium_driver.capabilities['browserName'],
-            self.selenium_driver.capabilities['version']]  # 'Firefox 33.0'
+            self.selenium_driver.capabilities['version']])  # 'Firefox 33.0'
 
     def get_last_download(self):
         files = sorted([
