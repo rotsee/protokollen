@@ -66,10 +66,12 @@ class S3Connection(object):
     def put_file(self, local_filename, s3name, headers=None):
         k = Key(self._bucket, s3name)
         k.set_contents_from_filename(local_filename)
+        k.set_acl('public-read')
 
     def put_file_from_string(self, string, s3name, headers=None):
         k = Key(self._bucket, s3name)
         k.set_contents_from_string(string)
+        k.set_acl('public-read')
 
 if __name__ == "__main__":
     print "This module is only intended to be called from other scripts."
