@@ -207,8 +207,8 @@ class PdfPageFromOcr(PdfPage):
                        "-dSAFE",
                        "-dQUIET",
                        "-o" + temp_filename,
-                       "-sDEVICE=png16m",
-                       "-r300",
+                       "-sDEVICE=pnggray",
+                       "-r600",
                        "-dFirstPage=" + str(self.page_number),
                        "-dLastPage=" + str(self.page_number),
                        self.pdf_path]
