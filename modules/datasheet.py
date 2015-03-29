@@ -1,4 +1,4 @@
-#coding=utf-8
+# -*- coding: utf-8 -*-
 
 import logging
 
@@ -43,7 +43,7 @@ class DataSet(object):
 
     def _append_keys_to_header(self, dictionary):
         for key in dictionary.keys():
-            if not key in self.headers:
+            if key not in self.headers:
                 self.headers.append(key)
 
     def get_enumerated_headers(self, name, start_from=1):
@@ -91,7 +91,7 @@ class DataSet(object):
     def get_next(self):
         """Get the rows, one at a time:
 
-              for row in my_data.getNext():
+              for row in my_data.get_next():
                   print row
         """
         for row in self.data:
@@ -119,6 +119,31 @@ class HeaderlessDataSet(DataSet):
             self.data.append(Row(data_row))
 
 
+class DBFFile(DataSet):
+    """Represents data from a .dbf file. Data is loaded on init.
+    """
+    def __init__(self, filename,
+                 delimiter=',', quotechar='"', has_headers=True):
+        from dbfpy import dbf
+        self.delimiter = delimiter
+        self.quotechar = quotechar
+        self.filename = filename
+        self.data = []
+        self.width = 0
+        self.headers = []
+
+        db = dbf.Dbf(self.filename)
+        self.headers = db.fieldNames
+        try:
+            for row in db:
+                row_dict = {}
+                for key in self.headers:
+                    row_dict[key] = row[key]
+                self.data.append(Row(row_dict))
+        except ValueError:
+            pass
+
+
 class CSVFile(DataSet):
     """Represents data from a CSV file. Data is loaded on init.
     """
@@ -135,12 +160,12 @@ class CSVFile(DataSet):
         try:
             with open(self.filename, 'rb') as csvfile:
                 reader = csv.reader(csvfile)
-                firstRow = has_headers
+                first_row = has_headers
                 for row in reader:
-                    if firstRow:
+                    if first_row:
                         self.headers = row
                         self.width = len(self.headers)
-                        firstRow = False
+                        first_row = False
                     else:
                         row_dict = {}
                         i = 0
@@ -174,7 +199,7 @@ class GoogleSheet(DataSet):
         self.data = []
         self.headers = []
 
-        #Two step authorization
+        # Two step authorization
         from oauth2client.client import SignedJwtAssertionCredentials
         private_key = self._getPrivateKeyFromP12File(p12file)
         OAuth2Credentials = SignedJwtAssertionCredentials(
