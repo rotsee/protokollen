@@ -43,7 +43,7 @@ class DataSet(object):
 
     def _append_keys_to_header(self, dictionary):
         for key in dictionary.keys():
-            if key not in self.headers:
+            if not key in self.headers:
                 self.headers.append(key)
 
     def get_enumerated_headers(self, name, start_from=1):
@@ -132,16 +132,31 @@ class DBFFile(DataSet):
         self.width = 0
         self.headers = []
 
-        db = dbf.Dbf(self.filename)
+        db = dbf.Dbf(self.filename, True)
         self.headers = db.fieldNames
-        try:
-            for row in db:
-                row_dict = {}
-                for key in self.headers:
-                    row_dict[key] = row[key]
-                self.data.append(Row(row_dict))
-        except ValueError:
-            pass
+
+        # using the default `for row in db` will cause a crash on invalid
+        # fields produced by QGIS
+        for i in range(0, len(db)):
+            row_dict = {}
+            for key in self.headers:
+                header = db.header[key]
+                try:
+                    record = db[i].rawFromStream(db, i)
+                    val = header.decodeFromRecord(record)
+                except ValueError:
+                    val = None
+                row_dict[key] = val
+            self.data.append(Row(row_dict))
+
+        # Cleaner method, whenever this issue is fixed in  DBFpy
+        """
+        for row in db:
+            row_dict = {}
+            for key in self.headers:
+                row_dict[key] = row[key]
+            self.data.append(Row(row_dict))
+        """
 
 
 class CSVFile(DataSet):
