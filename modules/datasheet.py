@@ -178,7 +178,7 @@ class CSVFile(DataSet):
                 first_row = has_headers
                 for row in reader:
                     if first_row:
-                        self.headers = row
+                        self.headers = [h.strip() for h in row]
                         self.width = len(self.headers)
                         first_row = False
                     else:
