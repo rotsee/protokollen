@@ -16,7 +16,7 @@ Prerequisites
 
 For harvester.py
 ----------------
- * Firefox (tested with versions 32 through 36) or Chrome (tested with versions 38 through 41)
+ * Firefox (tested with versions 32 through 37) or Chrome (tested with versions 38 through 41)
  * Xvfb (tested with version 1.15)
  * [Service-account credentials](https://developers.google.com/console/help/new/#serviceaccounts) from the [Google developers console](https://console.developers.google.com/), if you wish to use Google Spreadsheets as the source for your harvesting. Not needed if you use a local CSV file.
  * python-magic (installed by setup.py) and libmagic (needs to be installed separately)
