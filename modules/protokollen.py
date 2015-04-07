@@ -48,7 +48,7 @@ class Files(object):
         return (self.storage.prefix_exists(filekey) and
                 self.db.exists(dbkey))
 
-    def store_file(self, local_filename, filetype, origin, source,
+    def store_file(self, local_file, origin, source,
                    harvesting_rules=None, overwrite=False):
         """origin and filetype is used for consistent naming.
            A hash value for the filename can be used for backwards
@@ -58,20 +58,24 @@ class Files(object):
            `source` is the URL this file was harvested from, if any
         """
 
+        filetype = local_file.get_file_type()
+        fileext = local_file.get_file_extension()
+
         if filetype not in settings.allowedFiletypes:
-            self.ui.info("%s is not an allowed file type" % filetype)
+            self.ui.info("%s is not an allowed file type" % fileext)
             return
 
+        local_filename = local_file.localFile
         filename = md5sum(local_filename)
 
-        if self.exists(origin, filename, filetype) and not overwrite:
+        if self.exists(origin, filename, fileext) and not overwrite:
             self.ui.debug("Not overwriting %s/%s" % (origin, filename))
             return
 
         remote_name = self.storage.buildRemoteName(filename,
                                                    path=origin,
-                                                   ext=filetype)
-        dbkey = self.db.create_key([origin, filename + "." + filetype])
+                                                   ext=fileext)
+        dbkey = self.db.create_key([origin, filename + "." + fileext])
 
         self.ui.info("Storing %s in storage" % local_filename)
         self.storage.put_file(local_filename, remote_name)
@@ -81,13 +85,14 @@ class Files(object):
         self.db.put(dbkey, u"origin", source)  # URL
         # Should rather be the more generic “origin”
         self.db.put(dbkey, u"municipality", origin)
-        self.db.put(dbkey, u"file_type", filetype)
+        self.db.put(dbkey, u"file_type", fileext)
         self.db.put(dbkey, u"storage_path", remote_name)
         self.db.put(dbkey, u"harvesting_rules", harvesting_rules)
+        extractor = local_file.extractor()
+        extractor_name = type(extractor).__name__
+        self.db.put(dbkey, u"extractor", extractor_name)
         try:
             self.ui.debug("Extracting metadata")
-            type_ = FileType.ext_to_type_dict[filetype]
-            extractor = FileType.type_to_extractor_dict[type_].extractor()
             meta = extractor.get_metadata()
             self.db.put(dbkey, u"metadata", meta.data, overwrite=overwrite)
         except Exception as e:
