@@ -104,7 +104,8 @@ def main():
         # File paths was not always stored in db, so might very well be missing
         if file_path != file_path_from_db:
             ui.warning("File paths from storage and db do not match")
-            ui.debug("Storage: %s; Db: %s" % (file_path, file_path_from_db))
+            ui.debug(file_path)
+            ui.debug(file_path_from_db)
             if not ui.ask_if_continue():
                 ui.exit()
 
