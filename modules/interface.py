@@ -37,8 +37,7 @@ class Interface:
 
     predefined_args = {
         "loglevel": {
-            "short": "-l",
-            "long": "--loglevel",
+            "short": "-l", "long": "--loglevel",
             "dest": "loglevel",
             "type": int,
             "help": "Log level. " +
@@ -47,8 +46,7 @@ class Interface:
             "default": 2
         },
         "dryrun": {
-            "short": "-d",
-            "long": "--dry",
+            "short": "-d", "long": "--dry",
             "dest": "dryrun",
             "action": 'store_true',
             "help": "Dry run. Do not upload files, or put stuff in databases."
@@ -61,8 +59,7 @@ class Interface:
             "help": "Should we overwrite existing files and database entries?"
         },
         "tempdir": {
-            "short": "-m",
-            "long": "--tempdir",
+            "short": "-m", "long": "--tempdir",
             "type": str,
             "default": "temp",
             "dest": "tempdir",
