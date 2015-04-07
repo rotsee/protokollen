@@ -13,7 +13,7 @@ from modules.extractors.rtf import RtfExtractor
 from modules.extractors.html import HtmlExtractor
 
 
-class FileType:
+class FileType(object):
     UNKNOWN = 0
     PDF = 1
     DOC = 2
