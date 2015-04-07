@@ -13,6 +13,7 @@ from modules.interface import Interface
 from modules.protokollen import Files
 from modules.datasheet import CSVFile
 from modules.download import FileFromWeb
+from urllib2 import HTTPError
 
 commandline_args = [{
     "short": "-f", "long": "--file",
@@ -30,10 +31,13 @@ def main():
     files_connection = Files(ui)
     csv_file = CSVFile(ui.args.csv_file, has_headers=False)
     for row in csv_file.get_next():
-        print row
         origin = row["0"]
         url = row["1"]
-        downloaded_file = FileFromWeb(url, "../temp/tempfile")
+        try:
+            downloaded_file = FileFromWeb(url, "../temp/tempfile")
+        except HTTPError:
+            ui.warning("Url not found: %s" % url)
+            continue
         files_connection.store_file(downloaded_file, origin, url)
 
 if __name__ == '__main__':
