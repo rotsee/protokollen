@@ -161,6 +161,9 @@ def main():
                 print "text length",
                 print len(document.text)
                 continue
+            if (len(document.text) == 0) or document.text.isspace():
+                ui.info("Skipping empty document")
+                continue
             """ "Ale kommun-xxx-1" """
             docs_db.put(docs_dbkey, "meeting_date", document.date)
             docs_db.put(docs_dbkey, "file_key", files_dbkey)
