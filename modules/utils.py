@@ -46,6 +46,20 @@ python_encodings = ["ascii",
 """
 
 
+def md5sum(filename, blocksize=65536):
+    """Create md5sum for a (potentially) large file.
+
+       WARNING: MD5isbroken, do not use for cryptographic purposes!
+
+    """
+    import hashlib
+    hash = hashlib.md5()
+    with open(filename, "r+b") as f:
+        for block in iter(lambda: f.read(blocksize), ""):
+            hash.update(block)
+    return hash.hexdigest()
+
+
 def make_unicode(str_):
     """This method will try to convert any string to a unicode object,
        using whatever encoding works. This is a last resort, when we
