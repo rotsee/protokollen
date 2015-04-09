@@ -15,11 +15,11 @@ from collections import deque
 from copy import deepcopy
 
 from modules.interface import Interface
+from modules.protokollen import Files
 from modules.download import FileFromWeb, File
 from modules.surfer import Surfer, ConnectionError
 from modules.datasheet import CSVFile, GoogleSheet
 from modules.utils import make_unicode
-from modules.databases.debuggerdb import DebuggerDB
 
 ui = Interface(__file__,
                """This script will download all files pointed out by
@@ -68,7 +68,6 @@ def main():
     """Entry point when run from command line.
        Variables:
 
-       db: A Database object, or None if no database is defined in settings.py
        data_set: A DataSet object with instructions for the harvester
        browser: A Surfer object, e.g. a wrapper for a selenium browser
 
@@ -92,33 +91,19 @@ def main():
         ui.error("No local file given, and no Google Spreadsheet key found.")
         ui.exit()
 
-    ui.info("Setting up db connection for storing data on downloaded files.")
-    try:
-        db = settings.Database(settings.db_server,
-                               settings.db_harvest_table,
-                               "info",
-                               port=settings.db_port
-                               )
-    except (TypeError, NameError, AttributeError):
-        ui.info("No database setup found, using DebuggerDB")
-        db = DebuggerDB(None, settings.db_harvest_table or "TABLE")
-
     Interface.SUPERDRY_MODE = 2  # add an extra level of dryness
     if ui.args.superdryrun:
         ui.info("Running in super dry mode")
         ui.executionMode = Interface.SUPERDRY_MODE
 
-    ui.info("Connecting to file storage")
-    uploader = settings.Storage(settings.access_key_id,
-                                settings.secret_access_key,
-                                settings.access_token,
-                                settings.bucket_name)
+    ui.info("Setting up Files connection.")
+    files_connection = Files(ui)
 
     ui.info("Setting up virtual browser")
     browser = Surfer(browser=settings.browser, delay=1)
     try:
         ui.debug("Browsing the web with %s" % browser.browser_version)
-        run_harvest(data_set, browser, uploader, db)
+        run_harvest(data_set, browser, files_connection)
     except Exception as e:
         ui.error("%s: %s" % (type(e), e))
         raise
@@ -127,8 +112,8 @@ def main():
         browser.kill()
 
 
-def do_download(browser, uploader, row, db):
-    """Get the file, put it in the storage, and add a db entry for it
+def do_download(browser, row, files_connection):
+    """Get the file, and add it to files_connection
     """
     ui.debug("Starting download at %s" % browser.selenium_driver.current_url)
     if browser.selenium_driver.current_url == "about:blank":
@@ -143,74 +128,31 @@ def do_download(browser, uploader, row, db):
         # as there is a slight risk of duplicate names.
         # Don't use path, that can be temporary.
         short_name = path.split(url)[-1]
-#        print short_name
-#        print make_unicode(short_name)
         try:
-            filename = md5(row["source"] + short_name).hexdigest()
+            old_style_name = md5(row["origin"] +
+                                 short_name).hexdigest()
         except UnicodeDecodeError:
-            filename = md5(row["source"] + make_unicode(short_name)).hexdigest()
+            old_style_name = md5(row["origin"] +
+                                 make_unicode(short_name)).hexdigest()
         local_filename = url
         download_file = File(url)
         # if we didn't get the file from an URL, we don't know
-        # the origin. Use the starting URL
-        origin = row["url"]
+        # the source. Use the starting URL
+        source_url = row["url"]
     else:
         # Did we open the document inline? Get the file from
         # the current URL
         ui.debug("Adding URL %s" % browser.selenium_driver.current_url)
-        url = browser.selenium_driver.current_url
-        filename = md5(url).hexdigest()
-        local_filename = path.join(ui.args.tempdir, filename)
-        download_file = FileFromWeb(url, local_filename, settings.user_agent)
-        origin = url
+        source_url = browser.selenium_driver.current_url
+        old_style_name = md5(source_url).hexdigest()
+        local_filename = path.join(ui.args.tempdir, old_style_name)
+        download_file = FileFromWeb(source_url, local_filename,
+                                    settings.user_agent)
 
-    filetype = download_file.get_file_type()
-    file_ext = download_file.get_file_extension()
-    remote_name = uploader.buildRemoteName(filename,
-                                           path=row["source"],
-                                           ext=file_ext)
-    dbkey = db.create_key([row["source"], filename + "." + file_ext])
-    """ Database key is created from municipality and filename"""
-
-    # Check if a file with this name exists
-    # in both storage and DB
-    if (uploader.prefix_exists(remote_name) and
-       db.exists(dbkey) is not None and
-       ui.args.overwrite is not True):
-        ui.debug("%s already exists, not overwriting" % url)
-    else:
-        if filetype in settings.allowedFiletypes:
-            ui.info("Storing %s" % filename)
-            if ui.executionMode < Interface.DRY_MODE:
-                uploader.put_file(local_filename, remote_name)
-
-            ui.debug("Storing file data in database")
-            if ui.executionMode < Interface.DRY_MODE:
-                db.put(dbkey, u"origin", origin)
-                # Should rather be the more generic “source”
-                db.put(dbkey, u"municipality", row["source"])
-                db.put(dbkey, u"file_type", file_ext)
-                db.put(dbkey, u"storage_path", remote_name)
-                db.put(dbkey, u"harvesting_rules", row,
-                       overwrite=ui.args.overwrite)
-            try:
-                ui.debug("Extracting metadata")
-                extractor = download_file.extractor()
-                # HtmlExtractor will want to know where in the page to
-                # look for content. Send `html` column, if any
-                if "html" in row:
-                    extractor.content_xpath = row["html"]
-                meta = extractor.get_metadata()
-                ui.debug(meta.data)
-                if ui.executionMode < Interface.DRY_MODE:
-                    db.put(dbkey, u"metadata", meta.data,
-                           overwrite=ui.args.overwrite)
-            except Exception as e:
-                ui.info("Could not get metadata from %s. %s" % (dbkey, e))
-
-        else:
-            ui.warning("%s is not an allowed mime type"
-                       % download_file.mimeType)
+    # Check for old naming convention before storing
+    extension = download_file.get_file_extension()
+    if not files_connection.exists(row["origin"], old_style_name, extension):
+        files_connection.store_file(download_file, row["origin"], source_url)
 
     try:
         download_file.delete()
@@ -218,7 +160,7 @@ def do_download(browser, uploader, row, db):
         ui.warning("Could not delete temp file %s (%s)" % (local_filename, e))
 
 
-def run_harvest(data_set, browser, uploader, db):
+def run_harvest(data_set, browser, files_connection):
     """ This is a tree step process, for each row in the data set:
 
         1. Go to a URL
@@ -227,18 +169,17 @@ def run_harvest(data_set, browser, uploader, db):
         3. Recursively do a sequence of 1 or more clicks, to reach each
            document. Documents are sometimes spread across multiple files.
     """
-    data_set.filter(require=["source", "url", "dlclick1"])
+    data_set.filter(require=["origin", "url", "dlclick1"])
     data_set.shuffle()  # give targets some rest between requests
     ui.info("Data contains %d rows" % data_set.get_length())
     preclick_headers = data_set.get_enumerated_headers("preclick")
     dlclick_headers = data_set.get_enumerated_headers("dlclick")
 
     for row in data_set.get_next():
-        municipality = row["source"]
         preclicks = row.enumerated_columns(preclick_headers)
         dlclicks = row.enumerated_columns(dlclick_headers)
 
-        ui.info("Processing %s at URL %s" % (municipality, row["url"]))
+        ui.info("Processing %s at URL %s" % (row["origin"], row["url"]))
         try:
             browser.surf_to(row["url"])
         except ConnectionError as e:
@@ -256,9 +197,8 @@ def run_harvest(data_set, browser, uploader, db):
         click_through_dlclicks(browser,
                                deque(filter(None, dlclicks)),
                                callback=do_download,
-                               uploader=uploader,
                                row=row,
-                               db=db)
+                               files_connection=files_connection)
 
 if __name__ == '__main__':
     main()
