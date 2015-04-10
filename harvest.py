@@ -20,6 +20,7 @@ from modules.download import FileFromWeb, File
 from modules.surfer import Surfer, ConnectionError
 from modules.datasheet import CSVFile, GoogleSheet
 from modules.utils import make_unicode
+from modules.database import DbConnectionError
 
 ui = Interface(__file__,
                """This script will download all files pointed out by
@@ -30,7 +31,7 @@ ui = Interface(__file__,
 
 def click_through_dlclicks(browser,
                            dlclicks_deque,
-                           callback=None,
+                           callback,
                            *args,
                            **kwargs):
     """Move through a deque of xpath expressions (left to right),
@@ -52,12 +53,15 @@ def click_through_dlclicks(browser,
                                                 # `browser` will be prepended
                                                 click_through_dlclicks,
                                                 new_dlclicks_deque,
-                                                callback=callback,
+                                                callback,
                                                 *args,
                                                 **kwargs
                                                 )
+            except DbConnectionError:
+                ui.critical("Could not connect to database. Exiting.")
+                ui.exit()
             except Exception as e:
-                ui.warning("Element not clickable. %s" % e)
+                ui.warning("Could not get files: %s" % e)
                 continue
 
     else:
@@ -196,7 +200,7 @@ def run_harvest(data_set, browser, files_connection):
         ui.debug("Getting URL list from %s and on" % row["dlclick1"])
         click_through_dlclicks(browser,
                                deque(filter(None, dlclicks)),
-                               callback=do_download,
+                               do_download,
                                row=row,
                                files_connection=files_connection)
 
