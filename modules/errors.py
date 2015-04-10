@@ -5,7 +5,7 @@
     standalone module because it has to handle errors from both this code base
     and the Maui text analyzer.
 
-    An error report MUST contain a description and an api key. 
+    An error report MUST contain a description and an api key.
     An error report CAN contain:
     - error_type:   a categorization of the error type
     - document:     the document that the error refer to
@@ -27,7 +27,6 @@ class ErrorReport(object):
         self.error_type = error_type
         self.document = document
         self.level = level
-        
 
     def post(self):
         """ Submit to the error to the Error API. The request will trigger
@@ -48,7 +47,7 @@ class ErrorReport(object):
                 'level': self.level
             }
 
-            urlopen(req, json.dumps(self.args))
+            urlopen(req, json.dumps(args))
             logging.info("Successfully posted an error report")
 
         except HTTPError, err:
