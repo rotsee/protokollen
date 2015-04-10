@@ -20,7 +20,7 @@ from modules.download import FileFromWeb, File
 from modules.surfer import Surfer, ConnectionError
 from modules.datasheet import CSVFile, GoogleSheet
 from modules.utils import make_unicode
-from modules.database import DbConnectionError
+from modules.databases.database import DbConnectionError
 
 ui = Interface(__file__,
                """This script will download all files pointed out by
