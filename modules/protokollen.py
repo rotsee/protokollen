@@ -8,7 +8,6 @@
 
 import settings
 from modules.databases.debuggerdb import DebuggerDB
-from modules.download import FileType
 from modules.utils import md5sum
 
 
