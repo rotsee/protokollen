@@ -118,7 +118,8 @@ def main():
                     extractor = download_file.extractor()
                     meta = extractor.get_metadata()
                     ui.debug(meta.data)
-                    db.put(dbkey, u"metadata", meta.data, overwrite=ui.args.overwrite)
+                    db.put(dbkey, u"metadata", meta.data,
+                           overwrite=ui.args.overwrite)
                 except Exception as e:
                     ui.info("Could not get metadata from %s. %s" % (dbkey, e))
 
@@ -128,7 +129,8 @@ def main():
         try:
             download_file.delete()
         except Exception as e:
-            ui.warning("Could not delete temp file %s (%s)" % (local_filename, e))
+            ui.warning("Could not delete temp file %s (%s)" %
+                       (local_filename, e))
 
 
 if __name__ == '__main__':
