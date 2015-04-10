@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
-"""This module contains the base class for all database classes.
+"""This module contains the base class and error classes
+   for all database classes.
 """
+
+
+class DbConnectionError(Exception):
+    """The database could not be reached.
+    """
 
 
 class Database(object):

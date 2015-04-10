@@ -2,9 +2,9 @@
 """This module contains a class for interacting with ElasticSearch
 """
 
-from modules.databases.database import Database
+from modules.databases.database import Database, DbConnectionError
 from elasticsearch import Elasticsearch
-from elasticsearch.exceptions import NotFoundError
+from elasticsearch.exceptions import NotFoundError, ConnectionError
 from datetime import datetime
 import logging
 
@@ -29,6 +29,8 @@ class ElasticSearch(Database):
             return res["_source"]
         except NotFoundError:
             return None
+        except ConnectionError:
+            raise DbConnectionError
 
     def delete(self, key):
         try:
