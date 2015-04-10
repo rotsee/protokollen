@@ -18,7 +18,7 @@ try:
         'pyOpenSSL',  # required, in practice, by oauth2client
         'boto',
         'elasticsearch',
-        'numpy',  # for nltk. Not *actually* needed.
+#       'numpy',  # for nltk. Not *actually* needed.
         'nltk',
         'beautifulsoup4',
         'html5lib',
