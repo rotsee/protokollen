@@ -135,9 +135,11 @@ class Surfer:
         if len(windows) > 1:
             res = callback_(self, *args, **kwargs)
             self.selenium_driver.close()
-        windows = self.selenium_driver.window_handles
-        self.selenium_driver.switch_to_window(windows[-1])
-        return res
+            windows = self.selenium_driver.window_handles
+            self.selenium_driver.switch_to_window(windows[-1])
+            return res
+        else:
+            return None
 
     def surf_to(self, url):
         """Simply go to an URL"""
