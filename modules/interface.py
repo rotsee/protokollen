@@ -135,19 +135,19 @@ class Interface:
         self.logger.info(msg, *args, **kwargs)
 
     def warning(self, msg, *args, **kwargs):
-        msg = TerminalColors.WARNING + msg + TerminalColors.ENDC
-        self.logger.warning(msg, *args, **kwargs)
+        cmsg = TerminalColors.WARNING + msg + TerminalColors.ENDC
+        self.logger.warning(cmsg, *args, **kwargs)
         self.post_error(logging.WARNING, msg)
 
     def error(self, msg, *args, **kwargs):
-        msg = TerminalColors.FAIL + msg + TerminalColors.ENDC
-        self.logger.error(msg, *args, **kwargs)
+        cmsg = TerminalColors.FAIL + msg + TerminalColors.ENDC
+        self.logger.error(cmsg, *args, **kwargs)
         self.post_error(logging.ERROR, msg)
 
     def critical(self, msg, *args, **kwargs):
-        msg = TerminalColors.FAIL + TerminalColors.BOLD + \
+        cmsg = TerminalColors.FAIL + TerminalColors.BOLD + \
             msg + TerminalColors.ENDC
-        self.logger.critical(msg, *args, **kwargs)
+        self.logger.critical(cmsg, *args, **kwargs)
         self.post_error(logging.CRITICAL, msg)
 
     def dry_mode(self):
