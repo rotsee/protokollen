@@ -9,12 +9,9 @@
 
 import settings
 
-from hashlib import md5
-
+from modules.protokollen import Files
 from modules.interface import Interface
 from modules.storage import DropboxStorage
-from modules.databases.debuggerdb import DebuggerDB
-from modules.utils import make_unicode
 
 commandline_args = [{
     "short": "-f", "long": "--source-from-fragment",
@@ -40,33 +37,10 @@ ui = Interface(__file__,
 
 
 def main():
-    """Entry point when run from command line.
-       Variables:
-        * db: A Database object, as defined in settings.py
-        * dest_storage: A storage, as defined in settings.py
-        * source: A storage holding files to be imported
-    """
-    ui.info("Setting up db connection for storing data on downloaded files.")
-    try:
-        db = settings.Database(settings.db_server,
-                               settings.db_harvest_table,
-                               "info",
-                               port=settings.db_port
-                               )
-    except (TypeError, NameError, AttributeError):
-        ui.info("No database setup found, using DebuggerDB")
-        db = DebuggerDB(None, settings.db_harvest_table or "TABLE")
+    """Entry point when run from command line."""
 
-    if ui.args.path is None:
-        ui.warning("No Dropbox path given. Will start from your root folder.")
-        if ui.ask_if_continue() is False:
-            ui.exit()
-
-    ui.info("Connecting to file storage")
-    dest_storage = settings.Storage(settings.access_key_id,
-                                    settings.secret_access_key,
-                                    settings.access_token,
-                                    settings.bucket_name)
+    ui.info("Setting up DB and storage connection")
+    files_connection = Files(ui)
 
     ui.info("Connecting to Dropbox storage")
     source = DropboxStorage(settings.dropbox_key,
@@ -74,63 +48,20 @@ def main():
                             token=settings.dropbox_token,
                             path=ui.args.path)
 
+    local_file = "../temp/tempfile"
+
     for file_ in source.get_next_file():
-        try:
-            filename = md5(file_.name).hexdigest()
-        except UnicodeEncodeError:
-            filename = md5(unicode(file_.name).encode('utf-8')).hexdigest()
-        except UnicodeDecodeError:
-            filename = md5(make_unicode(file_.name)).hexdigest()
-        local_filename = "temp/" + filename
-        download_file = source.get_file(file_, local_filename)
-        source_fragment = file_.path_fragments[ui.args.source_fragment]
 
-        filetype = download_file.get_file_type()
-        file_ext = download_file.get_file_extension()
-        remote_name = dest_storage.buildRemoteName(filename,
-                                                   path=source_fragment,
-                                                   ext=file_ext)
-        """ Remote file name is created from source and filename"""
-        dbkey = db.create_key([source_fragment, filename + "." + file_ext])
-        """ Database key is created from source and filename"""
+        download_file = source.get_file(file_, local_file)
+        origin = file_.path_fragments[ui.args.source_fragment]
 
-        # Check if a file with this name exists
-        # in both storage and DB
-        if (dest_storage.prefix_exists(remote_name) and
-           db.exists(dbkey) and
-           ui.args.overwrite is not True):
-            ui.debug("%s already exists, not overwriting" % dbkey)
-        else:
-            if filetype in settings.allowedFiletypes:
-                ui.info("Storing %s" % local_filename)
-                dest_storage.put_file(local_filename, remote_name)
+        files_connection.store_file(download_file, origin, None)
 
-                ui.debug("Storing file data in database")
-                db.put(dbkey, u"origin", file_.basename)
-
-                # Should rather be the more generic “source”
-                db.put(dbkey, u"municipality", source_fragment)
-                db.put(dbkey, u"file_type", file_ext)
-                db.put(dbkey, u"storage_path", remote_name)
-                db.put(dbkey, u"harvesting_rules", None)
-                try:
-                    ui.debug("Extracting metadata")
-                    extractor = download_file.extractor()
-                    meta = extractor.get_metadata()
-                    ui.debug(meta.data)
-                    db.put(dbkey, u"metadata", meta.data,
-                           overwrite=ui.args.overwrite)
-                except Exception as e:
-                    ui.info("Could not get metadata from %s. %s" % (dbkey, e))
-
-            else:
-                ui.warning("%s is not an allowed mime type or download failed"
-                           % download_file.mimeType)
         try:
             download_file.delete()
         except Exception as e:
             ui.warning("Could not delete temp file %s (%s)" %
-                       (local_filename, e))
+                       (local_file, e))
 
 
 if __name__ == '__main__':
