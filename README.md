@@ -64,7 +64,7 @@ Ubuntu, Debian, Linux Mint, others
 ----------------------------------
 Make sure all dependencies are installed
 
-    sudo apt-get update && sudo apt-get install git python xvfb firefox libmagic-dev wv
+    sudo apt-get update && sudo apt-get install git python xvfb firefox libmagic-dev wv python python-dev
 
 Clone the repository
 
@@ -81,6 +81,10 @@ Start harvesting
 
     python harvest.py -f data/xpath_sample_data.csv -l 2
 
+Getting dependency errors for `httplib2` when running `setup.py`  ? Try this:
+
+    sudo pip uninstall urllib3 six
+    sudo python ./setup.py develop
 
 Using ProtoCollection
 =====================
