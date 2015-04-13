@@ -327,6 +327,8 @@ class PdfExtractor(ExtractorBase):
             # I have actually no idea what going on here,
             # but this error occurs in some protected PDF's
             raise ExtractionNotAllowed
+        except TypeError:
+            raise CompatibilityError
 
     def get_text(self):
         """Returns all text content from the PDF as plain text.
