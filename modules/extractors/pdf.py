@@ -6,8 +6,8 @@
 import logging
 
 from modules.extractors.documentBase import ExtractorBase, Page
-from modules.extractors.documentBase import ExtractionNotAllowed
-from modules.extractors.documentBase import CompatibilityError
+from modules.extractors.documentBase import\
+    ExtractionNotAllowed, CompatibilityError
 from modules.metadata import Metadata
 from modules.xmp import xmp_to_dict
 from modules.utils import make_unicode
@@ -19,7 +19,7 @@ from os import path as os_path
 
 from pytesseract import image_to_string
 
-from pdfminer.pdfparser import PDFParser, PSEOF
+from pdfminer.pdfparser import PDFParser, PSEOF, PDFSyntaxError
 from pdfminer.pdfdocument import PDFDocument, PDFEncryptionError
 from pdfminer.pdfpage import PDFPage, PDFTextExtractionNotAllowed
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
@@ -238,6 +238,8 @@ class PdfMinerWrapper(object):
             self.document = PDFDocument(self.parser)
         except PSEOF:
             raise CompatibilityError("PdfMiner reported an unexpected EOF")
+        except PDFSyntaxError:
+            raise CompatibilityError("PdfMiner reported a syntax error")
 
         if not self.document.is_extractable:
             raise PDFTextExtractionNotAllowed
