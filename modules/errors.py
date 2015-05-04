@@ -47,7 +47,10 @@ class ErrorReport(object):
                 'level': self.level
             }
 
+            import pdb
+            pdb.set_trace()
             urlopen(req, json.dumps(args))
+
             logging.info("Successfully posted an error report")
 
         except HTTPError, err:
