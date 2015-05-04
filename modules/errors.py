@@ -22,7 +22,8 @@ class ErrorReport(object):
 
     """ Description is the only mandatory attribute
     """
-    def __init__(self, description, error_type=None, document=None, level=None):
+    def __init__(self, description,
+                 error_type=None, document=None, level=None):
         self.description = description
         self.error_type = error_type
         self.document = document
@@ -47,8 +48,6 @@ class ErrorReport(object):
                 'level': self.level
             }
 
-            import pdb
-            pdb.set_trace()
             urlopen(req, json.dumps(args))
 
             logging.info("Successfully posted an error report")
