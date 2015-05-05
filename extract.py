@@ -132,6 +132,10 @@ def main():
         except CompatibilityError:
             ui.warning("Could not understand the file %s" % key.name)
             # Continue without deleting. We might want to inspect this file
+            continue
+        except OSError, e:
+            ui.error("OS error (probably out of memory)\
+                      when extracting from %s: " % (key.name, e))
         i = 0
         # FIXME: let DocumentList keep track of this
         for document in document_list.get_next_document():
