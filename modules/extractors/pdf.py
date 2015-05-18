@@ -240,6 +240,8 @@ class PdfMinerWrapper(object):
             raise CompatibilityError("PdfMiner reported an unexpected EOF")
         except PDFSyntaxError:
             raise CompatibilityError("PdfMiner reported a syntax error")
+        except ValueError:
+            raise CompatibilityError("PdfMiner could not parse this file")
 
         if not self.document.is_extractable:
             raise PDFTextExtractionNotAllowed
