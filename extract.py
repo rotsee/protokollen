@@ -136,6 +136,8 @@ def main():
         except OSError:
             ui.error("OS error (probably out of memory)\
                       when extracting from %s: " % key.name)
+            continue
+
         i = 0
         # FIXME: let DocumentList keep track of this
         for document in document_list.get_next_document():
