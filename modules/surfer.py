@@ -16,7 +16,9 @@ import urlparse
 from shutil import rmtree
 from tempfile import mkdtemp
 from os import (listdir,
-                sep as os_sep)
+                sep as os_sep,
+                path as os_path,
+                pardir)
 
 
 class ConnectionError(Exception):
@@ -48,6 +50,11 @@ class Surfer:
 
         self.vdisplay = Xvfb()
         self.vdisplay.start()
+
+        def get_bin_path(subdir):
+            path = os_path.dirname(os_path.realpath(__file__)) + os_sep
+            return path + os_sep.join([pardir, "bin", subdir])
+
         if browser == "firefox":
             profile = FirefoxProfile()
             # Open links in same window
@@ -61,7 +68,7 @@ class Surfer:
                                    "application/msword, application/vnd.ms-word, application/rtf, application/octet-stream")
 
             # Add extension for overriding Content-Disposition headers, etc
-            extensions_dir = os_sep.join(['bin', 'firefox-plugins-enabled'])
+            extensions_dir = get_bin_path('firefox-plugins-enabled')
             for filename in listdir(extensions_dir):
                 fullfilename = os_sep.join([extensions_dir, filename])
                 profile.add_extension(extension=fullfilename)
@@ -70,8 +77,8 @@ class Surfer:
         elif browser == "chrome":
             # Add extension for overriding Content-Disposition headers
             options = ChromeOptions()
-            options.add_extension('bin/undisposition.crx')
-            driver = Chrome(executable_path='bin/chromedriver',
+            options.add_extension(get_bin_path('bin/undisposition.crx'))
+            driver = Chrome(executable_path=get_bin_path('bin/chromedriver'),
                             chrome_options=options)
         else:
             raise Exception("Not a valid browser name")
