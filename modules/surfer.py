@@ -13,6 +13,7 @@ from selenium.common.exceptions import (InvalidSelectorException,
 from xvfbwrapper import Xvfb
 from time import sleep
 import urlparse
+from httplib import BadStatusLine
 from shutil import rmtree
 from tempfile import mkdtemp
 from os import (listdir,
@@ -153,6 +154,8 @@ class Surfer:
         try:
             self.selenium_driver.get(url)
         except TimeoutException:
+            raise ConnectionError
+        except BadStatusLine:
             raise ConnectionError
         self.selenium_driver.implicitly_wait(self.extra_delay)
 

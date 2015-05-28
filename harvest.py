@@ -196,6 +196,7 @@ def run_harvest(data_set, browser, files_connection):
                 browser.click_on_stuff(preclick)
             except Exception as e:
                 ui.warning("Could not do preclick in %s" % row["url"])
+                continue
 
         ui.debug("Getting URL list from %s and on" % row["dlclick1"])
         click_through_dlclicks(browser,
