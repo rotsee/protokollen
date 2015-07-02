@@ -82,6 +82,12 @@ Database = None
  A token needed to make requests to our own Error API.
 """
 
+#tagger_api_url = "http://tagger_api_url"
+#tagger_api_key = "12345678"
+"""
+ Auth to Textual Relations text tagger API
+"""
+
 document_rules = [
     ("kommunstyrelseprotokoll",
         ("and", [
